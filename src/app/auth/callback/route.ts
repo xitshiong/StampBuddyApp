@@ -13,7 +13,7 @@ export async function GET(request: Request) {
       // Check if profile exists
       const { data: profile } = await supabase
         .from('profiles')
-        .select('id, role')
+        .select('*')
         .eq('id', data.user.id)
         .single()
 
