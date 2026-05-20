@@ -44,7 +44,8 @@ export default function RolePage() {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) { router.replace('/auth'); return }
 
-    const { error } = await supabase.from('profiles').upsert({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { error } = await (supabase.from('profiles') as any).upsert({
       id: user.id,
       phone: user.email ?? user.id,
       role,
