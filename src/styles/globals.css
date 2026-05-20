@@ -1,0 +1,212 @@
+@import "tailwindcss";
+
+:root {
+  /* Warm dark palette — Midnight Espresso */
+  --bg-base:      oklch(0.09 0.012 55);
+  --bg-surface:   oklch(0.13 0.012 55);
+  --bg-elevated:  oklch(0.17 0.013 55);
+  --border:       oklch(0.24 0.016 55);
+  --border-soft:  oklch(0.19 0.013 55);
+
+  /* Text — warm tinted, not cold gray */
+  --text-primary:   oklch(0.95 0.012 65);
+  --text-secondary: oklch(0.63 0.022 65);
+  --text-muted:     oklch(0.40 0.016 65);
+
+  /* Amber accent — espresso crema */
+  --accent:       oklch(0.76 0.14 78);
+  --accent-dim:   oklch(0.76 0.14 78 / 0.14);
+  --accent-text:  oklch(0.18 0.03 55);
+
+  /* Semantic */
+  --success:  oklch(0.66 0.16 155);
+  --warning:  oklch(0.72 0.17 80);
+  --error:    oklch(0.62 0.20 20);
+
+  /* Radii */
+  --r-card: 22px;
+  --r-btn:  14px;
+  --r-input: 13px;
+
+  /* Typography */
+  --font-sans: 'Bricolage Grotesque', system-ui, sans-serif;
+  --font-display: var(--font-sans);
+  --font-body: var(--font-sans);
+
+  /* Type scale — fixed rem for app UI */
+  --text-label: 0.6875rem;   /* 11px — uppercase labels only */
+  --text-sm:    0.8125rem;   /* 13px — secondary, hints, captions */
+  --text-base:  1rem;        /* 16px — body, inputs */
+  --text-md:    1.25rem;     /* 20px — card names, subheadings */
+  --text-lg:    1.625rem;    /* 26px — page headings */
+  --text-xl:    clamp(2.125rem, 9vw, 3rem); /* hero display */
+}
+
+/* Reset */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  min-height: 100%;
+  background: var(--bg-base);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overscroll-behavior: none;
+  font-feature-settings: 'kern' 1, 'liga' 1, 'ss01' 1;
+  font-optical-sizing: auto;
+  color-scheme: dark;
+}
+/* Numeric data — tabular alignment */
+.num { font-variant-numeric: tabular-nums; }
+
+/* Safe area */
+.safe-top    { padding-top: max(env(safe-area-inset-top, 0px), 20px); }
+.safe-bottom { padding-bottom: env(safe-area-inset-bottom, 16px); }
+
+/* No scrollbar */
+::-webkit-scrollbar { width: 0; height: 0; }
+
+/* Tap */
+* { -webkit-tap-highlight-color: transparent; }
+
+/* Focus */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* Stamp pop */
+@keyframes stamp-pop {
+  0%   { transform: scale(0) rotate(-12deg); opacity: 0; }
+  65%  { transform: scale(1.2) rotate(3deg); }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+.stamp-pop { animation: stamp-pop 0.38s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+
+/* Shimmer for slide-to-redeem */
+@keyframes shimmer {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(250%); }
+}
+.shimmer::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, oklch(1 0 0 / 0.1), transparent);
+  animation: shimmer 2.2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* QR live pulse */
+@keyframes live-pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.35; }
+}
+.live-dot { animation: live-pulse 1.4s ease-in-out infinite; }
+
+/* Spin */
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Fade up stagger helper */
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.fade-up {
+  animation: fade-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: calc(var(--i, 0) * 60ms);
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Scroll reveal */
+.reveal {
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity 0.55s cubic-bezier(0.16, 1, 0.3, 1), transform 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+  transition-delay: calc(var(--i, 0) * 80ms);
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Step connector line reveal */
+.step-line {
+  transform-origin: left center;
+  transform: scaleX(0);
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.3s;
+}
+.step-line.visible {
+  transform: scaleX(1);
+}
+
+/* FAQ accordion */
+.faq-body {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.faq-body.open {
+  grid-template-rows: 1fr;
+}
+.faq-body > div {
+  overflow: hidden;
+}
+
+/* Get started button */
+.btn {
+  position: relative;
+  font-size: 15px;
+  text-transform: uppercase;
+  text-decoration: none;
+  padding: 1em 2.5em;
+  display: inline-block;
+  cursor: pointer;
+  border-radius: 6em;
+  transition: all 0.2s;
+  border: none;
+  font-family: var(--font-sans);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--accent-text);
+  background-color: var(--accent);
+}
+
+.btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 28px oklch(0.76 0.14 78 / 0.35);
+}
+
+.btn:active {
+  transform: translateY(-1px);
+  box-shadow: 0 5px 14px oklch(0.76 0.14 78 / 0.25);
+}
+
+.btn::after {
+  content: "";
+  display: inline-block;
+  height: 100%;
+  width: 100%;
+  border-radius: 6em;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: -1;
+  transition: all 0.4s;
+  background-color: var(--accent);
+}
+
+.btn:hover::after {
+  transform: scaleX(1.4) scaleY(1.6);
+  opacity: 0;
+}
