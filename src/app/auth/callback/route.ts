@@ -13,7 +13,7 @@ export async function GET(request: Request) {
       // Check if profile exists
       const { data: profile } = await supabase
         .from('profiles')
-        .select('*')
+        .select('role')
         .eq('id', data.user.id)
         .single()
 
@@ -23,7 +23,8 @@ export async function GET(request: Request) {
       }
 
       // Existing user — route by role
-      return NextResponse.redirect(`${origin}/${profile.role === 'merchant' ? 'merchant' : 'customer'}`)
+      const role = (profile as { role: string }).role
+      return NextResponse.redirect(`${origin}/${role === 'merchant' ? 'merchant' : 'customer'}`)
     }
   }
 
