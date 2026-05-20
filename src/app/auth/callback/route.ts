@@ -10,7 +10,6 @@ export async function GET(request: Request) {
     const { data, error } = await supabase.auth.exchangeCodeForSession(code)
 
     if (!error && data.user) {
-      // Check if profile exists
       const { data: profile } = await supabase
         .from('profiles')
         .select('role')
@@ -18,13 +17,11 @@ export async function GET(request: Request) {
         .single()
 
       if (!profile) {
-        // New user — redirect to role selection
         return NextResponse.redirect(`${origin}/auth/role`)
       }
 
-      // Existing user — route by role
-      const role = (profile as { role: string }).role
-      return NextResponse.redirect(`${origin}/${role === 'merchant' ? 'merchant' : 'customer'}`)
+      const dest = (profile as unknown as { role: string }).role === 'merchant' ? 'merchant' : 'customer'
+      return NextResponse.redirect(`${origin}/${dest}`)
     }
   }
 
