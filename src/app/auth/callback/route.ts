@@ -16,11 +16,11 @@ export async function GET(request: Request) {
         .eq('id', data.user.id)
         .single()
 
-      if (!profile) {
+      if (!profile || !profile.role) {
         return NextResponse.redirect(`${origin}/auth/role`)
       }
 
-      const dest = (profile as unknown as { role: string }).role === 'merchant' ? 'merchant' : 'customer'
+      const dest = profile.role === 'merchant' ? 'merchant' : 'customer'
       return NextResponse.redirect(`${origin}/${dest}`)
     }
   }
