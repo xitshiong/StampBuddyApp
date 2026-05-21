@@ -44,13 +44,14 @@ export default function SearchPage() {
     const supabase = createClient()
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return
-    const { data, error } = await supabase
+    const { data: cardData, error } = await supabase
       .from('loyalty_cards')
       .insert({ user_id: user.id, business_id: business.id })
       .select('id,user_id,business_id,current_stamps,total_redeemed,created_at')
       .single()
     if (error) { toast.error('Could not follow café'); return }
-    const card: LoyaltyCardWithBusiness = { ...(data as LoyaltyCard), businesses: business }
+    const data = cardData as LoyaltyCard
+    const card: LoyaltyCardWithBusiness = { ...data, businesses: business }
     setFollowed(prev => new Set([...prev, business.id]))
     useAppStore.getState().setCards([card, ...useAppStore.getState().cards])
     toast.success(`Following ${business.name}`)
