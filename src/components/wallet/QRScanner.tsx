@@ -54,7 +54,7 @@ export default function QRScanner({ card, onClose, onSuccess }: Props) {
     const { data: rawData, error } = await supabase.rpc('redeem_stamp_session', {
       p_session_id: sessionId,
       p_loyalty_card_id: card.id,
-    })
+    } as any)
     const data = rawData as RedeemStampResult | null
     if (error || !data?.ok) {
       const msg = data?.error === 'session_expired'

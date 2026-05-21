@@ -44,7 +44,7 @@ export default function VoucherCard({ card, onRedeemed }: Props) {
       await animate(x, maxX, { type: 'spring', stiffness: 400, damping: 32 })
       setLoading(true)
       const supabase = createClient()
-      const { data: rawData, error } = await supabase.rpc('redeem_voucher', { p_loyalty_card_id: card.id })
+      const { data: rawData, error } = await supabase.rpc('redeem_voucher', { p_loyalty_card_id: card.id } as any)
       const data = rawData as RedeemVoucherResult | null
       setLoading(false)
       if (error || !data?.ok) {
