@@ -10,9 +10,13 @@ const ease = [0.16, 1, 0.3, 1] as [number, number, number, number]
 export default function GoogleAuth() {
   async function signInWithGoogle() {
     const supabase = createClient()
+    const redirectUrl = process.env.NEXT_PUBLIC_SITE_URL
+      ? `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback`
+      : `${window.location.origin}/auth/callback`
+
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: { redirectTo: `${window.location.origin}/auth/callback` },
+      options: { redirectTo: redirectUrl },
     })
     if (error) toast.error(error.message)
   }
