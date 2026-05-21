@@ -29,7 +29,7 @@ export default function MerchantPage() {
       if (!user) { window.location.href = '/auth'; return }
       const { data } = await supabase
         .from('businesses').select('*').eq('owner_id', user.id).single()
-      if (data) setBusiness(data)
+      if (data) setBusiness(data as any)
       else window.location.href = '/merchant/onboarding'
       setLoading(false)
     }
@@ -58,8 +58,9 @@ export default function MerchantPage() {
       .select('id').single()
     setGenerating(false)
     if (error || !data) { toast.error('Failed to generate QR'); return }
+    const session = data as { id: string }
     setStampCount(count)
-    setSessionId(data.id)
+    setSessionId(session.id)
   }
 
   async function handleSignOut() {

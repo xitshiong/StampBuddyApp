@@ -39,7 +39,7 @@ export default function CustomerWalletPage() {
     supabase.auth.getUser().then(async ({ data: { user } }) => {
       if (!user) return
       const { data } = await supabase.from('profiles').select('*').eq('id', user.id).single()
-      if (data) useAppStore.getState().setProfile(data)
+      if (data) useAppStore.getState().setProfile(data as any)
     })
   }, [profile])
 
