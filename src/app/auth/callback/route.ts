@@ -10,18 +10,18 @@ export async function GET(request: Request) {
     const { data, error } = await supabase.auth.exchangeCodeForSession(code)
 
     if (!error && data.user) {
-      const { data: profile } = await supabase
+      const { data: profileData } = await supabase
         .from('profiles')
         .select('role')
         .eq('id', data.user.id)
         .single()
 
-      if (!profile) {
+      if (!profileData) {
         return NextResponse.redirect(`${origin}/auth/role`)
       }
 
-      const role = profile.role as 'customer' | 'merchant'
-      const dest = role === 'merchant' ? 'merchant' : 'customer'
+      const profile = profileData as { role: 'customer' | 'merchant' }
+      const dest = profile.role === 'merchant' ? 'merchant' : 'customer'
       return NextResponse.redirect(`${origin}/${dest}`)
     }
   }
