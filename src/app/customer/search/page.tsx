@@ -44,9 +44,10 @@ export default function SearchPage() {
     const supabase = createClient()
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return
+    const insertData = { user_id: user.id, business_id: business.id }
     const { data: cardData, error } = await supabase
       .from('loyalty_cards')
-      .insert({ user_id: user.id, business_id: business.id })
+      .insert(insertData as any)
       .select('id,user_id,business_id,current_stamps,total_redeemed,created_at')
       .single()
     if (error) { toast.error('Could not follow café'); return }
