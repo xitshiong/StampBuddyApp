@@ -74,14 +74,42 @@ export default function MerchantPage() {
   const urgent = timeLeft <= 10
 
   if (loading) return (
-    <div style={{ display: 'flex', height: '100dvh', alignItems: 'center', justifyContent: 'center', background: 'var(--bg-base)' }}>
+    <div style={{
+      display: 'flex',
+      height: '100dvh',
+      alignItems: 'center',
+      justifyContent: 'center',
+      background: 'var(--bg-base)',
+      backgroundImage: `
+        linear-gradient(45deg, oklch(0.12 0.015 55) 25%, transparent 25%),
+        linear-gradient(-45deg, oklch(0.12 0.015 55) 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, oklch(0.12 0.015 55) 75%),
+        linear-gradient(-45deg, transparent 75%, oklch(0.12 0.015 55) 75%)
+      `,
+      backgroundSize: '40px 40px',
+      backgroundPosition: '0 0, 0 20px, 20px -20px, -20px 0px',
+    }}>
       <div style={{ width: 28, height: 28, borderRadius: '50%', border: '2.5px solid var(--border)', borderTopColor: 'var(--accent)', animation: 'spin 0.7s linear infinite' }} />
       <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </div>
   )
 
   return (
-    <div style={{ flex: 1, overflowY: 'auto', padding: '56px 24px 48px', background: 'var(--bg-base)', minHeight: '100dvh' }}>
+    <div style={{
+      flex: 1,
+      overflowY: 'auto',
+      padding: '56px 24px 48px',
+      background: 'var(--bg-base)',
+      minHeight: '100dvh',
+      backgroundImage: `
+        linear-gradient(45deg, oklch(0.12 0.015 55) 25%, transparent 25%),
+        linear-gradient(-45deg, oklch(0.12 0.015 55) 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, oklch(0.12 0.015 55) 75%),
+        linear-gradient(-45deg, transparent 75%, oklch(0.12 0.015 55) 75%)
+      `,
+      backgroundSize: '40px 40px',
+      backgroundPosition: '0 0, 0 20px, 20px -20px, -20px 0px',
+    }}>
 
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 36 }}>

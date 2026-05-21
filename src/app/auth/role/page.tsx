@@ -60,8 +60,19 @@ export default function RolePage() {
 
   return (
     <div style={{
-      minHeight: '100dvh', display: 'flex', flexDirection: 'column',
-      padding: '52px 28px 40px', background: 'var(--bg-base)',
+      minHeight: '100dvh',
+      display: 'flex',
+      flexDirection: 'column',
+      padding: '52px 28px 40px',
+      background: 'var(--bg-base)',
+      backgroundImage: `
+        linear-gradient(45deg, oklch(0.12 0.015 55) 25%, transparent 25%),
+        linear-gradient(-45deg, oklch(0.12 0.015 55) 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, oklch(0.12 0.015 55) 75%),
+        linear-gradient(-45deg, transparent 75%, oklch(0.12 0.015 55) 75%)
+      `,
+      backgroundSize: '40px 40px',
+      backgroundPosition: '0 0, 0 20px, 20px -20px, -20px 0px',
     }}>
       <motion.div
         initial={{ opacity: 0, y: 24 }}

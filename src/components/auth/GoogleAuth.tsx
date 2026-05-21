@@ -22,6 +22,14 @@ export default function GoogleAuth() {
       minHeight: '100dvh', display: 'flex', flexDirection: 'column',
       alignItems: 'center', justifyContent: 'center',
       padding: '32px 28px', background: 'var(--bg-base)',
+      backgroundImage: `
+        linear-gradient(45deg, oklch(0.12 0.015 55) 25%, transparent 25%),
+        linear-gradient(-45deg, oklch(0.12 0.015 55) 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, oklch(0.12 0.015 55) 75%),
+        linear-gradient(-45deg, transparent 75%, oklch(0.12 0.015 55) 75%)
+      `,
+      backgroundSize: '40px 40px',
+      backgroundPosition: '0 0, 0 20px, 20px -20px, -20px 0px',
     }}>
       {/* Ambient glow */}
       <div style={{

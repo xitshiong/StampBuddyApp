@@ -54,7 +54,20 @@ export default function CustomerWalletPage() {
   }
 
   return (
-    <div style={{ height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+    <div style={{
+      height: '100%',
+      display: 'flex',
+      flexDirection: 'column',
+      overflow: 'hidden',
+      backgroundImage: `
+        linear-gradient(45deg, oklch(0.12 0.015 55) 25%, transparent 25%),
+        linear-gradient(-45deg, oklch(0.12 0.015 55) 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, oklch(0.12 0.015 55) 75%),
+        linear-gradient(-45deg, transparent 75%, oklch(0.12 0.015 55) 75%)
+      `,
+      backgroundSize: '40px 40px',
+      backgroundPosition: '0 0, 0 20px, 20px -20px, -20px 0px',
+    }}>
       {/* Header */}
       <div style={{ padding: '52px 24px 16px', flexShrink: 0 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
