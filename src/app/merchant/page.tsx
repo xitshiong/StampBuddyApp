@@ -54,7 +54,7 @@ export default function MerchantPage() {
     const supabase = createClient()
     const { data, error } = await supabase
       .from('stamp_sessions')
-      .insert({ business_id: business.id, stamp_count: count })
+      .insert({ business_id: business.id, stamp_count: count } as any)
       .select('id').single()
     setGenerating(false)
     if (error || !data) { toast.error('Failed to generate QR'); return }

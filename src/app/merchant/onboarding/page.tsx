@@ -22,7 +22,7 @@ const COLORS = [
 
 // Map bg oklch values to hex for DB storage
 const BG_TO_HEX: Record<string, string> = {
-  'oklch(0.26 0.08 55)':  '#6366f1',
+  'oklch(0.26 0.08 55)':  '#f59e0b',
   'oklch(0.24 0.07 15)':  '#f97316',
   'oklch(0.22 0.07 155)': '#22c55e',
   'oklch(0.22 0.08 260)': '#6366f1',
@@ -59,7 +59,7 @@ export default function MerchantOnboarding() {
       max_stamps: maxStamps,
       voucher_reward: voucherReward.trim(),
       color: BG_TO_HEX[selectedColor.value] ?? '#6366f1',
-    })
+    } as any)
 
     setLoading(false)
     if (error) { toast.error(error.message); return }
@@ -131,7 +131,7 @@ export default function MerchantOnboarding() {
             <div style={{ display: 'flex', gap: 7, marginTop: 18, flexWrap: 'wrap' }}>
               {Array.from({ length: maxStamps }).map((_, i) => (
                 <div key={i} style={{
-                  width: i < 3 ? 22 : 22, height: 22, borderRadius: '50%',
+                  width: 22, height: 22, borderRadius: '50%',
                   background: i < 3 ? selectedColor.accent : 'oklch(1 0 0 / 0.15)',
                   border: `1.5px solid ${i < 3 ? selectedColor.accent : 'oklch(1 0 0 / 0.25)'}`,
                   flexShrink: 0,
