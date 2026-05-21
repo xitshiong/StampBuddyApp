@@ -6,7 +6,7 @@ import { useEffect, useState, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { createClient } from '@/lib/supabase/client'
 import { useAppStore } from '@/store/app'
-import type { LoyaltyCardWithBusiness } from '@/types/database'
+import type { LoyaltyCardWithBusiness, LoyaltyCard, Business } from '@/types/database'
 import WalletCard from '@/components/wallet/WalletCard'
 import { LogOut } from 'lucide-react'
 
@@ -19,12 +19,14 @@ export default function CustomerWalletPage() {
 
   const fetchCards = useCallback(async () => {
     const supabase = createClient()
-    const { data } = await supabase
+    const { data: cardsData } = await supabase
       .from('loyalty_cards').select('*').order('created_at', { ascending: false })
-    if (!data) return
+    if (!cardsData) return
+    const data = cardsData as LoyaltyCard[]
     const bizIds = [...new Set(data.map(c => c.business_id))]
     const { data: bizData } = await supabase.from('businesses').select('*').in('id', bizIds)
-    const bizMap = Object.fromEntries((bizData ?? []).map(b => [b.id, b]))
+    const businesses = (bizData ?? []) as Business[]
+    const bizMap = Object.fromEntries(businesses.map(b => [b.id, b]))
     setCards(data.map(c => ({ ...c, businesses: bizMap[c.business_id] })) as LoyaltyCardWithBusiness[])
     setLoading(false)
   }, [setCards])
