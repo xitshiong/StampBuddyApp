@@ -77,7 +77,7 @@ export default function MerchantSettings() {
         max_stamps: maxStamps,
         voucher_reward: voucherReward.trim(),
         color: COLORS[colorIndex].hex,
-      } as any)
+      } as never)
       .eq('id', business.id)
 
     setSaving(false)
