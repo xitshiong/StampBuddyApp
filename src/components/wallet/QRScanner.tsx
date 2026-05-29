@@ -36,7 +36,10 @@ export default function QRScanner({ card, onClose, onSuccess, mode = 'stamp' }: 
           async (decodedText) => {
             if (!scanning) return
             setScanning(false)
-            await scanner.stop()
+            
+            // Do NOT call scanner.stop() here. Stopping the video track inside its own 
+            // frame processing callback causes a WebKit crash on iOS Safari. 
+            // We just process the scan and let the component unmount handle the stop.
             await handleScan(decodedText)
           },
           () => {}
