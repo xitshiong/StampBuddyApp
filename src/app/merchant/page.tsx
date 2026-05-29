@@ -9,7 +9,7 @@ import { createClient } from '@/lib/supabase/client'
 import toast from 'react-hot-toast'
 import type { Business } from '@/types/database'
 import NumPad from '@/components/merchant/NumPad'
-import { LogOut, RefreshCw, Settings, QrCode } from 'lucide-react'
+import { LogOut, RefreshCw, Settings, QrCode, Sparkles } from 'lucide-react'
 import { useSearchParams } from 'next/navigation'
 
 const QR_TTL = 60
@@ -151,11 +151,6 @@ export default function MerchantPage() {
     img.src = 'data:image/svg+xml;base64,' + btoa(svgData)
   }
 
-  async function handleSignOut() {
-    const supabase = createClient()
-    await supabase.auth.signOut()
-    window.location.href = '/auth'
-  }
 
   const pct = sessionId ? (timeLeft / QR_TTL) * 100 : 100
   const circ = 2 * Math.PI * 26

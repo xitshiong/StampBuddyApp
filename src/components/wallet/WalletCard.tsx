@@ -179,7 +179,7 @@ export default function WalletCard({ card, isActive, stackIndex, onTap, onStamps
             card={card}
             onClose={() => setShowScanner(false)}
             onSuccess={newStamps => {
-              onStampsUpdated(card.id, newStamps)
+              onStampsUpdated(card.id, newStamps ?? card.current_stamps)
               setShowScanner(false)
             }}
           />
