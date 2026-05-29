@@ -308,6 +308,18 @@ export default function HomePage() {
         .editorial-grid{display:grid;grid-template-columns:1fr;gap:0}
         @media(min-width:1024px){.editorial-grid{grid-template-columns:1fr 1fr;gap:80px}}
         .hover-card:hover{transform:translateX(-50%) rotate(var(--rotate)) translateY(-12px) !important;box-shadow:0 32px 72px oklch(0 0 0 / 0.9) !important}
+        .text-shine {
+          background: linear-gradient(to right, #9f9f9f 0%, #fff 10%, #868686 20%, #9f9f9f 100%);
+          background-size: 200% auto;
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          animation: shine 3s infinite linear;
+        }
+        @keyframes shine {
+          0% { background-position: 0; }
+          60% { background-position: -200%; }
+          100% { background-position: -200%; }
+        }
       `}</style>
 
       {/* NAV */}
@@ -363,7 +375,7 @@ export default function HomePage() {
                 textShadow: '0 2px 24px oklch(0 0 0 / 0.5)',
               }}
             >
-              Your stamps, finally in one place
+              Your <span className="text-shine">stamps</span>, finally in one place
             </motion.h1>
 
             <motion.p
