@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 480" width="100%" height="100%">
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&amp;display=swap');
+      .script-font { font-family: 'Dancing Script', 'Brush Script MT', cursive; }
+      .sans-font { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; }
+    </style>
+  </defs>
+
+  <g transform="translate(25, 25)">
+    <rect width="350" height="200" fill="#6c2d35" rx="5"/>
+    
+    <text x="15" y="90" class="sans-font" font-weight="900" font-size="110" fill="#d2af93" letter-spacing="-4">COM</text>
+    <text x="65" y="175" class="sans-font" font-weight="900" font-size="110" fill="#d2af93" letter-spacing="-4">MON</text>
+
+    <text x="175" y="130" class="script-font" font-weight="700" font-size="85" fill="#f3e7bd" text-anchor="middle" transform="rotate(-15, 175, 130)">Cup</text>
+
+    <text x="20" y="188" class="sans-font" font-size="8" fill="#f3e7bd" font-weight="bold" letter-spacing="0.5">PERSONALITY</text>
+    <text x="175" y="188" class="sans-font" font-size="8" fill="#f3e7bd" font-weight="bold" letter-spacing="0.5" text-anchor="middle">MEMORIES</text>
+    <text x="330" y="188" class="sans-font" font-size="8" fill="#f3e7bd" font-weight="bold" letter-spacing="0.5" text-anchor="end">PRETENSION</text>
+  </g>
+
+  <g transform="translate(25, 250)">
+    <rect width="350" height="200" fill="#e9debc" rx="5"/>
+
+    <path d="M140,0 C140,80 300,50 300,100 C300,160 180,160 220,200 L350,200 L350,0 Z" fill="#f1ecd9" clip-path="inset(0 0 0 0 round 5px)"/>
+
+    <text x="175" y="35" class="sans-font" font-size="10" font-weight="bold" fill="#6c2d35" text-anchor="middle" letter-spacing="0.5">LOYALTY CARD</text>
+
+    <circle cx="65" cy="85" r="23" fill="#6c2d35"/>
+    <circle cx="138" cy="85" r="23" fill="#6c2d35"/>
+    <circle cx="211" cy="85" r="23" fill="#6c2d35"/>
+    <circle cx="284" cy="85" r="23" fill="#6c2d35"/>
+
+    <circle cx="65" cy="150" r="23" fill="#6c2d35"/>
+    <circle cx="138" cy="150" r="23" fill="#6c2d35"/>
+    <circle cx="211" cy="150" r="23" fill="#6c2d35"/>
+    <circle cx="284" cy="150" r="23" fill="#6c2d35"/>
+
+    <g transform="translate(65, 85) rotate(-25) scale(1.1)">
+      <path d="M-8,-9 h12 a7,7 0 0,1 0,14 h-12 z M4,-3 h4 a3,3 0 0,1 0,6 h-4 z" fill="#e9debc" fill-rule="evenodd"/>
+    </g>
+    <g transform="translate(138, 85) rotate(-15) scale(1.1)">
+      <path d="M-8,-9 h12 a7,7 0 0,1 0,14 h-12 z M4,-3 h4 a3,3 0 0,1 0,6 h-4 z" fill="#e9debc" fill-rule="evenodd"/>
+    </g>
+  </g>
+</svg>
