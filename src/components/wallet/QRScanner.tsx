@@ -99,7 +99,7 @@ export default function QRScanner({ card, onClose, onSuccess, mode = 'stamp' }: 
       .from('businesses')
       .select('*')
       .eq('id', businessId)
-      .single()
+      .single() as { data: { id: string; name: string; color: string } | null, error: unknown }
 
     if (bizError || !business) {
       toast.error('Business not found. Make sure you\'re scanning a StampBuddy QR code')
