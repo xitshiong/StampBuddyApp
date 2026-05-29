@@ -320,6 +320,43 @@ export default function HomePage() {
           60% { background-position: -200%; }
           100% { background-position: -200%; }
         }
+        .cycler-words {
+          overflow: hidden;
+          position: relative;
+          height: 1.2em;
+        }
+        .cycler-words::after {
+          content: "";
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(
+            var(--bg-base) 0%,
+            transparent 30%,
+            transparent 70%,
+            var(--bg-base) 100%
+          );
+          z-index: 20;
+          pointer-events: none;
+        }
+        .cycler-word {
+          display: block;
+          height: 100%;
+          line-height: 1.2em;
+          animation: spin_words 8s infinite;
+        }
+        @keyframes spin_words {
+          0%, 14% { transform: translateY(0); }
+          17% { transform: translateY(-102%); }
+          20%, 34% { transform: translateY(-100%); }
+          37% { transform: translateY(-202%); }
+          40%, 54% { transform: translateY(-200%); }
+          57% { transform: translateY(-302%); }
+          60%, 74% { transform: translateY(-300%); }
+          77% { transform: translateY(-402%); }
+          80%, 94% { transform: translateY(-400%); }
+          97% { transform: translateY(-502%); }
+          100% { transform: translateY(-500%); }
+        }
       `}</style>
 
       {/* NAV */}
@@ -353,12 +390,21 @@ export default function HomePage() {
               style={{ marginBottom: 32 }}
             >
               <div className="ruled-divider" style={{ marginBottom: 28 }} />
-              <p style={{
+              <div style={{
                 fontSize: 12, fontWeight: 800, letterSpacing: '0.14em',
-                textTransform: 'uppercase', color: 'var(--accent)', marginBottom: 8
+                textTransform: 'uppercase', color: 'var(--accent)', marginBottom: 8,
+                display: 'flex', alignItems: 'center', gap: '6px'
               }}>
-                Digital loyalty for restaurants
-              </p>
+                <span>DIGITAL LOYALTY FOR</span>
+                <div className="cycler-words">
+                  <span className="cycler-word">RESTAURANTS</span>
+                  <span className="cycler-word">CAFES</span>
+                  <span className="cycler-word">BARS</span>
+                  <span className="cycler-word">BARBERS</span>
+                  <span className="cycler-word">SHOPS</span>
+                  <span className="cycler-word" aria-hidden="true">RESTAURANTS</span>
+                </div>
+              </div>
             </motion.div>
 
             <motion.h1
