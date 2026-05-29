@@ -2,174 +2,221 @@
 
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { createClient } from '@/lib/supabase/client'
-import toast from 'react-hot-toast'
 import type { LoyaltyCardWithBusiness } from '@/types/database'
 import StampGrid from './StampGrid'
 import QRScanner from './QRScanner'
 import VoucherCard from './VoucherCard'
-import { getCardColor } from '@/lib/utils'
 
 interface Props {
   card: LoyaltyCardWithBusiness
-  isActive: boolean
-  stackIndex: number
+  isActive: boolean      // Is this card currently at the front of the stack?
+  isExpanded: boolean    // Is this card currently in full-screen view?
+  isLifting: boolean     // Is the user hovering/touching the front card?
+  stackIndex: number     // 0 = front, 1 = middle, 2 = back
+  onPointerDown: () => void
+  onPointerUp: () => void
   onTap: () => void
+  onExpand: () => void
   onStampsUpdated: (cardId: string, newStamps: number) => void
 }
 
-const ease = [0.16, 1, 0.3, 1] as [number, number, number, number]
+const ease = [0.25, 0.46, 0.45, 0.94] as [number, number, number, number]
 
-export default function WalletCard({ card, isActive, stackIndex, onTap, onStampsUpdated }: Props) {
+// Helper for contrast
+function getContrastYIQ(hexcolor: string){
+    hexcolor = hexcolor.replace("#", "");
+    if (hexcolor.length === 3) hexcolor = hexcolor.split('').map(c => c+c).join('');
+    var r = parseInt(hexcolor.substr(0,2),16);
+    var g = parseInt(hexcolor.substr(2,2),16);
+    var b = parseInt(hexcolor.substr(4,2),16);
+    var yiq = ((r*299)+(g*587)+(b*114))/1000;
+    return (yiq >= 128) ? '#111111' : '#ffffff';
+}
+
+export default function WalletCard({ 
+  card, isActive, isExpanded, isLifting, stackIndex, 
+  onPointerDown, onPointerUp, onTap, onExpand, onStampsUpdated 
+}: Props) {
   const [showScanner, setShowScanner] = useState(false)
   const { businesses: biz } = card
+  
   const isComplete = card.current_stamps >= biz.max_stamps
-  const colors = getCardColor(biz.color)
-  const pct = Math.round((card.current_stamps / biz.max_stamps) * 100)
   const stampsLeft = biz.max_stamps - card.current_stamps
+  
+  // Use merchant branding or fallback
+  const bg = biz.card_bg_color || '#1c1c1e'
+  const accent = biz.card_accent_color || biz.color || '#956afa'
+  const textClr = biz.card_text_color || getContrastYIQ(bg)
+  const pattern = biz.card_pattern || ''
+  const shape = biz.stamp_shape || 'circle'
+
+  // Apple Wallet Stack positioning logic
+  // Base offset is 20px per layer. If lifting, background layers spread by +4px
+  const baseOffset = stackIndex * 20
+  const fanOffset = (isLifting && stackIndex > 0) ? 4 : 0
+  
+  // If lifting, the front card goes UP by 18px. If not active, it sits in stack.
+  const liftOffset = (isActive && isLifting && !isExpanded) ? -18 : 0
+  
+  const topOffset = isActive ? liftOffset : (baseOffset + fanOffset)
+  const scale = isActive ? 1 : Math.max(0.9, 1 - stackIndex * 0.03)
+  const brightness = isActive ? 1 : stackIndex === 1 ? 0.85 : 0.70
+
+  const handleInteraction = () => {
+    if (isExpanded) return // Close is handled by the close button
+    if (!isActive) onTap()
+    else onExpand()
+  }
 
   return (
     <>
       <motion.div
         layout
-        onClick={onTap}
+        onClick={handleInteraction}
+        onPointerDown={onPointerDown}
+        onPointerUp={onPointerUp}
+        onPointerCancel={onPointerUp}
+        onPointerLeave={onPointerUp}
+        initial={false}
         animate={{
-          y: isActive ? 0 : stackIndex * 10,
-          scale: isActive ? 1 : 1 - stackIndex * 0.028,
-          zIndex: 50 - stackIndex,
+          y: isExpanded ? 0 : topOffset,
+          scale: isExpanded ? 1 : scale,
+          filter: `brightness(${brightness})`,
+          zIndex: isExpanded ? 100 : 50 - stackIndex,
         }}
-        transition={{ type: 'spring', stiffness: 340, damping: 34 }}
+        transition={{ duration: 0.35, ease }}
         style={{
-          position: 'relative',
-          borderRadius: 24,
-          cursor: 'pointer',
-          marginTop: stackIndex > 0 ? -168 : 0,
-          zIndex: 50 - stackIndex,
-          willChange: 'transform',
-        }}
+          position: isExpanded ? 'fixed' : 'absolute',
+          top: isExpanded ? 0 : 0,
+          left: isExpanded ? 0 : 0,
+          right: isExpanded ? 0 : 0,
+          bottom: isExpanded ? 0 : 'auto',
+          height: isExpanded ? '100dvh' : 240, 
+          width: '100%',
+          cursor: isExpanded ? 'default' : 'pointer',
+          borderRadius: isExpanded ? 0 : 14,
+          boxShadow: isActive && isLifting && !isExpanded ? '0 24px 48px rgba(0,0,0,0.25)' : 'none',
+          '--card-bg': bg,
+          '--card-accent': accent,
+          '--card-text-clr': textClr,
+          '--card-pattern': pattern,
+        } as React.CSSProperties}
+        className="card"
       >
         <div style={{
-          background: colors.bg,
-          border: `1px solid ${colors.accent}28`,
-          borderRadius: 24,
-          padding: isActive ? '24px 24px 22px' : '24px 24px 20px',
-          minHeight: 180,
           position: 'relative',
+          width: '100%',
+          height: '100%',
+          display: 'flex',
+          flexDirection: 'column',
           overflow: 'hidden',
-          boxShadow: isActive
-            ? `0 20px 60px oklch(0 0 0 / 0.5), 0 0 0 1px ${colors.accent}18`
-            : `0 ${6 + stackIndex * 6}px ${20 + stackIndex * 10}px oklch(0 0 0 / 0.35)`,
-          transition: 'box-shadow 0.3s ease',
+          borderRadius: isExpanded ? 0 : 14,
+          transition: 'border-radius 0.35s ease',
         }}>
-          {/* Radial glow */}
-          <div style={{
-            position: 'absolute', top: -50, right: -30,
-            width: 180, height: 180, borderRadius: '50%',
-            background: `radial-gradient(circle, ${colors.accent}20 0%, transparent 65%)`,
-            pointerEvents: 'none',
-          }} />
-          {/* Subtle grain overlay */}
-          <div style={{
-            position: 'absolute', inset: 0, borderRadius: 24,
-            opacity: 0.025,
-            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
-            pointerEvents: 'none',
-          }} />
-
-          {/* Header */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', position: 'relative' }}>
-            <div style={{ flex: 1, minWidth: 0, paddingRight: 12 }}>
-              <p style={{
-                fontSize: 10, fontWeight: 600, letterSpacing: '0.08em',
-                textTransform: 'uppercase', color: `${colors.accent}99`, marginBottom: 5,
-              }}>Loyalty Card</p>
-              <h3 style={{
-                fontSize: 20, fontWeight: 700, letterSpacing: '-0.3px',
-                color: 'oklch(0.95 0.01 65)', lineHeight: 1.1,
-                overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-              }}>{biz.name}</h3>
-            </div>
-            <div style={{
-              flexShrink: 0,
-              padding: '5px 11px', borderRadius: 20,
-              background: `${colors.accent}1a`,
-              border: `1px solid ${colors.accent}35`,
-            }}>
-              <span style={{
-                fontSize: 13, fontWeight: 800, color: colors.accent,
-                fontVariantNumeric: 'tabular-nums',
-              }}>
-                {card.current_stamps}/{biz.max_stamps}
-              </span>
-            </div>
-          </div>
-
-          {/* Progress bar */}
-          <div style={{
-            marginTop: 18, height: 3, borderRadius: 2,
-            background: 'oklch(1 0 0 / 0.1)', overflow: 'hidden',
+          {/* Top Section (Card Face) */}
+          <div className="card-face" style={{
+            flex: isExpanded ? '1' : '0 0 55%',
+            background: 'var(--card-bg)',
+            position: 'relative',
+            padding: 24,
+            display: 'flex',
+            flexDirection: 'column',
+            borderTopLeftRadius: isExpanded ? 0 : 14,
+            borderTopRightRadius: isExpanded ? 0 : 14,
           }}>
-            <motion.div
-              initial={{ width: 0 }}
-              animate={{ width: `${pct}%` }}
-              transition={{ duration: 0.7, ease }}
-              style={{ height: '100%', borderRadius: 2, background: colors.accent }}
-            />
-          </div>
+            {/* Optional Pattern */}
+            {pattern && (
+              <div style={{
+                position: 'absolute', inset: 0, opacity: 0.15,
+                backgroundImage: `url(${pattern})`, backgroundSize: 'cover', pointerEvents: 'none'
+              }} />
+            )}
+            
+            {/* Merchant Logo or Name placeholder */}
+            <div style={{ position: 'relative', zIndex: 2 }}>
+              {biz.logo_url ? (
+                <img src={biz.logo_url} alt={biz.name} style={{ height: 40, width: 'auto', objectFit: 'contain' }} />
+              ) : (
+                <h3 style={{
+                  fontSize: 22, fontWeight: 800, color: 'var(--card-text-clr)',
+                  margin: 0, letterSpacing: '-0.5px'
+                }}>
+                  {biz.name}
+                </h3>
+              )}
+            </div>
 
-          {/* Expanded */}
-          <AnimatePresence>
-            {isActive && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.25, ease }}
-                style={{ overflow: 'hidden' }}
-              >
-                <StampGrid
-                  current={card.current_stamps}
-                  max={biz.max_stamps}
-                  accentColor={colors.accent}
-                />
-
-                {isComplete ? (
-                  <VoucherCard card={card} onRedeemed={() => onStampsUpdated(card.id, 0)} />
+            {/* Stamp Grid */}
+            <div style={{ position: 'relative', zIndex: 2, marginTop: 'auto', paddingTop: 20 }}>
+              <StampGrid current={card.current_stamps} max={biz.max_stamps} accentColor="var(--card-accent)" stampShape={shape} />
+            </div>
+            
+            {isExpanded && (
+              <div style={{ marginTop: 40, position: 'relative', zIndex: 2 }}>
+                 {isComplete ? (
+                  <VoucherCard card={card} onRedeemed={() => { onStampsUpdated(card.id, 0); onTap() }} />
                 ) : (
-                  <motion.button
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.1, duration: 0.3, ease }}
+                  <button
                     onClick={e => { e.stopPropagation(); setShowScanner(true) }}
-                    whileTap={{ scale: 0.97 }}
                     style={{
-                      width: '100%', marginTop: 18, padding: '15px',
-                      borderRadius: 14, border: 'none',
-                      background: colors.accent,
-                      color: 'var(--accent-text)',
-                      fontWeight: 700, fontSize: 15, cursor: 'pointer',
-                      letterSpacing: '-0.1px', fontFamily: 'var(--font-sans)',
-                      boxShadow: `0 4px 20px ${colors.accent}40`,
+                      width: '100%', padding: '16px', borderRadius: 12, border: 'none',
+                      background: 'var(--card-accent)', color: '#fff',
+                      fontWeight: 700, fontSize: 16, cursor: 'pointer',
+                      boxShadow: '0 8px 24px rgba(0,0,0,0.2)'
                     }}
                   >
                     Scan QR to Stamp
-                  </motion.button>
+                  </button>
                 )}
-              </motion.div>
+              </div>
             )}
-          </AnimatePresence>
+          </div>
 
-          {/* Collapsed hint */}
-          {!isActive && (
-            <p style={{
-              position: 'absolute', bottom: 18, left: 24,
-              fontSize: 11, fontWeight: 500,
-              color: 'oklch(1 0 0 / 0.38)',
-              letterSpacing: '0.01em',
-            }}>
-              {isComplete ? '🏆 Free drink ready' : `${stampsLeft} stamp${stampsLeft !== 1 ? 's' : ''} to go`}
-            </p>
-          )}
+          {/* Bottom Section (Card Desc) */}
+          <div className="card-desc" style={{
+            flex: isExpanded ? '0 0 auto' : '0 0 45%',
+            background: 'color-mix(in srgb, var(--card-bg) 60%, #000)',
+            position: 'relative',
+            top: -10,
+            padding: '24px 24px',
+            borderTopLeftRadius: 14,
+            borderTopRightRadius: 14,
+            zIndex: 3,
+            boxShadow: '0 -4px 12px rgba(0,0,0,0.1)',
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div>
+                <p style={{ margin: 0, fontSize: 12, color: 'var(--card-text-clr)', opacity: 0.7, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                  {isComplete ? 'Reward Ready' : `${stampsLeft} stamps to go`}
+                </p>
+                <p style={{ margin: '4px 0 0 0', fontSize: 16, fontWeight: 600, color: 'var(--card-text-clr)' }}>
+                  {biz.voucher_reward}
+                </p>
+              </div>
+              <div style={{
+                background: 'rgba(255,255,255,0.15)',
+                padding: '6px 12px',
+                borderRadius: 20,
+                color: 'var(--card-text-clr)',
+                fontWeight: 800,
+                fontSize: 14,
+              }}>
+                {card.current_stamps} / {biz.max_stamps}
+              </div>
+            </div>
+            {isExpanded && (
+               <button
+                  onClick={e => { e.stopPropagation(); onTap() }} // Tap to close
+                  style={{
+                    marginTop: 20, width: '100%', padding: '12px', borderRadius: 20,
+                    background: 'rgba(255,255,255,0.1)', border: 'none', color: 'var(--card-text-clr)',
+                    fontWeight: 600, cursor: 'pointer'
+                  }}
+               >
+                 Close
+               </button>
+            )}
+          </div>
         </div>
       </motion.div>
 

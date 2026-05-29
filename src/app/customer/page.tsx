@@ -15,7 +15,9 @@ const ease = [0.16, 1, 0.3, 1] as [number, number, number, number]
 
 export default function CustomerWalletPage() {
   const { profile, cards, setCards } = useAppStore()
-  const [activeIndex, setActiveIndex] = useState(0)
+  const [activeIndex, setActiveIndex] = useState(0) // Tracks front card index
+  const [expandedCardId, setExpandedCardId] = useState<string | null>(null)
+  const [liftingCardId, setLiftingCardId] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
   const [showScanner, setShowScanner] = useState(false)
 
@@ -164,15 +166,35 @@ export default function CustomerWalletPage() {
         ) : cards.length === 0 ? (
           <EmptyState />
         ) : (
-          <div style={{ position: 'relative' }}>
-            <AnimatePresence>
-              {cards.map((card, i) => (
+          <div className={`wallet-stack ${liftingCardId !== null ? 'is-active' : ''}`} style={{ position: 'relative', height: 260, marginTop: 20 }}>
+            <AnimatePresence mode="popLayout">
+              {cards.slice(0, 3).map((card, i) => (
                 <WalletCard
                   key={card.id}
                   card={card}
                   isActive={i === activeIndex}
-                  stackIndex={i === activeIndex ? 0 : i > activeIndex ? i - activeIndex : 0}
-                  onTap={() => setActiveIndex(i === activeIndex ? -1 : i)}
+                  isExpanded={expandedCardId === card.id}
+                  isLifting={liftingCardId === card.id}
+                  stackIndex={i}
+                  onPointerDown={() => setLiftingCardId(card.id)}
+                  onPointerUp={() => setLiftingCardId(null)}
+                  onTap={() => {
+                     // If it's expanded, close it.
+                     if (expandedCardId === card.id) {
+                         setExpandedCardId(null)
+                         setActiveIndex(0)
+                     } else {
+                         // Bring to front by reordering array
+                         const newCards = [...cards]
+                         const tapped = newCards.splice(i, 1)[0]
+                         newCards.unshift(tapped)
+                         setCards(newCards)
+                         setActiveIndex(0)
+                     }
+                  }}
+                  onExpand={() => {
+                     setExpandedCardId(card.id)
+                  }}
                   onStampsUpdated={handleStampsUpdated}
                 />
               ))}

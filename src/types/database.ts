@@ -11,9 +11,9 @@ export interface Database {
         Relationships: []
       }
       businesses: {
-        Row: { id: string; owner_id: string; name: string; description: string | null; color: string; max_stamps: number; voucher_reward: string; created_at: string }
-        Insert: { owner_id: string; name: string; description?: string; color?: string; max_stamps?: number; voucher_reward: string }
-        Update: { name?: string; description?: string; color?: string; max_stamps?: number; voucher_reward?: string }
+        Row: { id: string; owner_id: string; name: string; description: string | null; color: string; max_stamps: number; voucher_reward: string; created_at: string; logo_url: string | null; card_bg_color: string | null; card_accent_color: string | null; card_text_color: string | null; card_pattern: string | null; stamp_shape: string }
+        Insert: { owner_id: string; name: string; description?: string; color?: string; max_stamps?: number; voucher_reward: string; logo_url?: string; card_bg_color?: string; card_accent_color?: string; card_text_color?: string; card_pattern?: string; stamp_shape?: string }
+        Update: { name?: string; description?: string; color?: string; max_stamps?: number; voucher_reward?: string; logo_url?: string; card_bg_color?: string; card_accent_color?: string; card_text_color?: string; card_pattern?: string; stamp_shape?: string }
         Relationships: []
       }
       loyalty_cards: {
