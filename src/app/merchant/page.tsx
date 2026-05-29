@@ -11,11 +11,20 @@ import type { Business } from '@/types/database'
 import NumPad from '@/components/merchant/NumPad'
 import { LogOut, RefreshCw, Settings, QrCode, Sparkles } from 'lucide-react'
 import { useSearchParams } from 'next/navigation'
+import { Suspense } from 'react'
 
 const QR_TTL = 60
 const ease   = [0.16, 1, 0.3, 1] as [number, number, number, number]
 
 export default function MerchantPage() {
+  return (
+    <Suspense>
+      <MerchantPageInner />
+    </Suspense>
+  )
+}
+
+function MerchantPageInner() {
   const searchParams = useSearchParams()
   const [business, setBusiness]   = useState<Business | null>(null)
   const [sessionId, setSessionId] = useState<string | null>(null)
