@@ -9,18 +9,21 @@ import { createClient } from '@/lib/supabase/client'
 import toast from 'react-hot-toast'
 import type { Business } from '@/types/database'
 import NumPad from '@/components/merchant/NumPad'
-import { LogOut, RefreshCw } from 'lucide-react'
+import { LogOut, RefreshCw, Settings, QrCode } from 'lucide-react'
+import { useSearchParams } from 'next/navigation'
 
 const QR_TTL = 60
 const ease   = [0.16, 1, 0.3, 1] as [number, number, number, number]
 
 export default function MerchantPage() {
+  const searchParams = useSearchParams()
   const [business, setBusiness]   = useState<Business | null>(null)
   const [sessionId, setSessionId] = useState<string | null>(null)
   const [stampCount, setStampCount] = useState(0)
   const [timeLeft, setTimeLeft]   = useState(QR_TTL)
   const [generating, setGenerating] = useState(false)
   const [loading, setLoading]     = useState(true)
+  const [showCelebration, setShowCelebration] = useState(false)
 
   useEffect(() => {
     async function init() {
@@ -32,6 +35,11 @@ export default function MerchantPage() {
       if (data) setBusiness(data as any)
       else window.location.href = '/merchant/onboarding'
       setLoading(false)
+
+      // Check if we should show celebration modal
+      if (searchParams.get('showQR') === 'true') {
+        setShowCelebration(true)
+      }
     }
     init()
   }, [])
@@ -61,6 +69,86 @@ export default function MerchantPage() {
     const session = data as { id: string }
     setStampCount(count)
     setSessionId(session.id)
+  }
+
+  async function handleSignOut() {
+    const supabase = createClient()
+    await supabase.auth.signOut()
+    window.location.href = '/auth'
+  }
+
+  function downloadBusinessQR() {
+    if (!business) return
+    const canvas = document.createElement('canvas')
+    const svg = document.getElementById('business-qr-svg') as any
+    if (!svg) return
+
+    const svgData = new XMLSerializer().serializeToString(svg)
+    const img = new Image()
+    img.onload = () => {
+      canvas.width = 512
+      canvas.height = 512
+      const ctx = canvas.getContext('2d')
+      if (!ctx) return
+      ctx.fillStyle = 'white'
+      ctx.fillRect(0, 0, 512, 512)
+      ctx.drawImage(img, 0, 0, 512, 512)
+      canvas.toBlob(blob => {
+        if (!blob) return
+        const url = URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = `${business.name.replace(/\s+/g, '-')}-QR.png`
+        a.click()
+        URL.revokeObjectURL(url)
+      })
+    }
+    img.src = 'data:image/svg+xml;base64,' + btoa(svgData)
+  }
+
+  async function shareBusinessQR() {
+    if (!business) return
+
+    // Check if Web Share API is supported
+    if (!navigator.share) {
+      toast.error('Share not supported on this device')
+      downloadBusinessQR()
+      return
+    }
+
+    const canvas = document.createElement('canvas')
+    const svg = document.getElementById('business-qr-svg') as any
+    if (!svg) return
+
+    const svgData = new XMLSerializer().serializeToString(svg)
+    const img = new Image()
+    img.onload = async () => {
+      canvas.width = 512
+      canvas.height = 512
+      const ctx = canvas.getContext('2d')
+      if (!ctx) return
+      ctx.fillStyle = 'white'
+      ctx.fillRect(0, 0, 512, 512)
+      ctx.drawImage(img, 0, 0, 512, 512)
+
+      canvas.toBlob(async (blob) => {
+        if (!blob) return
+        const file = new File([blob], `${business.name.replace(/\s+/g, '-')}-QR.png`, { type: 'image/png' })
+
+        try {
+          await navigator.share({
+            files: [file],
+            title: `${business.name} - Loyalty Card`,
+            text: `Scan this QR to collect stamps at ${business.name}!`
+          })
+        } catch (err: any) {
+          if (err.name !== 'AbortError') {
+            toast.error('Failed to share')
+          }
+        }
+      })
+    }
+    img.src = 'data:image/svg+xml;base64,' + btoa(svgData)
   }
 
   async function handleSignOut() {
@@ -112,32 +200,276 @@ export default function MerchantPage() {
     }}>
 
       {/* Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 36 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 44 }}>
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease }}
         >
-          <h1 style={{ fontSize: 26, fontWeight: 700, letterSpacing: '-0.5px' }}>
+          <div style={{
+            height: 4,
+            background: 'var(--accent)',
+            width: 60,
+            marginBottom: 16,
+            borderRadius: 2,
+          }} />
+          <h1 style={{
+            fontSize: 'clamp(1.75rem, 5vw, 2.25rem)',
+            fontWeight: 900,
+            letterSpacing: '-0.03em',
+            textShadow: '0 2px 12px oklch(0 0 0 / 0.2)',
+          }}>
             {business?.name ?? 'Dashboard'}
           </h1>
         </motion.div>
-        <motion.button
-          onClick={handleSignOut}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.1, duration: 0.3 }}
-          whileTap={{ scale: 0.95 }}
-          style={{
-            background: 'var(--bg-surface)', border: '1px solid var(--border-soft)',
-            borderRadius: 12, padding: '9px 14px', cursor: 'pointer',
-            color: 'var(--text-secondary)',
-            display: 'flex', alignItems: 'center', gap: 7, fontSize: 13, fontWeight: 500,
-          }}
-        >
-          <LogOut size={14} /> Sign out
-        </motion.button>
+        <div style={{ display: 'flex', gap: 10 }}>
+          <motion.button
+            onClick={() => window.location.href = '/merchant/qr'}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.1, duration: 0.3 }}
+            whileTap={{ scale: 0.95 }}
+            style={{
+              background: 'var(--bg-surface)', border: '2px solid var(--border-soft)',
+              borderRadius: 14, padding: '10px 16px', cursor: 'pointer',
+              color: 'var(--text-secondary)',
+              display: 'flex', alignItems: 'center', gap: 8, fontSize: 14, fontWeight: 600,
+              transition: 'border-color 0.2s, background 0.2s',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.borderColor = 'var(--border)'
+              e.currentTarget.style.background = 'var(--bg-elevated)'
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.borderColor = 'var(--border-soft)'
+              e.currentTarget.style.background = 'var(--bg-surface)'
+            }}
+          >
+            <QrCode size={15} /> Store QR
+          </motion.button>
+          <motion.button
+            onClick={() => window.location.href = '/merchant/settings'}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.1, duration: 0.3 }}
+            whileTap={{ scale: 0.95 }}
+            style={{
+              background: 'var(--bg-surface)', border: '2px solid var(--border-soft)',
+              borderRadius: 14, padding: '10px 16px', cursor: 'pointer',
+              color: 'var(--text-secondary)',
+              display: 'flex', alignItems: 'center', gap: 8, fontSize: 14, fontWeight: 600,
+              transition: 'border-color 0.2s, background 0.2s',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.borderColor = 'var(--border)'
+              e.currentTarget.style.background = 'var(--bg-elevated)'
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.borderColor = 'var(--border-soft)'
+              e.currentTarget.style.background = 'var(--bg-surface)'
+            }}
+          >
+            <Settings size={15} /> Settings
+          </motion.button>
+          <motion.button
+            onClick={handleSignOut}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.1, duration: 0.3 }}
+            whileTap={{ scale: 0.95 }}
+            style={{
+              background: 'var(--bg-surface)', border: '2px solid var(--border-soft)',
+              borderRadius: 14, padding: '10px 16px', cursor: 'pointer',
+              color: 'var(--text-secondary)',
+              display: 'flex', alignItems: 'center', gap: 8, fontSize: 14, fontWeight: 600,
+              transition: 'border-color 0.2s, background 0.2s',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.borderColor = 'var(--border)'
+              e.currentTarget.style.background = 'var(--bg-elevated)'
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.borderColor = 'var(--border-soft)'
+              e.currentTarget.style.background = 'var(--bg-surface)'
+            }}
+          >
+            <LogOut size={15} /> Sign out
+          </motion.button>
+        </div>
       </div>
+
+      {/* Celebration Modal */}
+      <AnimatePresence>
+        {showCelebration && business && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setShowCelebration(false)}
+            style={{
+              position: 'fixed',
+              inset: 0,
+              background: 'oklch(0 0 0 / 0.7)',
+              backdropFilter: 'blur(8px)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: 24,
+              zIndex: 100,
+            }}
+          >
+            <motion.div
+              initial={{ scale: 0.9, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.9, y: 20 }}
+              transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+              onClick={(e) => e.stopPropagation()}
+              style={{
+                background: 'var(--bg-surface)',
+                borderRadius: 24,
+                padding: '32px 28px',
+                maxWidth: 400,
+                width: '100%',
+                boxShadow: '0 20px 60px oklch(0 0 0 / 0.4)',
+                border: '1px solid var(--border-soft)',
+                position: 'relative',
+                overflow: 'hidden',
+              }}
+            >
+              {/* Confetti background effect */}
+              <div style={{
+                position: 'absolute',
+                top: -50,
+                left: -50,
+                right: -50,
+                bottom: -50,
+                background: `radial-gradient(circle at 30% 20%, oklch(0.76 0.14 78 / 0.15) 0%, transparent 50%),
+                             radial-gradient(circle at 70% 80%, oklch(0.66 0.16 155 / 0.15) 0%, transparent 50%)`,
+                pointerEvents: 'none',
+              }} />
+
+              <div style={{ position: 'relative', zIndex: 1 }}>
+                {/* Icon */}
+                <motion.div
+                  initial={{ scale: 0, rotate: -180 }}
+                  animate={{ scale: 1, rotate: 0 }}
+                  transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
+                  style={{
+                    width: 64,
+                    height: 64,
+                    borderRadius: '50%',
+                    background: 'oklch(0.76 0.14 78)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    margin: '0 auto 20px',
+                    boxShadow: '0 8px 24px oklch(0.76 0.14 78 / 0.3)',
+                  }}
+                >
+                  <Sparkles size={32} color="white" />
+                </motion.div>
+
+                {/* Title */}
+                <h2 style={{
+                  fontSize: 24,
+                  fontWeight: 900,
+                  letterSpacing: '-0.02em',
+                  textAlign: 'center',
+                  marginBottom: 12,
+                }}>
+                  Your business is live!
+                </h2>
+
+                {/* Description */}
+                <p style={{
+                  fontSize: 14,
+                  color: 'var(--text-secondary)',
+                  textAlign: 'center',
+                  lineHeight: 1.6,
+                  marginBottom: 24,
+                }}>
+                  Share your QR code with customers so they can start collecting stamps at <strong>{business.name}</strong>
+                </p>
+
+                {/* Mini QR preview */}
+                <div style={{
+                  background: 'white',
+                  padding: 16,
+                  borderRadius: 16,
+                  marginBottom: 20,
+                  display: 'flex',
+                  justifyContent: 'center',
+                  border: '2px solid oklch(0.88 0.012 65)',
+                }}>
+                  <QRCodeSVG
+                    value={`stampbuddy://follow/${business.id}`}
+                    size={120}
+                    level="H"
+                    includeMargin={false}
+                  />
+                </div>
+
+                {/* CTA buttons */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                  <button
+                    onClick={() => {
+                      window.location.href = '/merchant/qr'
+                      setShowCelebration(false)
+                    }}
+                    style={{
+                      width: '100%',
+                      padding: '14px',
+                      borderRadius: 14,
+                      border: 'none',
+                      background: 'oklch(0.76 0.14 78)',
+                      color: 'white',
+                      fontSize: 15,
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: 8,
+                      transition: 'background 0.2s',
+                    }}
+                    onMouseEnter={(e) => e.currentTarget.style.background = 'oklch(0.70 0.14 78)'}
+                    onMouseLeave={(e) => e.currentTarget.style.background = 'oklch(0.76 0.14 78)'}
+                  >
+                    <QrCode size={16} />
+                    View Store QR
+                  </button>
+
+                  <button
+                    onClick={() => setShowCelebration(false)}
+                    style={{
+                      width: '100%',
+                      padding: '14px',
+                      borderRadius: 14,
+                      border: '2px solid var(--border-soft)',
+                      background: 'transparent',
+                      color: 'var(--text-secondary)',
+                      fontSize: 15,
+                      fontWeight: 600,
+                      cursor: 'pointer',
+                      transition: 'border-color 0.2s, color 0.2s',
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.borderColor = 'var(--border)'
+                      e.currentTarget.style.color = 'var(--text-primary)'
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.borderColor = 'var(--border-soft)'
+                      e.currentTarget.style.color = 'var(--text-secondary)'
+                    }}
+                  >
+                    Got it
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <AnimatePresence mode="wait">
         {sessionId ? (

@@ -38,8 +38,8 @@ export default function GoogleAuth() {
       {/* Ambient glow */}
       <div style={{
         position: 'fixed', top: '20%', left: '50%', transform: 'translateX(-50%)',
-        width: 320, height: 320, borderRadius: '50%',
-        background: 'radial-gradient(circle, oklch(0.76 0.14 78 / 0.07) 0%, transparent 70%)',
+        width: 400, height: 400, borderRadius: '50%',
+        background: 'radial-gradient(circle, oklch(0.76 0.14 78 / 0.12) 0%, transparent 70%)',
         pointerEvents: 'none',
       }} />
 
@@ -47,22 +47,45 @@ export default function GoogleAuth() {
         initial={{ opacity: 0, y: 28 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease }}
-        style={{ width: '100%', maxWidth: 340, position: 'relative' }}
+        style={{ width: '100%', maxWidth: 420, position: 'relative' }}
       >
         {/* Logo mark */}
-        <div style={{ textAlign: 'center', marginBottom: 44 }}>
+        <div style={{ textAlign: 'center', marginBottom: 56 }}>
           <motion.div
             initial={{ scale: 0.7, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ delay: 0.1, duration: 0.5, ease }}
-            style={{ margin: '0 auto 20px', display: 'flex', justifyContent: 'center' }}
+            style={{ margin: '0 auto 28px', display: 'flex', justifyContent: 'center' }}
           >
-            <StampBuddyLogo size={64} />
+            <StampBuddyLogo size={72} />
           </motion.div>
-          <h1 style={{ fontSize: 26, fontWeight: 700, letterSpacing: '-0.5px', marginBottom: 8 }}>
+
+          {/* Ruled divider */}
+          <div style={{
+            height: 4,
+            background: 'var(--accent)',
+            width: 80,
+            margin: '0 auto 24px',
+            borderRadius: 2,
+          }} />
+
+          <h1 style={{
+            fontSize: 'clamp(2rem, 5vw, 2.75rem)',
+            fontWeight: 900,
+            letterSpacing: '-0.03em',
+            marginBottom: 12,
+            lineHeight: 1,
+            textShadow: '0 2px 16px oklch(0 0 0 / 0.3)',
+          }}>
             Welcome back
           </h1>
-          <p style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.5 }}>
+          <p style={{
+            fontSize: 16,
+            color: 'var(--text-secondary)',
+            lineHeight: 1.6,
+            maxWidth: '32ch',
+            margin: '0 auto',
+          }}>
             Sign in to your StampBuddy wallet
           </p>
         </div>
@@ -75,16 +98,24 @@ export default function GoogleAuth() {
           transition={{ delay: 0.2, duration: 0.4, ease }}
           whileTap={{ scale: 0.98 }}
           style={{
-            width: '100%', padding: '15px 20px', borderRadius: 14,
+            width: '100%', padding: '18px 24px', borderRadius: 60,
             background: 'oklch(0.97 0.004 65)',
-            border: '1px solid oklch(0.88 0.012 65)',
+            border: '2px solid oklch(0.88 0.012 65)',
             cursor: 'pointer',
-            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12,
-            fontSize: 15, fontWeight: 700,
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 14,
+            fontSize: 16, fontWeight: 700,
             color: 'oklch(0.15 0.02 55)',
-            letterSpacing: '-0.2px',
-            boxShadow: '0 2px 12px oklch(0 0 0 / 0.18)',
-            transition: 'box-shadow 0.2s',
+            letterSpacing: '0.01em',
+            boxShadow: '0 4px 20px oklch(0 0 0 / 0.2)',
+            transition: 'transform 0.2s, box-shadow 0.2s',
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.transform = 'translateY(-2px)'
+            e.currentTarget.style.boxShadow = '0 8px 28px oklch(0 0 0 / 0.25)'
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = 'translateY(0)'
+            e.currentTarget.style.boxShadow = '0 4px 20px oklch(0 0 0 / 0.2)'
           }}
         >
           <GoogleIcon />
@@ -93,36 +124,37 @@ export default function GoogleAuth() {
 
         {/* Divider */}
         <div style={{
-          display: 'flex', alignItems: 'center', gap: 12,
-          margin: '28px 0',
+          display: 'flex', alignItems: 'center', gap: 16,
+          margin: '36px 0',
         }}>
-          <div style={{ flex: 1, height: 1, background: 'var(--border-soft)' }} />
-          <span style={{ fontSize: 12, color: 'var(--text-muted)', fontWeight: 500 }}>or</span>
-          <div style={{ flex: 1, height: 1, background: 'var(--border-soft)' }} />
+          <div style={{ flex: 1, height: 2, background: 'var(--border-soft)' }} />
+          <span style={{ fontSize: 13, color: 'var(--text-muted)', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase' }}>or</span>
+          <div style={{ flex: 1, height: 2, background: 'var(--border-soft)' }} />
         </div>
 
         {/* Info cards */}
-        <div style={{ display: 'flex', gap: 10 }}>
+        <div style={{ display: 'flex', gap: 14 }}>
           {[
             { icon: '☕', label: 'Customers', desc: 'Collect stamps' },
             { icon: '🏪', label: 'Merchants', desc: 'Run loyalty programs' },
           ].map(item => (
             <div key={item.label} style={{
-              flex: 1, padding: '14px', borderRadius: 14,
+              flex: 1, padding: '20px 16px', borderRadius: 18,
               background: 'var(--bg-surface)',
-              border: '1px solid var(--border-soft)',
+              border: '2px solid var(--border-soft)',
               textAlign: 'center',
+              transition: 'border-color 0.2s, background 0.2s',
             }}>
-              <div style={{ fontSize: 22, marginBottom: 6 }}>{item.icon}</div>
-              <p style={{ fontSize: 13, fontWeight: 700, letterSpacing: '-0.2px' }}>{item.label}</p>
-              <p style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 2 }}>{item.desc}</p>
+              <div style={{ fontSize: 28, marginBottom: 10 }}>{item.icon}</div>
+              <p style={{ fontSize: 15, fontWeight: 800, letterSpacing: '-0.01em', marginBottom: 4 }}>{item.label}</p>
+              <p style={{ fontSize: 12, color: 'var(--text-muted)' }}>{item.desc}</p>
             </div>
           ))}
         </div>
 
         <p style={{
-          fontSize: 11, color: 'var(--text-muted)', textAlign: 'center',
-          marginTop: 28, lineHeight: 1.6,
+          fontSize: 12, color: 'var(--text-muted)', textAlign: 'center',
+          marginTop: 36, lineHeight: 1.6,
         }}>
           By continuing you agree to our terms of service and privacy policy.
         </p>

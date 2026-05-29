@@ -81,21 +81,35 @@ export default function RolePage() {
         style={{ flex: 1, display: 'flex', flexDirection: 'column' }}
       >
         {/* Header */}
-        <div style={{ marginBottom: 36 }}>
+        <div style={{ marginBottom: 48 }}>
+          <div style={{
+            height: 4,
+            background: 'var(--accent)',
+            width: 80,
+            marginBottom: 24,
+            borderRadius: 2,
+          }} />
           <p style={{
-            fontSize: 12, fontWeight: 700, letterSpacing: '0.1em',
-            textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 12,
+            fontSize: 12, fontWeight: 800, letterSpacing: '0.12em',
+            textTransform: 'uppercase', color: 'var(--accent)', marginBottom: 16,
           }}>Step 1 of 2</p>
-          <h1 style={{ fontSize: 28, fontWeight: 800, letterSpacing: '-0.6px', lineHeight: 1.1, marginBottom: 10 }}>
+          <h1 style={{
+            fontSize: 'clamp(2rem, 6vw, 2.5rem)',
+            fontWeight: 900,
+            letterSpacing: '-0.03em',
+            lineHeight: 1.05,
+            marginBottom: 16,
+            textShadow: '0 2px 16px oklch(0 0 0 / 0.3)',
+          }}>
             How will you use<br />StampBuddy?
           </h1>
-          <p style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.5 }}>
+          <p style={{ fontSize: 15, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
             This sets up your experience. You can't change it later.
           </p>
         </div>
 
         {/* Role cards */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 14, flex: 1 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16, flex: 1 }}>
           {ROLES.map((r, i) => {
             const active = role === r.id
             return (
@@ -108,13 +122,14 @@ export default function RolePage() {
                 whileTap={{ scale: 0.985 }}
                 style={{
                   textAlign: 'left', cursor: 'pointer',
-                  padding: '22px 22px',
-                  borderRadius: 20,
+                  padding: '26px 24px',
+                  borderRadius: 22,
                   background: active ? r.bg : 'var(--bg-surface)',
-                  border: `1.5px solid ${active ? r.border : 'var(--border-soft)'}`,
-                  transition: 'background 0.2s, border-color 0.2s',
+                  border: `2px solid ${active ? r.border : 'var(--border-soft)'}`,
+                  transition: 'background 0.2s, border-color 0.2s, box-shadow 0.2s',
                   position: 'relative',
                   overflow: 'hidden',
+                  boxShadow: active ? `0 8px 32px ${r.accent}20` : 'none',
                 }}
               >
                 {/* Selected indicator */}
@@ -122,47 +137,49 @@ export default function RolePage() {
                   <motion.div
                     layoutId="role-indicator"
                     style={{
-                      position: 'absolute', top: 18, right: 18,
-                      width: 22, height: 22, borderRadius: '50%',
+                      position: 'absolute', top: 20, right: 20,
+                      width: 26, height: 26, borderRadius: '50%',
                       background: r.accent,
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      boxShadow: `0 4px 16px ${r.accent}40`,
                     }}
                     transition={{ type: 'spring', stiffness: 400, damping: 30 }}
                   >
-                    <svg width="11" height="8" viewBox="0 0 11 8" fill="none">
-                      <path d="M1 4L4 7L10 1" stroke="oklch(0.09 0.012 55)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <svg width="12" height="9" viewBox="0 0 11 8" fill="none">
+                      <path d="M1 4L4 7L10 1" stroke="oklch(0.09 0.012 55)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
                     </svg>
                   </motion.div>
                 )}
 
-                <div style={{ display: 'flex', alignItems: 'flex-start', gap: 16 }}>
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: 18 }}>
                   <div style={{
-                    width: 48, height: 48, borderRadius: 14, flexShrink: 0,
+                    width: 56, height: 56, borderRadius: 16, flexShrink: 0,
                     background: active ? `${r.accent}22` : 'var(--bg-elevated)',
-                    border: `1px solid ${active ? r.border : 'var(--border-soft)'}`,
+                    border: `2px solid ${active ? r.border : 'var(--border-soft)'}`,
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontSize: 22, transition: 'background 0.2s',
+                    fontSize: 26, transition: 'background 0.2s',
                   }}>
                     {r.icon}
                   </div>
-                  <div style={{ flex: 1, paddingRight: 28 }}>
+                  <div style={{ flex: 1, paddingRight: 32 }}>
                     <p style={{
-                      fontSize: 16, fontWeight: 700, letterSpacing: '-0.3px',
-                      color: active ? 'var(--text-primary)' : 'var(--text-primary)',
-                      marginBottom: 5,
+                      fontSize: 18, fontWeight: 800, letterSpacing: '-0.02em',
+                      color: 'var(--text-primary)',
+                      marginBottom: 6,
                     }}>{r.title}</p>
-                    <p style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.5 }}>
+                    <p style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
                       {r.desc}
                     </p>
-                    <div style={{ display: 'flex', gap: 6, marginTop: 12, flexWrap: 'wrap' }}>
+                    <div style={{ display: 'flex', gap: 8, marginTop: 14, flexWrap: 'wrap' }}>
                       {r.detail.map(d => (
                         <span key={d} style={{
-                          fontSize: 11, fontWeight: 600, padding: '3px 9px',
+                          fontSize: 12, fontWeight: 700, padding: '5px 12px',
                           borderRadius: 20,
                           background: active ? `${r.accent}18` : 'var(--bg-elevated)',
                           color: active ? r.accent : 'var(--text-muted)',
-                          border: `1px solid ${active ? `${r.accent}28` : 'transparent'}`,
+                          border: `1.5px solid ${active ? `${r.accent}28` : 'transparent'}`,
                           transition: 'all 0.2s',
+                          letterSpacing: '0.01em',
                         }}>{d}</span>
                       ))}
                     </div>
@@ -182,14 +199,24 @@ export default function RolePage() {
           transition={{ delay: 0.32, duration: 0.4, ease }}
           whileTap={{ scale: 0.98 }}
           style={{
-            width: '100%', marginTop: 28, padding: '17px',
-            borderRadius: 16, border: 'none',
+            width: '100%', marginTop: 32, padding: '19px',
+            borderRadius: 60, border: 'none',
             background: loading ? `${selected.accent}70` : selected.accent,
-            color: 'var(--accent-text)', fontWeight: 700, fontSize: 15,
+            color: 'var(--accent-text)', fontWeight: 700, fontSize: 16,
             cursor: loading ? 'not-allowed' : 'pointer',
-            letterSpacing: '-0.2px',
-            boxShadow: loading ? 'none' : `0 6px 24px ${selected.accent}35`,
-            transition: 'background 0.2s, box-shadow 0.2s',
+            letterSpacing: '0.01em',
+            boxShadow: loading ? 'none' : `0 8px 32px ${selected.accent}40`,
+            transition: 'background 0.2s, box-shadow 0.2s, transform 0.2s',
+          }}
+          onMouseEnter={(e) => {
+            if (!loading) {
+              e.currentTarget.style.transform = 'translateY(-2px)'
+              e.currentTarget.style.boxShadow = `0 12px 40px ${selected.accent}50`
+            }
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = 'translateY(0)'
+            e.currentTarget.style.boxShadow = `0 8px 32px ${selected.accent}40`
           }}
         >
           {loading ? 'Setting up…' : `Continue as ${selected.title}`}

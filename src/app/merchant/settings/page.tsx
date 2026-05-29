@@ -2,80 +2,116 @@
 
 export const dynamic = 'force-dynamic'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import toast from 'react-hot-toast'
-import { ChevronLeft } from 'lucide-react'
+import type { Business } from '@/types/database'
+import { ChevronLeft, Save } from 'lucide-react'
 
 const ease = [0.16, 1, 0.3, 1] as [number, number, number, number]
 
 const COLORS = [
-  { label: 'Amber',   value: 'oklch(0.26 0.08 55)',  accent: 'oklch(0.76 0.14 78)' },
-  { label: 'Rose',    value: 'oklch(0.24 0.07 15)',   accent: 'oklch(0.70 0.17 15)' },
-  { label: 'Emerald', value: 'oklch(0.22 0.07 155)',  accent: 'oklch(0.66 0.16 155)' },
-  { label: 'Indigo',  value: 'oklch(0.22 0.08 260)',  accent: 'oklch(0.65 0.18 260)' },
-  { label: 'Violet',  value: 'oklch(0.22 0.08 300)',  accent: 'oklch(0.65 0.17 300)' },
-  { label: 'Cyan',    value: 'oklch(0.22 0.07 210)',  accent: 'oklch(0.68 0.15 210)' },
+  { label: 'Amber',   value: 'oklch(0.26 0.08 55)',  accent: 'oklch(0.76 0.14 78)', hex: '#f59e0b' },
+  { label: 'Rose',    value: 'oklch(0.24 0.07 15)',   accent: 'oklch(0.70 0.17 15)', hex: '#f97316' },
+  { label: 'Emerald', value: 'oklch(0.22 0.07 155)',  accent: 'oklch(0.66 0.16 155)', hex: '#22c55e' },
+  { label: 'Indigo',  value: 'oklch(0.22 0.08 260)',  accent: 'oklch(0.65 0.18 260)', hex: '#6366f1' },
+  { label: 'Violet',  value: 'oklch(0.22 0.08 300)',  accent: 'oklch(0.65 0.17 300)', hex: '#a855f7' },
+  { label: 'Cyan',    value: 'oklch(0.22 0.07 210)',  accent: 'oklch(0.68 0.15 210)', hex: '#06b6d4' },
 ]
 
-// Map bg oklch values to hex for DB storage
-const BG_TO_HEX: Record<string, string> = {
-  'oklch(0.26 0.08 55)':  '#f59e0b',
-  'oklch(0.24 0.07 15)':  '#f97316',
-  'oklch(0.22 0.07 155)': '#22c55e',
-  'oklch(0.22 0.08 260)': '#6366f1',
-  'oklch(0.22 0.08 300)': '#a855f7',
-  'oklch(0.22 0.07 210)': '#06b6d4',
-}
+export default function MerchantSettings() {
+  const router = useRouter()
+  const [business, setBusiness] = useState<Business | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [saving, setSaving] = useState(false)
 
-export default function MerchantOnboarding() {
+  // Form state
   const [name, setName] = useState('')
   const [description, setDescription] = useState('')
   const [maxStamps, setMaxStamps] = useState(8)
   const [voucherReward, setVoucherReward] = useState('')
   const [colorIndex, setColorIndex] = useState(0)
-  const [loading, setLoading] = useState(false)
-  const router = useRouter()
 
-  const selectedColor = COLORS[colorIndex]
+  useEffect(() => {
+    async function init() {
+      const supabase = createClient()
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) { window.location.href = '/auth'; return }
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
+      const { data } = await supabase
+        .from('businesses').select('*').eq('owner_id', user.id).single()
+
+      if (!data) { window.location.href = '/merchant/onboarding'; return }
+
+      const biz = data as Business
+      setBusiness(biz)
+      setName(biz.name)
+      setDescription(biz.description || '')
+      setMaxStamps(biz.max_stamps)
+      setVoucherReward(biz.voucher_reward)
+
+      // Find color index
+      const idx = COLORS.findIndex(c => c.hex === biz.color)
+      setColorIndex(idx >= 0 ? idx : 3)
+
+      setLoading(false)
+    }
+    init()
+  }, [])
+
+  async function handleSave() {
+    if (!business) return
     if (!name.trim()) { toast.error('Business name required'); return }
     if (!voucherReward.trim()) { toast.error('Voucher reward required'); return }
     if (maxStamps < 1 || maxStamps > 20) { toast.error('Stamps must be 1–20'); return }
 
-    setLoading(true)
+    setSaving(true)
     const supabase = createClient()
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) { router.replace('/auth'); return }
+    const { error } = await supabase
+      .from('businesses')
+      .update({
+        name: name.trim(),
+        description: description.trim() || null,
+        max_stamps: maxStamps,
+        voucher_reward: voucherReward.trim(),
+        color: COLORS[colorIndex].hex,
+      } as any)
+      .eq('id', business.id)
 
-    const { error } = await supabase.from('businesses').insert({
-      owner_id: user.id,
-      name: name.trim(),
-      description: description.trim() || undefined,
-      max_stamps: maxStamps,
-      voucher_reward: voucherReward.trim(),
-      color: BG_TO_HEX[selectedColor.value] ?? '#6366f1',
-    } as any)
-
-    setLoading(false)
+    setSaving(false)
     if (error) { toast.error(error.message); return }
-    toast.success('Business created!')
-    router.replace('/merchant?showQR=true')
+    toast.success('Settings saved!')
+    router.push('/merchant')
   }
+
+  const selectedColor = COLORS[colorIndex]
+
+  if (loading) return (
+    <div style={{
+      display: 'flex',
+      height: '100dvh',
+      alignItems: 'center',
+      justifyContent: 'center',
+      background: 'var(--bg-base)',
+    }}>
+      <div style={{ width: 28, height: 28, borderRadius: '50%', border: '2.5px solid var(--border)', borderTopColor: 'var(--accent)', animation: 'spin 0.7s linear infinite' }} />
+      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+    </div>
+  )
 
   return (
     <div style={{
-      minHeight: '100dvh', background: 'var(--bg-base)',
-      display: 'flex', flexDirection: 'column',
+      minHeight: '100dvh',
+      background: 'var(--bg-base)',
+      display: 'flex',
+      flexDirection: 'column',
     }}>
       {/* Header */}
       <div style={{ padding: '52px 28px 0', flexShrink: 0 }}>
         <button
-          onClick={() => router.push('/auth/role')}
+          onClick={() => router.push('/merchant')}
           style={{
             background: 'none', border: 'none', cursor: 'pointer', padding: 0,
             display: 'flex', alignItems: 'center', gap: 8,
@@ -85,7 +121,7 @@ export default function MerchantOnboarding() {
           onMouseEnter={(e) => e.currentTarget.style.color = 'var(--text-primary)'}
           onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-secondary)'}
         >
-          <ChevronLeft size={20} /> Back
+          <ChevronLeft size={20} /> Back to Dashboard
         </button>
         <div style={{
           height: 4,
@@ -94,10 +130,6 @@ export default function MerchantOnboarding() {
           marginBottom: 20,
           borderRadius: 2,
         }} />
-        <p style={{
-          fontSize: 12, fontWeight: 800, letterSpacing: '0.12em',
-          textTransform: 'uppercase', color: 'var(--accent)', marginBottom: 16,
-        }}>Step 2 of 2</p>
         <h1 style={{
           fontSize: 'clamp(1.75rem, 5vw, 2.25rem)',
           fontWeight: 900,
@@ -106,16 +138,16 @@ export default function MerchantOnboarding() {
           lineHeight: 1.05,
           textShadow: '0 2px 12px oklch(0 0 0 / 0.2)',
         }}>
-          Set up your business
+          Business Settings
         </h1>
         <p style={{ fontSize: 15, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
-          Customers will see this on their loyalty card.
+          Update your business details and loyalty card settings
         </p>
       </div>
 
       {/* Scrollable form */}
       <div style={{ flex: 1, overflowY: 'auto', padding: '24px 28px 48px' }}>
-        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
 
           {/* Live card preview */}
           <motion.div
@@ -220,23 +252,26 @@ export default function MerchantOnboarding() {
             </div>
           </FieldGroup>
 
-          {/* Submit */}
+          {/* Save button */}
           <motion.button
-            type="submit" disabled={loading}
+            onClick={handleSave}
+            disabled={saving}
             whileTap={{ scale: 0.98 }}
             style={{
               width: '100%', padding: '17px', borderRadius: 16, border: 'none',
-              background: loading ? `${selectedColor.accent}60` : selectedColor.accent,
+              background: saving ? `${selectedColor.accent}60` : selectedColor.accent,
               color: 'var(--accent-text)', fontWeight: 700, fontSize: 15,
-              cursor: loading ? 'not-allowed' : 'pointer', letterSpacing: '-0.2px',
-              boxShadow: loading ? 'none' : `0 6px 24px ${selectedColor.accent}35`,
+              cursor: saving ? 'not-allowed' : 'pointer', letterSpacing: '-0.2px',
+              boxShadow: saving ? 'none' : `0 6px 24px ${selectedColor.accent}35`,
               transition: 'background 0.2s, box-shadow 0.2s',
               marginTop: 8,
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
             }}
           >
-            {loading ? 'Creating…' : 'Create business →'}
+            <Save size={16} />
+            {saving ? 'Saving…' : 'Save Changes'}
           </motion.button>
-        </form>
+        </div>
       </div>
     </div>
   )

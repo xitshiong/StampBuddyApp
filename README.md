@@ -29,12 +29,12 @@ App runs at **http://localhost:3000**
 
 ## Environment
 
-Create `.env.local` (already filled in):
+Create `.env.local`:
 
 ```
-NEXT_PUBLIC_SUPABASE_URL=https://uwvikjekkacjtwolyxzx.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=...
-SUPABASE_SERVICE_ROLE_KEY=...
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
 ```
 
 ---
@@ -75,6 +75,7 @@ src/
 ├── components/
 │   ├── auth/
 │   │   └── GoogleAuth.tsx          ← Google OAuth button
+
 │   ├── merchant/
 │   │   └── NumPad.tsx              ← Stamp count numpad
 │   ├── ui/
@@ -159,13 +160,11 @@ src/
    - Scroll-triggered reveals with Framer Motion `useInView`
    - Asymmetric layouts, large ruled dividers, numbered steps
 
-2. **PhoneAuth.tsx** — old phone OTP component, now unused (replaced by GoogleAuth). Can be deleted.
+2. **Merchant business editing** — no way to edit business details after onboarding. Could add settings page at `/merchant/settings`.
 
-3. **Merchant business editing** — no way to edit business details after onboarding. Could add settings page at `/merchant/settings`.
+3. **Customer profile** — no profile/settings screen. No way to see total stamps redeemed history.
 
-4. **Customer profile** — no profile/settings screen. No way to see total stamps redeemed history.
-
-5. **pg_cron** — `expire_stale_sessions()` RPC exists but isn't scheduled. Set up a Supabase Edge Function cron or pg_cron job to call it periodically.
+4. **pg_cron** — `expire_stale_sessions()` RPC exists but isn't scheduled. Set up a Supabase Edge Function cron or pg_cron job to call it periodically.
 
 ---
 

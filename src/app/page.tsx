@@ -6,35 +6,34 @@ import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, useInView } from 'framer-motion'
 import { createClient } from '@/lib/supabase/client'
-import type { Profile } from '@/types/database'
 import { useAppStore } from '@/store/app'
 import StampBuddyLogo from '@/components/ui/Logo'
-import { QrCode, Smartphone, Gift, Store, Zap, ShieldCheck, ChevronDown } from 'lucide-react'
+import { QrCode, Gift, Zap, ShieldCheck, ChevronDown, ArrowRight } from 'lucide-react'
 
 const ease = [0.16, 1, 0.3, 1] as [number, number, number, number]
 
-const CARD_PREVIEWS = [
-  { color: 'oklch(0.28 0.08 30)',  accent: 'oklch(0.72 0.17 30)',  stamps: 5, name: 'Kopi Kita',    rotate: -7 },
-  { color: 'oklch(0.24 0.08 150)', accent: 'oklch(0.66 0.16 155)', stamps: 3, name: 'Brew Society', rotate: -2 },
-  { color: 'oklch(0.22 0.08 260)', accent: 'oklch(0.65 0.18 260)', stamps: 7, name: 'Roast & Co.',  rotate: 4  },
-]
-
-const HOW_STEPS = [
-  { num: '01', title: 'Merchant taps stamp count', body: 'Cafe owner enters how many stamps to give. Two seconds, done.' },
-  { num: '02', title: 'QR code appears', body: 'One-time QR with 60-second countdown. No hardware needed.' },
-  { num: '03', title: 'Customer scans, stamps land', body: 'Open wallet, scan QR, stamps appear instantly. No typing, no friction.' },
-]
-
-const WHY_CUSTOMER = [
-  { title: 'All cafes, one wallet', body: 'Follow every spot you love. No more paper cards falling out of your wallet.' },
-  { title: 'Real rewards you can use', body: 'Fill a card, unlock a voucher. Slide to redeem and watch the 5-minute countdown.' },
-  { title: 'Works in any browser', body: 'No app store. Add to home screen in one tap. Works offline.' },
-]
-
-const WHY_MERCHANT = [
-  { title: 'Zero hardware cost', body: 'Your phone is the terminal. No QR printer, no monthly fees, no POS integration.' },
-  { title: 'Impossible to fake', body: 'Every QR is one-time use, expires in 60 seconds. Screenshots are useless.' },
-  { title: 'Your brand, your rules', body: 'Pick card color, set reward, choose stamp count. Setup takes under a minute.' },
+const EDITORIAL_FEATURES = [
+  {
+    num: '01',
+    kicker: 'For customers',
+    title: 'All your cafes, one wallet',
+    body: 'Follow every spot you love. Collect stamps with a scan. Redeem real rewards. No paper cards falling out of your wallet, no app store friction.',
+    visual: 'wallet'
+  },
+  {
+    num: '02',
+    kicker: 'For merchants',
+    title: 'Zero hardware cost',
+    body: 'Your phone is the terminal. Generate one-time QR codes in two seconds. No printer, no monthly fees, no POS integration. Impossible to fake.',
+    visual: 'qr'
+  },
+  {
+    num: '03',
+    kicker: 'The flow',
+    title: 'Three taps. Done.',
+    body: 'Merchant taps stamp count. QR appears with 60-second countdown. Customer scans, stamps land instantly. The whole transaction takes under 10 seconds.',
+    visual: 'flow'
+  },
 ]
 
 function SectionReveal({ children }: { children: React.ReactNode }) {
@@ -47,6 +46,149 @@ function SectionReveal({ children }: { children: React.ReactNode }) {
       transition: 'opacity 0.7s cubic-bezier(0.16,1,0.3,1), transform 0.7s cubic-bezier(0.16,1,0.3,1)',
     }}>
       {children}
+    </div>
+  )
+}
+
+function CardStack() {
+  const cards: Array<{
+    isImage?: boolean
+    imagePath?: string
+    color?: string
+    accent?: string
+    name?: string
+    stamps?: number
+    rotate: number
+    y: number
+    z: number
+  }> = [
+    {
+      isImage: true,
+      imagePath: '/example card.png',
+      rotate: -6,
+      y: 0,
+      z: 3,
+    },
+    {
+      isImage: true,
+      imagePath: '/Card1.png',
+      rotate: 2,
+      y: 20,
+      z: 2,
+    },
+    {
+      isImage: true,
+      imagePath: '/Card2.png',
+      rotate: -3,
+      y: 40,
+      z: 1,
+    },
+  ]
+
+  return (
+    <div style={{
+      position: 'relative',
+      width: 'min(90vw, 520px)',
+      height: 340,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginTop: -40,
+    }}>
+      {cards.map((card, i) => (
+        <div
+          key={i}
+          className="hover-card"
+          style={{
+            position: 'absolute',
+            top: card.y,
+            left: '50%',
+            transform: `translateX(-50%) rotate(${card.rotate}deg)`,
+            width: '100%',
+            aspectRatio: '1.586',
+            borderRadius: 20,
+            background: card.isImage ? 'transparent' : card.color,
+            border: card.isImage ? 'none' : `2px solid ${card.accent}60`,
+            padding: card.isImage ? 0 : 'clamp(24px, 4vw, 36px) clamp(28px, 5vw, 44px)',
+            boxShadow: `0 ${16 + i * 8}px ${40 + i * 16}px oklch(0 0 0 / 0.7)`,
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+            zIndex: card.z,
+            transition: 'transform 0.3s cubic-bezier(0.16,1,0.3,1), box-shadow 0.3s cubic-bezier(0.16,1,0.3,1)',
+            ['--rotate' as any]: `${card.rotate}deg`,
+            overflow: 'hidden',
+          }}
+        >
+          {card.isImage ? (
+            <img
+              src={card.imagePath}
+              alt="Loyalty card"
+              style={{
+                width: '100%',
+                height: '100%',
+                objectFit: 'fill',
+                borderRadius: 20,
+                display: 'block',
+              }}
+            />
+          ) : (
+            <>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{
+                  fontSize: 'clamp(18px, 3.5vw, 24px)',
+                  fontWeight: 900,
+                  color: card.accent,
+                  letterSpacing: '0.02em',
+                }}>{card.name}</span>
+                <div style={{
+                  width: 48, height: 48, borderRadius: 12,
+                  background: `${card.accent}30`,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                }}>
+                  <QrCode size={22} color={card.accent} />
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 'clamp(10px, 2vw, 14px)', alignItems: 'center' }}>
+                <div style={{ display: 'flex', gap: 'clamp(10px, 2vw, 14px)' }}>
+                  {Array.from({ length: 4 }).map((_, idx) => (
+                    <div key={idx} style={{
+                      width: 'clamp(40px, 7vw, 56px)',
+                      height: 'clamp(40px, 7vw, 56px)',
+                      borderRadius: '50%',
+                      background: idx < (card.stamps ?? 0) ? card.accent : 'transparent',
+                      border: `3px solid ${card.accent}`,
+                      flexShrink: 0,
+                    }} />
+                  ))}
+                </div>
+                <div style={{ display: 'flex', gap: 'clamp(10px, 2vw, 14px)' }}>
+                  {Array.from({ length: 4 }).map((_, idx) => (
+                    <div key={idx + 4} style={{
+                      width: 'clamp(40px, 7vw, 56px)',
+                      height: 'clamp(40px, 7vw, 56px)',
+                      borderRadius: '50%',
+                      background: (idx + 4) < (card.stamps ?? 0) ? card.accent : 'transparent',
+                      border: `3px solid ${card.accent}`,
+                      flexShrink: 0,
+                    }} />
+                  ))}
+                </div>
+              </div>
+
+              <p style={{
+                fontSize: 'clamp(12px, 2.5vw, 15px)',
+                color: `${card.accent}b0`,
+                fontWeight: 700,
+                letterSpacing: '0.1em',
+                textTransform: 'uppercase',
+                textAlign: 'center',
+              }}>{card.stamps ?? 0} of 8 stamps</p>
+            </>
+          )}
+        </div>
+      ))}
     </div>
   )
 }
@@ -154,62 +296,54 @@ export default function HomePage() {
 
       <style>{`
         @media(hover:hover){* { cursor: none !important; }.custom-cursor-dot,.custom-cursor-ring{display:block!important}}
-        .hero-grid{display:grid;grid-template-columns:1fr;gap:48px;align-items:center}
-        @media(min-width:900px){.hero-grid{grid-template-columns:1fr 1fr;gap:80px}}
-        .step-grid{display:grid;grid-template-columns:1fr;gap:0}
-        @media(min-width:768px){.step-grid{grid-template-columns:repeat(3,1fr);gap:0}}
-        .benefit-grid{display:grid;grid-template-columns:1fr;gap:32px}
-        @media(min-width:640px){.benefit-grid{grid-template-columns:repeat(3,1fr);gap:40px}}
-        .card-stack-wrap{position:relative;height:380px;display:flex;align-items:center;justify-content:center;padding:20px;transform:rotate(-3deg)}
-        @media(min-width:900px){.card-stack-wrap{height:600px;padding:60px}}
-        .cta-row{display:flex;gap:14px;flex-wrap:wrap;align-items:center;justify-content:center}
-        @media(min-width:640px){.cta-row{justify-content:flex-start}}
-        .btn-primary{font-size:15px;font-weight:700;padding:1em 2em;border-radius:60px;border:none;background:var(--accent);color:var(--accent-text);cursor:pointer;font-family:var(--font-sans);letter-spacing:0.01em;transition:transform 0.2s,box-shadow 0.2s;position:relative;overflow:hidden;min-height:48px;display:inline-flex;align-items:center;justify-content:center}
-        @media(min-width:640px){.btn-primary{font-size:16px;padding:1em 2.2em}}
-        .btn-primary:hover{transform:translateY(-2px);box-shadow:0 12px 32px oklch(0.76 0.14 78 / 0.3)}
+        .cta-row{display:flex;gap:16px;flex-wrap:wrap;align-items:center}
+        .btn-primary{font-size:15px;font-weight:700;padding:1.1em 2.4em;border-radius:60px;border:none;background:var(--accent);color:var(--accent-text);cursor:pointer;font-family:var(--font-sans);letter-spacing:0.01em;transition:transform 0.2s,box-shadow 0.2s;position:relative;overflow:hidden;min-height:52px;display:inline-flex;align-items:center;justify-content:center;gap:8px}
+        @media(min-width:640px){.btn-primary{font-size:16px;padding:1.15em 2.6em}}
+        .btn-primary:hover{transform:translateY(-2px);box-shadow:0 16px 40px oklch(0.76 0.14 78 / 0.35)}
         .btn-primary:active{transform:translateY(0)}
-        .btn-secondary{font-size:15px;font-weight:600;padding:0.85em 1.8em;border-radius:60px;border:2px solid var(--border);background:transparent;color:var(--text-primary);cursor:pointer;font-family:var(--font-sans);letter-spacing:0.01em;transition:border-color 0.2s,color 0.2s,background 0.2s;min-height:48px;display:inline-flex;align-items:center;justify-content:center}
-        @media(min-width:640px){.btn-secondary{font-size:16px;padding:0.9em 2em}}
+        .btn-secondary{font-size:15px;font-weight:600;padding:1em 2em;border-radius:60px;border:2px solid var(--border);background:transparent;color:var(--text-primary);cursor:pointer;font-family:var(--font-sans);letter-spacing:0.01em;transition:border-color 0.2s,color 0.2s,background 0.2s;min-height:52px;display:inline-flex;align-items:center;justify-content:center}
+        @media(min-width:640px){.btn-secondary{font-size:16px;padding:1.05em 2.2em}}
         .btn-secondary:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-dim)}
-        .ruled-divider{height:3px;background:var(--accent);margin:0 auto;max-width:80px;border-radius:2px}
-        .step-connector{position:absolute;top:50%;left:100%;width:100%;height:2px;background:linear-gradient(90deg,var(--accent) 0%,var(--border) 100%);transform:translateY(-50%);opacity:0.3}
-        @media(max-width:767px){.step-connector{display:none}}
+        .ruled-divider{height:4px;background:var(--accent);margin:0;max-width:100px;border-radius:2px}
+        .editorial-grid{display:grid;grid-template-columns:1fr;gap:0}
+        @media(min-width:1024px){.editorial-grid{grid-template-columns:1fr 1fr;gap:80px}}
+        .hover-card:hover{transform:translateX(-50%) rotate(var(--rotate)) translateY(-12px) !important;box-shadow:0 32px 72px oklch(0 0 0 / 0.9) !important}
       `}</style>
 
       {/* NAV */}
       <nav style={{
         position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100,
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '0 clamp(20px, 5vw, 64px)', height: 64,
+        padding: '0 clamp(24px, 5vw, 80px)', height: 72,
         borderBottom: '1px solid var(--border-soft)',
         backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)',
-        background: 'oklch(0.09 0.012 55 / 0.9)',
+        background: 'oklch(0.09 0.012 55 / 0.92)',
       }}>
-        <StampBuddyLogo size={28} />
-        <button className="btn-primary" onClick={() => router.push('/auth')} style={{ padding: '0.6em 1.5em', fontSize: 13, minHeight: 40 }}>
+        <StampBuddyLogo size={32} />
+        <button className="btn-primary" onClick={() => router.push('/auth')} style={{ padding: '0.7em 1.8em', fontSize: 14, minHeight: 44 }}>
           Get started
         </button>
       </nav>
 
       {/* HERO */}
       <section style={{
-        paddingTop: 'clamp(100px, 16vh, 140px)',
-        paddingBottom: 'clamp(80px, 12vh, 120px)',
-        paddingLeft: 'clamp(20px, 5vw, 64px)',
-        paddingRight: 'clamp(20px, 5vw, 64px)',
-        maxWidth: 1280, margin: '0 auto',
+        paddingTop: 'clamp(120px, 18vh, 180px)',
+        paddingBottom: 'clamp(100px, 14vh, 160px)',
+        paddingLeft: 'clamp(24px, 5vw, 80px)',
+        paddingRight: 'clamp(24px, 5vw, 80px)',
+        maxWidth: 1440, margin: '0 auto',
       }}>
-        <div className="hero-grid">
-          <div>
+        <div className="editorial-grid">
+          <div style={{ maxWidth: 720 }}>
             <motion.div
               initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6, ease }}
-              style={{ marginBottom: 28 }}
+              style={{ marginBottom: 32 }}
             >
-              <div className="ruled-divider" style={{ margin: '0 0 24px 0' }} />
+              <div className="ruled-divider" style={{ marginBottom: 28 }} />
               <p style={{
-                fontSize: 13, fontWeight: 700, letterSpacing: '0.12em',
-                textTransform: 'uppercase', color: 'var(--accent)', marginBottom: 6
+                fontSize: 12, fontWeight: 800, letterSpacing: '0.14em',
+                textTransform: 'uppercase', color: 'var(--accent)', marginBottom: 8
               }}>
                 Digital loyalty for restaurants
               </p>
@@ -219,13 +353,14 @@ export default function HomePage() {
               initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, delay: 0.1, ease }}
               style={{
-                fontSize: 'clamp(2.25rem, 7vw, 4.5rem)',
+                fontSize: 'clamp(3rem, 10vw, 8rem)',
                 fontWeight: 900,
-                lineHeight: 0.95,
-                letterSpacing: '-0.03em',
+                lineHeight: 0.92,
+                letterSpacing: '-0.04em',
                 color: 'var(--text-primary)',
-                marginBottom: 28,
-                maxWidth: '16ch',
+                marginBottom: 40,
+                maxWidth: '14ch',
+                textShadow: '0 2px 24px oklch(0 0 0 / 0.5)',
               }}
             >
               Your stamps, finally in one place
@@ -235,11 +370,11 @@ export default function HomePage() {
               initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, delay: 0.2, ease }}
               style={{
-                fontSize: 'clamp(1rem, 2vw, 1.25rem)',
+                fontSize: 'clamp(1.125rem, 2.2vw, 1.375rem)',
                 color: 'var(--text-secondary)',
-                lineHeight: 1.65,
-                maxWidth: '42ch',
-                marginBottom: 40,
+                lineHeight: 1.7,
+                maxWidth: '48ch',
+                marginBottom: 48,
                 fontWeight: 400,
               }}
             >
@@ -253,7 +388,8 @@ export default function HomePage() {
               className="cta-row"
             >
               <button className="btn-primary" onClick={() => router.push('/auth')}>
-                I'm a customer
+                Get started free
+                <ArrowRight size={18} />
               </button>
               <button className="btn-secondary" onClick={() => router.push('/auth')}>
                 I run a cafe
@@ -261,225 +397,250 @@ export default function HomePage() {
             </motion.div>
           </div>
 
-          <div className="card-stack-wrap">
-            {CARD_PREVIEWS.map((card, i) => (
-              <CardPreview key={card.name} card={card} index={i} />
-            ))}
-          </div>
+          <motion.div
+            initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8, delay: 0.2, ease }}
+            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+          >
+            <CardStack />
+          </motion.div>
         </div>
       </section>
 
       {/* RULED DIVIDER */}
       <div style={{
-        height: 2,
-        background: 'linear-gradient(90deg, transparent, var(--border), transparent)',
-        margin: '0 clamp(24px, 5vw, 64px)'
+        height: 3,
+        background: 'linear-gradient(90deg, transparent, var(--accent), transparent)',
+        margin: '0 clamp(24px, 5vw, 80px)',
+        opacity: 0.6,
       }} />
 
-      {/* HOW IT WORKS */}
-      <section style={{
-        padding: 'clamp(100px, 14vh, 140px) clamp(24px, 5vw, 64px)',
-        maxWidth: 1280, margin: '0 auto',
-      }}>
-        <SectionReveal>
-          <div style={{ marginBottom: 80, maxWidth: 680 }}>
-            <div className="ruled-divider" style={{ margin: '0 0 24px 0' }} />
-            <p style={{
-              fontSize: 13, fontWeight: 700, letterSpacing: '0.12em',
-              textTransform: 'uppercase', color: 'var(--accent)', marginBottom: 20
-            }}>
-              How it works
-            </p>
-            <h2 style={{
-              fontSize: 'clamp(2.25rem, 6.5vw, 4rem)',
-              fontWeight: 900,
-              lineHeight: 1,
-              letterSpacing: '-0.03em',
-              color: 'var(--text-primary)',
-              marginBottom: 24,
-            }}>
-              Three taps.<br />Done.
-            </h2>
-            <p style={{
-              fontSize: 18,
-              color: 'var(--text-secondary)',
-              lineHeight: 1.7,
-              maxWidth: '44ch',
-            }}>
-              The whole flow takes under 10 seconds. No hardware, no training, no setup cost.
-            </p>
-          </div>
-        </SectionReveal>
-
-        <div className="step-grid">
-          {HOW_STEPS.map((step, i) => (
-            <SectionReveal key={step.num}>
-              <div style={{
-                position: 'relative',
-                padding: '48px 32px 48px 0',
-                borderTop: '3px solid var(--accent)',
-              }}>
-                {i < HOW_STEPS.length - 1 && <div className="step-connector" />}
-
-                <div style={{
-                  fontSize: 'clamp(4rem, 10vw, 6rem)',
-                  fontWeight: 900,
-                  lineHeight: 0.9,
-                  color: 'var(--accent)',
-                  letterSpacing: '-0.04em',
-                  marginBottom: 24,
-                  opacity: 0.9,
-                }}>
-                  {step.num}
-                </div>
-
-                <h3 style={{
-                  fontSize: 'clamp(1.25rem, 2.5vw, 1.5rem)',
-                  fontWeight: 800,
-                  color: 'var(--text-primary)',
-                  marginBottom: 14,
-                  lineHeight: 1.2,
-                  letterSpacing: '-0.01em',
-                }}>
-                  {step.title}
-                </h3>
-
-                <p style={{
-                  fontSize: 16,
-                  color: 'var(--text-secondary)',
-                  lineHeight: 1.65,
-                  maxWidth: '32ch',
-                }}>
-                  {step.body}
-                </p>
-              </div>
-            </SectionReveal>
-          ))}
-        </div>
-      </section>
-
-      {/* RULED DIVIDER */}
-      <div style={{
-        height: 2,
-        background: 'linear-gradient(90deg, transparent, var(--border), transparent)',
-        margin: '0 clamp(24px, 5vw, 64px)'
-      }} />
-
-      {/* FOR CUSTOMERS */}
-      <section style={{
-        padding: 'clamp(100px, 14vh, 140px) clamp(24px, 5vw, 64px)',
-        maxWidth: 1280, margin: '0 auto',
-      }}>
-        <SectionReveal>
-          <div style={{ marginBottom: 72 }}>
-            <div className="ruled-divider" style={{ margin: '0 0 24px 0' }} />
-            <p style={{
-              fontSize: 13, fontWeight: 700, letterSpacing: '0.12em',
-              textTransform: 'uppercase', color: 'var(--accent)', marginBottom: 20
-            }}>
-              For customers
-            </p>
-            <h2 style={{
-              fontSize: 'clamp(2rem, 5.5vw, 3.5rem)',
-              fontWeight: 900,
-              lineHeight: 1.05,
-              letterSpacing: '-0.03em',
-              color: 'var(--text-primary)',
-            }}>
-              Built for cafe regulars
-            </h2>
-          </div>
-        </SectionReveal>
-
-        <div className="benefit-grid">
-          {WHY_CUSTOMER.map((item, i) => (
-            <SectionReveal key={item.title}>
-              <div style={{
-                padding: '40px 0',
-                borderTop: '2px solid var(--border)',
-              }}>
-                <h3 style={{
-                  fontSize: 'clamp(1.25rem, 2.2vw, 1.5rem)',
-                  fontWeight: 800,
-                  color: 'var(--text-primary)',
-                  marginBottom: 16,
-                  lineHeight: 1.2,
-                  letterSpacing: '-0.01em',
-                }}>
-                  {item.title}
-                </h3>
-                <p style={{
-                  fontSize: 16,
-                  color: 'var(--text-secondary)',
-                  lineHeight: 1.7,
-                  maxWidth: '32ch',
-                }}>
-                  {item.body}
-                </p>
-              </div>
-            </SectionReveal>
-          ))}
-        </div>
-      </section>
-
-      {/* FOR MERCHANTS */}
-      <section style={{ background: 'var(--bg-surface)' }}>
-        <div style={{
-          padding: 'clamp(100px, 14vh, 140px) clamp(24px, 5vw, 64px)',
-          maxWidth: 1280, margin: '0 auto',
+      {/* EDITORIAL FEATURES */}
+      {EDITORIAL_FEATURES.map((feature, i) => (
+        <section key={feature.num} style={{
+          padding: 'clamp(120px, 16vh, 180px) clamp(24px, 5vw, 80px)',
+          maxWidth: 1440, margin: '0 auto',
+          background: i === 1 ? 'var(--bg-surface)' : 'transparent',
         }}>
           <SectionReveal>
-            <div style={{ marginBottom: 72 }}>
-              <div className="ruled-divider" style={{ margin: '0 0 24px 0' }} />
-              <p style={{
-                fontSize: 13, fontWeight: 700, letterSpacing: '0.12em',
-                textTransform: 'uppercase', color: 'var(--accent)', marginBottom: 20
+            <div className="editorial-grid" style={{
+              alignItems: 'center',
+              flexDirection: i % 2 === 1 ? 'row-reverse' : 'row',
+            }}>
+              <div style={{ maxWidth: 640 }}>
+                <div style={{
+                  fontSize: 'clamp(5rem, 12vw, 10rem)',
+                  fontWeight: 900,
+                  lineHeight: 0.85,
+                  color: 'var(--accent)',
+                  letterSpacing: '-0.05em',
+                  marginBottom: 24,
+                  opacity: 0.15,
+                  textShadow: '0 4px 32px oklch(0.76 0.14 78 / 0.4)',
+                }}>
+                  {feature.num}
+                </div>
+
+                <div className="ruled-divider" style={{ marginBottom: 28, maxWidth: 120 }} />
+
+                <p style={{
+                  fontSize: 12, fontWeight: 800, letterSpacing: '0.14em',
+                  textTransform: 'uppercase', color: 'var(--accent)', marginBottom: 20
+                }}>
+                  {feature.kicker}
+                </p>
+
+                <h2 style={{
+                  fontSize: 'clamp(2.5rem, 6vw, 5rem)',
+                  fontWeight: 900,
+                  lineHeight: 0.95,
+                  letterSpacing: '-0.04em',
+                  color: 'var(--text-primary)',
+                  marginBottom: 32,
+                  textShadow: '0 2px 16px oklch(0 0 0 / 0.3)',
+                }}>
+                  {feature.title}
+                </h2>
+
+                <p style={{
+                  fontSize: 'clamp(1.0625rem, 2vw, 1.25rem)',
+                  color: 'var(--text-secondary)',
+                  lineHeight: 1.75,
+                  maxWidth: '52ch',
+                  fontWeight: 400,
+                }}>
+                  {feature.body}
+                </p>
+              </div>
+
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                minHeight: 400,
               }}>
-                For merchants
-              </p>
-              <h2 style={{
-                fontSize: 'clamp(2rem, 5.5vw, 3.5rem)',
-                fontWeight: 900,
-                lineHeight: 1.05,
-                letterSpacing: '-0.03em',
-                color: 'var(--text-primary)',
-              }}>
-                Run loyalty from your phone
-              </h2>
+                {feature.visual === 'wallet' && (
+                  <div style={{
+                    position: 'relative',
+                    width: 'min(90vw, 480px)',
+                    height: 400,
+                  }}>
+                    {[
+                      { isImage: true, imagePath: '/Card1.png', y: 0, rotate: -4 },
+                      { isImage: true, imagePath: '/Card2.png', y: 70, rotate: 2 },
+                      { color: 'oklch(0.22 0.08 260)', accent: 'oklch(0.65 0.18 260)', name: 'Roast & Co.', y: 140, rotate: -2 },
+                    ].map((card, idx) => (
+                      <div key={idx} style={{
+                        position: 'absolute',
+                        top: card.y,
+                        left: '50%',
+                        transform: `translateX(-50%) rotate(${card.rotate}deg)`,
+                        width: '100%',
+                        aspectRatio: '1.586',
+                        borderRadius: 18,
+                        background: card.isImage ? 'transparent' : card.color,
+                        border: card.isImage ? 'none' : `2px solid ${card.accent}40`,
+                        padding: card.isImage ? 0 : '20px 28px',
+                        boxShadow: `0 ${16 + idx * 8}px ${40 + idx * 16}px oklch(0 0 0 / 0.6)`,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'space-between',
+                        zIndex: 3 - idx,
+                        overflow: 'hidden',
+                      }}>
+                        {card.isImage ? (
+                          <img
+                            src={card.imagePath}
+                            alt="Loyalty card"
+                            style={{
+                              width: '100%',
+                              height: '100%',
+                              objectFit: 'cover',
+                              borderRadius: 18,
+                            }}
+                          />
+                        ) : (
+                          <>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                              <span style={{ fontSize: 18, fontWeight: 900, color: card.accent }}>{card.name}</span>
+                              <div style={{
+                                width: 40, height: 40, borderRadius: 10,
+                                background: `${card.accent}30`,
+                                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                              }}>
+                                <QrCode size={18} color={card.accent} />
+                              </div>
+                            </div>
+                            <div style={{ display: 'flex', gap: 10, justifyContent: 'center' }}>
+                              {Array.from({ length: 8 }).map((_, i) => (
+                                <div key={i} style={{
+                                  width: 32, height: 32, borderRadius: '50%',
+                                  background: i < (idx + 1) * 2 ? card.accent : 'transparent',
+                                  border: `2.5px solid ${card.accent}`,
+                                }} />
+                              ))}
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {feature.visual === 'qr' && (
+                  <div style={{
+                    width: 'min(90vw, 380px)',
+                    padding: 48,
+                    borderRadius: 24,
+                    background: 'var(--bg-elevated)',
+                    border: '2px solid var(--border)',
+                    boxShadow: '0 24px 64px oklch(0 0 0 / 0.7), 0 0 0 1px var(--accent-dim) inset',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    gap: 32,
+                  }}>
+                    <div style={{
+                      width: '100%',
+                      aspectRatio: '1',
+                      borderRadius: 16,
+                      background: 'white',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      position: 'relative',
+                      overflow: 'hidden',
+                    }}>
+                      <QrCode size={180} color="oklch(0.09 0.012 55)" strokeWidth={1.5} />
+                      <div style={{
+                        position: 'absolute',
+                        bottom: 16,
+                        left: '50%',
+                        transform: 'translateX(-50%)',
+                        background: 'var(--accent)',
+                        color: 'var(--accent-text)',
+                        padding: '8px 20px',
+                        borderRadius: 20,
+                        fontSize: 14,
+                        fontWeight: 800,
+                        letterSpacing: '0.05em',
+                      }}>
+                        60s
+                      </div>
+                    </div>
+                    <p style={{
+                      fontSize: 15,
+                      color: 'var(--text-secondary)',
+                      textAlign: 'center',
+                      fontWeight: 600,
+                    }}>
+                      One-time QR • Expires in 60 seconds
+                    </p>
+                  </div>
+                )}
+
+                {feature.visual === 'flow' && (
+                  <div style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 24,
+                    width: 'min(90vw, 400px)',
+                  }}>
+                    {['Tap count', 'QR appears', 'Scan & done'].map((step, idx) => (
+                      <div key={step} style={{
+                        padding: '32px 36px',
+                        borderRadius: 20,
+                        background: 'var(--bg-elevated)',
+                        border: '2px solid var(--border)',
+                        borderLeft: `6px solid var(--accent)`,
+                        boxShadow: '0 8px 24px oklch(0 0 0 / 0.4)',
+                        transform: `translateX(${idx * 12}px)`,
+                      }}>
+                        <div style={{
+                          fontSize: 13,
+                          fontWeight: 800,
+                          letterSpacing: '0.12em',
+                          color: 'var(--accent)',
+                          marginBottom: 12,
+                        }}>
+                          STEP {idx + 1}
+                        </div>
+                        <div style={{
+                          fontSize: 20,
+                          fontWeight: 800,
+                          color: 'var(--text-primary)',
+                        }}>
+                          {step}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
           </SectionReveal>
-
-          <div className="benefit-grid">
-            {WHY_MERCHANT.map((item, i) => (
-              <SectionReveal key={item.title}>
-                <div style={{
-                  padding: '40px 0',
-                  borderTop: '2px solid var(--border)',
-                }}>
-                  <h3 style={{
-                    fontSize: 'clamp(1.25rem, 2.2vw, 1.5rem)',
-                    fontWeight: 800,
-                    color: 'var(--text-primary)',
-                    marginBottom: 16,
-                    lineHeight: 1.2,
-                    letterSpacing: '-0.01em',
-                  }}>
-                    {item.title}
-                  </h3>
-                  <p style={{
-                    fontSize: 16,
-                    color: 'var(--text-secondary)',
-                    lineHeight: 1.7,
-                    maxWidth: '32ch',
-                  }}>
-                    {item.body}
-                  </p>
-                </div>
-              </SectionReveal>
-            ))}
-          </div>
-        </div>
-      </section>
+        </section>
+      ))}
 
       {/* TRUST / CTA */}
       <section style={{
@@ -612,7 +773,7 @@ export default function HomePage() {
       {/* FOOTER */}
       <footer style={{
         borderTop: '1px solid var(--border-soft)',
-        padding: 'clamp(48px, 8vh, 72px) clamp(24px, 5vw, 64px)',
+        padding: 'clamp(48px, 8vh, 72px) clamp(24px, 5vw, 80px)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
@@ -620,7 +781,7 @@ export default function HomePage() {
         gap: 24,
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-          <StampBuddyLogo size={28} />
+          <StampBuddyLogo size={32} />
           <span style={{ fontSize: 14, color: 'var(--text-muted)', fontWeight: 500 }}>
             Made for neighbourhood cafes
           </span>
@@ -630,106 +791,5 @@ export default function HomePage() {
         </p>
       </footer>
     </div>
-  )
-}
-
-function CardPreview({ card, index }: { card: typeof CARD_PREVIEWS[0]; index: number }) {
-  const floatY = [-10, 10, -10]
-  const floatDuration = [3.2, 3.8, 3.5][index]
-  const floatDelay = [0, 0.6, 1.2][index]
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 80, rotate: card.rotate }}
-      animate={{
-        opacity: 1,
-        y: floatY,
-        rotate: card.rotate,
-      }}
-      transition={{
-        opacity: { duration: 0.7, delay: index * 0.14, ease },
-        y: {
-          duration: floatDuration,
-          delay: floatDelay,
-          repeat: Infinity,
-          repeatType: 'mirror',
-          ease: 'easeInOut',
-        },
-        rotate: { duration: 0.7, delay: index * 0.14, ease },
-      }}
-      style={{
-        position: 'absolute',
-        width: 'min(90vw, 420px)',
-        height: 'min(42vw, 200px)',
-        borderRadius: 16,
-        background: card.color,
-        border: `1.5px solid oklch(from ${card.accent} l c h / 0.4)`,
-        padding: 'clamp(20px, 4vw, 28px) clamp(24px, 5vw, 36px)',
-        top: `50%`,
-        left: `50%`,
-        transform: `translate(-50%, -50%) translateY(${(index - 1) * 20}px) translateX(${(index - 1) * 14}px) rotate(${card.rotate}deg)`,
-        zIndex: index,
-        boxShadow: `0 ${12 + index * 8}px ${32 + index * 16}px oklch(0 0 0 / 0.6)`,
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'space-between',
-      }}
-    >
-      {/* Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <span style={{
-          fontSize: 'clamp(16px, 3.5vw, 20px)', fontWeight: 800, color: card.accent,
-          letterSpacing: '0.02em', lineHeight: 1,
-        }}>{card.name}</span>
-        <div style={{
-          width: 'clamp(36px, 7vw, 42px)', height: 'clamp(36px, 7vw, 42px)', borderRadius: 10,
-          background: `oklch(from ${card.accent} l c h / 0.22)`,
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-        }}>
-          <QrCode size={18} color={card.accent} />
-        </div>
-      </div>
-
-      {/* 2 rows of 4 stamps */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 'clamp(8px, 2vw, 12px)', alignItems: 'center' }}>
-        <div style={{ display: 'flex', gap: 'clamp(8px, 2vw, 12px)' }}>
-          {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} style={{
-              width: 'clamp(36px, 7vw, 48px)',
-              height: 'clamp(36px, 7vw, 48px)',
-              borderRadius: '50%',
-              background: i < card.stamps
-                ? card.accent
-                : 'transparent',
-              border: `2.5px solid ${card.accent}`,
-              transition: 'background 0.2s',
-              flexShrink: 0,
-            }} />
-          ))}
-        </div>
-        <div style={{ display: 'flex', gap: 'clamp(8px, 2vw, 12px)' }}>
-          {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i + 4} style={{
-              width: 'clamp(36px, 7vw, 48px)',
-              height: 'clamp(36px, 7vw, 48px)',
-              borderRadius: '50%',
-              background: (i + 4) < card.stamps
-                ? card.accent
-                : 'transparent',
-              border: `2.5px solid ${card.accent}`,
-              transition: 'background 0.2s',
-              flexShrink: 0,
-            }} />
-          ))}
-        </div>
-      </div>
-
-      {/* Footer text */}
-      <p style={{
-        fontSize: 'clamp(11px, 2.5vw, 14px)', color: `oklch(from ${card.accent} l c h / 0.7)`,
-        fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase',
-        textAlign: 'center',
-      }}>{card.stamps} of 8 stamps</p>
-    </motion.div>
   )
 }

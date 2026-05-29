@@ -61,13 +61,26 @@ export default function SearchPage() {
   return (
     <div style={{ height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
       {/* Header */}
-      <div style={{ padding: '52px 24px 16px', flexShrink: 0 }}>
+      <div style={{ padding: '52px 24px 20px', flexShrink: 0 }}>
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease }}
         >
-          <h1 style={{ fontSize: 26, fontWeight: 700, letterSpacing: '-0.5px', marginBottom: 16 }}>
+          <div style={{
+            height: 4,
+            background: 'var(--accent)',
+            width: 60,
+            marginBottom: 16,
+            borderRadius: 2,
+          }} />
+          <h1 style={{
+            fontSize: 'clamp(1.75rem, 5vw, 2.25rem)',
+            fontWeight: 900,
+            letterSpacing: '-0.03em',
+            marginBottom: 20,
+            textShadow: '0 2px 12px oklch(0 0 0 / 0.2)',
+          }}>
             Find cafes
           </h1>
         </motion.div>
@@ -80,9 +93,9 @@ export default function SearchPage() {
           style={{ position: 'relative' }}
         >
           <Search
-            size={16}
+            size={18}
             style={{
-              position: 'absolute', left: 15, top: '50%',
+              position: 'absolute', left: 16, top: '50%',
               transform: 'translateY(-50%)',
               color: 'var(--text-muted)', pointerEvents: 'none',
             }}
@@ -94,10 +107,10 @@ export default function SearchPage() {
             onChange={e => setQuery(e.target.value)}
             autoFocus
             style={{
-              width: '100%', padding: '13px 14px 13px 40px',
-              borderRadius: 14,
+              width: '100%', padding: '15px 16px 15px 44px',
+              borderRadius: 16,
               background: 'var(--bg-surface)',
-              border: '1.5px solid var(--border-soft)',
+              border: '2px solid var(--border-soft)',
               color: 'var(--text-primary)', fontSize: 16,
               outline: 'none', fontFamily: 'var(--font-sans)',
               fontWeight: 400, boxSizing: 'border-box',

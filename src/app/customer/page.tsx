@@ -8,7 +8,8 @@ import { createClient } from '@/lib/supabase/client'
 import { useAppStore } from '@/store/app'
 import type { LoyaltyCardWithBusiness, LoyaltyCard, Business } from '@/types/database'
 import WalletCard from '@/components/wallet/WalletCard'
-import { LogOut } from 'lucide-react'
+import QRScanner from '@/components/wallet/QRScanner'
+import { LogOut, QrCode } from 'lucide-react'
 
 const ease = [0.16, 1, 0.3, 1] as [number, number, number, number]
 
@@ -16,6 +17,7 @@ export default function CustomerWalletPage() {
   const { profile, cards, setCards } = useAppStore()
   const [activeIndex, setActiveIndex] = useState(0)
   const [loading, setLoading] = useState(true)
+  const [showScanner, setShowScanner] = useState(false)
 
   const fetchCards = useCallback(async () => {
     const supabase = createClient()
@@ -69,36 +71,85 @@ export default function CustomerWalletPage() {
       backgroundPosition: '0 0, 0 20px, 20px -20px, -20px 0px',
     }}>
       {/* Header */}
-      <div style={{ padding: '52px 24px 16px', flexShrink: 0 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+      <div style={{ padding: '52px 24px 20px', flexShrink: 0 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 }}>
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, ease }}
           >
-            <h1 style={{ fontSize: 26, fontWeight: 700, letterSpacing: '-0.5px' }}>
+            <div style={{
+              height: 4,
+              background: 'var(--accent)',
+              width: 60,
+              marginBottom: 16,
+              borderRadius: 2,
+            }} />
+            <h1 style={{
+              fontSize: 'clamp(1.75rem, 5vw, 2.25rem)',
+              fontWeight: 900,
+              letterSpacing: '-0.03em',
+              textShadow: '0 2px 12px oklch(0 0 0 / 0.2)',
+            }}>
               {loading ? 'Loading…' : cards.length === 0 ? 'Your wallet' : `${cards.length} card${cards.length !== 1 ? 's' : ''}`}
             </h1>
           </motion.div>
-          <motion.button
-            onClick={handleSignOut}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.1 }}
-            whileTap={{ scale: 0.95 }}
-            style={{
-              background: 'var(--bg-surface)', border: '1px solid var(--border-soft)',
-              borderRadius: 12, padding: '9px 14px', cursor: 'pointer',
-              color: 'var(--text-secondary)',
-              display: 'flex', alignItems: 'center', gap: 7, fontSize: 13, fontWeight: 500,
-            }}
-          >
-            <LogOut size={14} /> Sign out
-          </motion.button>
+          <div style={{ display: 'flex', gap: 10 }}>
+            <motion.button
+              onClick={() => setShowScanner(true)}
+              data-scan-button
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.1 }}
+              whileTap={{ scale: 0.95 }}
+              style={{
+                background: 'var(--accent)', border: '2px solid var(--accent)',
+                borderRadius: 14, padding: '10px 16px', cursor: 'pointer',
+                color: 'var(--accent-text)',
+                display: 'flex', alignItems: 'center', gap: 8, fontSize: 14, fontWeight: 700,
+                transition: 'transform 0.2s, box-shadow 0.2s',
+                boxShadow: '0 4px 16px oklch(0.76 0.14 78 / 0.3)',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-2px)'
+                e.currentTarget.style.boxShadow = '0 6px 20px oklch(0.76 0.14 78 / 0.4)'
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)'
+                e.currentTarget.style.boxShadow = '0 4px 16px oklch(0.76 0.14 78 / 0.3)'
+              }}
+            >
+              <QrCode size={15} /> Scan
+            </motion.button>
+            <motion.button
+              onClick={handleSignOut}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.1 }}
+              whileTap={{ scale: 0.95 }}
+              style={{
+                background: 'var(--bg-surface)', border: '2px solid var(--border-soft)',
+                borderRadius: 14, padding: '10px 16px', cursor: 'pointer',
+                color: 'var(--text-secondary)',
+                display: 'flex', alignItems: 'center', gap: 8, fontSize: 14, fontWeight: 600,
+                transition: 'border-color 0.2s, background 0.2s',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.borderColor = 'var(--border)'
+                e.currentTarget.style.background = 'var(--bg-elevated)'
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.borderColor = 'var(--border-soft)'
+                e.currentTarget.style.background = 'var(--bg-surface)'
+              }}
+            >
+              <LogOut size={15} /> Sign out
+            </motion.button>
+          </div>
         </div>
 
         {!loading && cards.length > 0 && (
-          <p style={{ fontSize: 13, color: 'var(--text-muted)', marginTop: 4, fontWeight: 400 }}>
+          <p style={{ fontSize: 14, color: 'var(--text-muted)', fontWeight: 500 }}>
             Tap a card to expand
           </p>
         )}
@@ -129,6 +180,18 @@ export default function CustomerWalletPage() {
           </div>
         )}
       </div>
+
+      {/* QR Scanner Modal */}
+      {showScanner && (
+        <QRScanner
+          mode="follow"
+          onClose={() => setShowScanner(false)}
+          onSuccess={() => {
+            setShowScanner(false)
+            fetchCards()
+          }}
+        />
+      )}
     </div>
   )
 }
@@ -152,9 +215,43 @@ function EmptyState() {
       <h2 style={{ fontSize: 20, fontWeight: 700, letterSpacing: '-0.3px', marginBottom: 10 }}>
         No loyalty cards yet
       </h2>
-      <p style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.6, maxWidth: 240, margin: '0 auto' }}>
-        Explore the cafes tab and follow a cafe to start collecting stamps.
+      <p style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.6, maxWidth: 280, margin: '0 auto 24px' }}>
+        Scan a cafe's QR code to collect your first loyalty card and start earning stamps
       </p>
+
+      {/* Scan QR button in empty state */}
+      <motion.button
+        onClick={() => {
+          const scanBtn = document.querySelector('[data-scan-button]') as HTMLButtonElement
+          if (scanBtn) scanBtn.click()
+        }}
+        whileTap={{ scale: 0.95 }}
+        style={{
+          background: 'var(--accent)',
+          border: '2px solid var(--accent)',
+          borderRadius: 14,
+          padding: '12px 24px',
+          cursor: 'pointer',
+          color: 'var(--accent-text)',
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: 8,
+          fontSize: 15,
+          fontWeight: 700,
+          transition: 'transform 0.2s, box-shadow 0.2s',
+          boxShadow: '0 4px 16px oklch(0.76 0.14 78 / 0.3)',
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.transform = 'translateY(-2px)'
+          e.currentTarget.style.boxShadow = '0 6px 20px oklch(0.76 0.14 78 / 0.4)'
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.transform = 'translateY(0)'
+          e.currentTarget.style.boxShadow = '0 4px 16px oklch(0.76 0.14 78 / 0.3)'
+        }}
+      >
+        <QrCode size={18} /> Scan QR Code
+      </motion.button>
     </motion.div>
   )
 }
