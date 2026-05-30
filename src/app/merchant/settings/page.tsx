@@ -175,12 +175,12 @@ export default function MerchantSettings() {
                   card={previewCard}
                   isActive={true}
                   isExpanded={false}
+                  isAnotherExpanded={false}
                   isLifting={false}
                   stackIndex={0}
                   onPointerDown={() => {}}
                   onPointerUp={() => {}}
                   onTap={() => {}}
-                  onExpand={() => {}}
                   onStampsUpdated={() => {}}
                />
             </div>
