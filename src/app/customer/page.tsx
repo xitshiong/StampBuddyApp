@@ -93,7 +93,7 @@ export default function CustomerWalletPage() {
               letterSpacing: '-0.03em',
               textShadow: '0 2px 12px oklch(0 0 0 / 0.2)',
             }}>
-              {loading ? 'Loading…' : cards.length === 0 ? 'Your wallet' : `${cards.length} card${cards.length !== 1 ? 's' : ''}`}
+              {loading ? 'Loading…' : 'Your wallet'}
             </h1>
           </motion.div>
           <div style={{ display: 'flex', gap: 10 }}>
