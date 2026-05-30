@@ -79,23 +79,22 @@ export default function WalletCard({
         onPointerLeave={onPointerUp}
         initial={false}
         animate={{
-          y: isExpanded ? 0 : topOffset,
-          scale: isExpanded ? 1 : scale,
+          y: isExpanded ? -20 : topOffset,
+          scale: isExpanded ? 1.02 : scale,
           filter: `brightness(${brightness})`,
           zIndex: isExpanded ? 100 : 50 - stackIndex,
         }}
         transition={{ duration: 0.35, ease }}
         style={{
-          position: isExpanded ? 'fixed' : 'absolute',
-          top: isExpanded ? 0 : 0,
-          left: isExpanded ? 0 : 0,
-          right: isExpanded ? 0 : 0,
-          bottom: isExpanded ? 0 : 'auto',
-          height: isExpanded ? '100dvh' : 240, 
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          height: isExpanded ? 'auto' : 240, 
           width: '100%',
           cursor: isExpanded ? 'default' : 'pointer',
-          borderRadius: isExpanded ? 0 : 14,
-          boxShadow: isActive && isLifting && !isExpanded ? '0 24px 48px rgba(0,0,0,0.25)' : 'none',
+          borderRadius: 14,
+          boxShadow: isActive && (isLifting || isExpanded) ? '0 24px 48px rgba(0,0,0,0.25)' : 'none',
           '--card-bg': bg,
           '--card-accent': accent,
           '--card-text-clr': textClr,
@@ -109,21 +108,20 @@ export default function WalletCard({
           height: '100%',
           display: 'flex',
           flexDirection: 'column',
-          overflowY: isExpanded ? 'auto' : 'hidden',
-          overflowX: 'hidden',
-          borderRadius: isExpanded ? 0 : 14,
+          overflow: 'hidden',
+          borderRadius: 14,
           transition: 'border-radius 0.35s ease',
         }}>
           {/* Top Section (Card Face) */}
           <div className="card-face" style={{
-            flex: isExpanded ? '1' : '0 0 55%',
+            flex: isExpanded ? '0 0 auto' : '0 0 55%',
             background: 'var(--card-bg)',
             position: 'relative',
             padding: 24,
             display: 'flex',
             flexDirection: 'column',
-            borderTopLeftRadius: isExpanded ? 0 : 14,
-            borderTopRightRadius: isExpanded ? 0 : 14,
+            borderTopLeftRadius: 14,
+            borderTopRightRadius: 14,
           }}>
             {/* Optional Pattern */}
             {pattern && (
@@ -179,7 +177,7 @@ export default function WalletCard({
             background: 'color-mix(in srgb, var(--card-bg) 60%, #000)',
             position: 'relative',
             top: -10,
-            padding: isExpanded ? '24px 24px 100px 24px' : '24px 24px',
+            padding: '24px 24px',
             borderTopLeftRadius: 14,
             borderTopRightRadius: 14,
             zIndex: 3,
@@ -187,9 +185,11 @@ export default function WalletCard({
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div>
-                <p style={{ margin: 0, fontSize: 12, color: 'var(--card-text-clr)', opacity: 0.7, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                  {isComplete ? 'Reward Ready' : `${stampsLeft} stamps to go`}
-                </p>
+                {isComplete && (
+                  <p style={{ margin: 0, fontSize: 12, color: 'var(--card-text-clr)', opacity: 0.7, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                    Reward Ready
+                  </p>
+                )}
                 <p style={{ margin: '4px 0 0 0', fontSize: 16, fontWeight: 600, color: 'var(--card-text-clr)' }}>
                   {biz.voucher_reward}
                 </p>
