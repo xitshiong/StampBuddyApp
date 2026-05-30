@@ -109,7 +109,8 @@ export default function WalletCard({
           height: '100%',
           display: 'flex',
           flexDirection: 'column',
-          overflow: 'hidden',
+          overflowY: isExpanded ? 'auto' : 'hidden',
+          overflowX: 'hidden',
           borderRadius: isExpanded ? 0 : 14,
           transition: 'border-radius 0.35s ease',
         }}>
@@ -178,7 +179,7 @@ export default function WalletCard({
             background: 'color-mix(in srgb, var(--card-bg) 60%, #000)',
             position: 'relative',
             top: -10,
-            padding: '24px 24px',
+            padding: isExpanded ? '24px 24px 100px 24px' : '24px 24px',
             borderTopLeftRadius: 14,
             borderTopRightRadius: 14,
             zIndex: 3,

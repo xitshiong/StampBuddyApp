@@ -10,15 +10,16 @@ interface Props {
 }
 
 export default function StampGrid({ current, max, accentColor = 'oklch(0.76 0.14 78)', stampShape = 'circle' }: Props) {
-  const cols = max <= 6 ? 3 : max <= 9 ? 3 : 4
+  const cols = max <= 6 ? 3 : max <= 10 ? 4 : 5
+  const gap = max > 10 ? 6 : 8
   const dots = Array.from({ length: max }, (_, i) => i < current)
 
   return (
     <div style={{
       display: 'grid',
       gridTemplateColumns: `repeat(${cols}, 1fr)`,
-      gap: 10,
-      marginTop: 20,
+      gap: gap,
+      marginTop: 12,
     }}>
       {dots.map((filled, i) => (
         <motion.div
