@@ -166,7 +166,7 @@ export default function CustomerWalletPage() {
         ) : cards.length === 0 ? (
           <EmptyState />
         ) : (
-          <div className={`wallet-stack ${liftingCardId !== null ? 'is-active' : ''}`} style={{ position: 'relative', height: 260, marginTop: 20 }}>
+          <div className={`wallet-stack ${liftingCardId !== null ? 'is-active' : ''}`} style={{ position: 'relative', height: 320, marginTop: 20 }}>
             <AnimatePresence mode="popLayout">
               {cards.slice(0, 3).map((card, i) => (
                 <WalletCard
@@ -174,26 +174,23 @@ export default function CustomerWalletPage() {
                   card={card}
                   isActive={i === activeIndex}
                   isExpanded={expandedCardId === card.id}
+                  isAnotherExpanded={expandedCardId !== null && expandedCardId !== card.id}
                   isLifting={liftingCardId === card.id}
                   stackIndex={i}
                   onPointerDown={() => setLiftingCardId(card.id)}
                   onPointerUp={() => setLiftingCardId(null)}
                   onTap={() => {
-                     // If it's expanded, close it.
                      if (expandedCardId === card.id) {
                          setExpandedCardId(null)
                          setActiveIndex(0)
                      } else {
-                         // Bring to front by reordering array
                          const newCards = [...cards]
                          const tapped = newCards.splice(i, 1)[0]
                          newCards.unshift(tapped)
                          setCards(newCards)
                          setActiveIndex(0)
+                         setExpandedCardId(tapped.id)
                      }
-                  }}
-                  onExpand={() => {
-                     setExpandedCardId(card.id)
                   }}
                   onStampsUpdated={handleStampsUpdated}
                 />

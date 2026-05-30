@@ -11,12 +11,12 @@ interface Props {
   card: LoyaltyCardWithBusiness
   isActive: boolean      // Is this card currently at the front of the stack?
   isExpanded: boolean    // Is this card currently in full-screen view?
+  isAnotherExpanded: boolean // Is another card expanded right now?
   isLifting: boolean     // Is the user hovering/touching the front card?
   stackIndex: number     // 0 = front, 1 = middle, 2 = back
   onPointerDown: () => void
   onPointerUp: () => void
   onTap: () => void
-  onExpand: () => void
   onStampsUpdated: (cardId: string, newStamps: number) => void
 }
 
@@ -34,8 +34,8 @@ function getContrastYIQ(hexcolor: string){
 }
 
 export default function WalletCard({ 
-  card, isActive, isExpanded, isLifting, stackIndex, 
-  onPointerDown, onPointerUp, onTap, onExpand, onStampsUpdated 
+  card, isActive, isExpanded, isAnotherExpanded, isLifting, stackIndex, 
+  onPointerDown, onPointerUp, onTap, onStampsUpdated 
 }: Props) {
   const [showScanner, setShowScanner] = useState(false)
   const { businesses: biz } = card
@@ -50,22 +50,23 @@ export default function WalletCard({
   const pattern = biz.card_pattern || ''
   const shape = biz.stamp_shape || 'circle'
 
-  // Apple Wallet Stack positioning logic
-  // Base offset is 20px per layer. If lifting, background layers spread by +4px
-  const baseOffset = stackIndex * 20
-  const fanOffset = (isLifting && stackIndex > 0) ? 4 : 0
+  // Stack styling logic:
+  // Apple Wallet stacks downwards in Y, but visually upwards in Z.
+  // Card 2 is at y:0, Card 1 at y:40, Card 0 at y:80
+  const maxDisplayedCards = 3
+  const baseOffset = (maxDisplayedCards - 1 - stackIndex) * 40
   
-  // If lifting, the front card goes UP by 18px. If not active, it sits in stack.
-  const liftOffset = (isActive && isLifting && !isExpanded) ? -18 : 0
-  
-  const topOffset = isActive ? liftOffset : (baseOffset + fanOffset)
-  const scale = isActive ? 1 : Math.max(0.9, 1 - stackIndex * 0.03)
-  const brightness = isActive ? 1 : stackIndex === 1 ? 0.85 : 0.70
+  // Active/Expand overrides
+  let topOffset = baseOffset
+  if (isExpanded) topOffset = 0
+  else if (isAnotherExpanded) topOffset = 400 // push down
+  else if (isActive && isLifting) topOffset = baseOffset - 10 // lift slightly
+
+  const scale = (isExpanded || isActive) ? 1 : Math.max(0.9, 1 - stackIndex * 0.03)
+  const brightness = (isExpanded || isActive) ? 1 : stackIndex === 1 ? 0.85 : 0.70
 
   const handleInteraction = () => {
-    if (isExpanded) return // Close is handled by the close button
-    if (!isActive) onTap()
-    else onExpand()
+    onTap()
   }
 
   return (
@@ -112,9 +113,9 @@ export default function WalletCard({
           borderRadius: 14,
           transition: 'border-radius 0.35s ease',
         }}>
-          {/* Top Section (Card Face) */}
+          {/* Card Face */}
           <div className="card-face" style={{
-            flex: isExpanded ? '0 0 auto' : '0 0 55%',
+            flex: '1',
             background: 'var(--card-bg)',
             position: 'relative',
             padding: 24,
@@ -122,6 +123,7 @@ export default function WalletCard({
             flexDirection: 'column',
             borderTopLeftRadius: 14,
             borderTopRightRadius: 14,
+            minHeight: 240,
           }}>
             {/* Optional Pattern */}
             {pattern && (
@@ -131,8 +133,7 @@ export default function WalletCard({
               }} />
             )}
             
-            {/* Merchant Logo or Name placeholder */}
-            <div style={{ position: 'relative', zIndex: 2 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'relative', zIndex: 2 }}>
               {biz.logo_url ? (
                 <img src={biz.logo_url} alt={biz.name} style={{ height: 40, width: 'auto', objectFit: 'contain' }} />
               ) : (
@@ -143,6 +144,16 @@ export default function WalletCard({
                   {biz.name}
                 </h3>
               )}
+              <div style={{
+                background: 'color-mix(in srgb, var(--card-bg) 70%, #000)',
+                padding: '6px 12px',
+                borderRadius: 20,
+                color: 'var(--card-text-clr)',
+                fontWeight: 800,
+                fontSize: 14,
+              }}>
+                {card.current_stamps} / {biz.max_stamps}
+              </div>
             </div>
 
             {/* Stamp Grid */}
@@ -151,7 +162,7 @@ export default function WalletCard({
             </div>
             
             {isExpanded && (
-              <div style={{ marginTop: 40, position: 'relative', zIndex: 2 }}>
+              <div style={{ marginTop: 40, position: 'relative', zIndex: 2, paddingBottom: 10 }}>
                  {isComplete ? (
                   <VoucherCard card={card} onRedeemed={() => { onStampsUpdated(card.id, 0); onTap() }} />
                 ) : (
@@ -168,54 +179,6 @@ export default function WalletCard({
                   </button>
                 )}
               </div>
-            )}
-          </div>
-
-          {/* Bottom Section (Card Desc) */}
-          <div className="card-desc" style={{
-            flex: isExpanded ? '0 0 auto' : '0 0 45%',
-            background: 'color-mix(in srgb, var(--card-bg) 60%, #000)',
-            position: 'relative',
-            top: -10,
-            padding: '24px 24px',
-            borderTopLeftRadius: 14,
-            borderTopRightRadius: 14,
-            zIndex: 3,
-            boxShadow: '0 -4px 12px rgba(0,0,0,0.1)',
-          }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <div>
-                {isComplete && (
-                  <p style={{ margin: 0, fontSize: 12, color: 'var(--card-text-clr)', opacity: 0.7, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                    Reward Ready
-                  </p>
-                )}
-                <p style={{ margin: '4px 0 0 0', fontSize: 16, fontWeight: 600, color: 'var(--card-text-clr)' }}>
-                  {biz.voucher_reward}
-                </p>
-              </div>
-              <div style={{
-                background: 'rgba(255,255,255,0.15)',
-                padding: '6px 12px',
-                borderRadius: 20,
-                color: 'var(--card-text-clr)',
-                fontWeight: 800,
-                fontSize: 14,
-              }}>
-                {card.current_stamps} / {biz.max_stamps}
-              </div>
-            </div>
-            {isExpanded && (
-               <button
-                  onClick={e => { e.stopPropagation(); onTap() }} // Tap to close
-                  style={{
-                    marginTop: 20, width: '100%', padding: '12px', borderRadius: 20,
-                    background: 'rgba(255,255,255,0.1)', border: 'none', color: 'var(--card-text-clr)',
-                    fontWeight: 600, cursor: 'pointer'
-                  }}
-               >
-                 Close
-               </button>
             )}
           </div>
         </div>

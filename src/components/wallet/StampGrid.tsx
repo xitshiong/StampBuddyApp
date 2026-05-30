@@ -12,7 +12,7 @@ interface Props {
 export default function StampGrid({ current, max, accentColor = 'oklch(0.76 0.14 78)', stampShape = 'circle' }: Props) {
   const cols = max <= 6 ? 3 : max <= 10 ? 4 : 5
   const gap = max > 10 ? 6 : 8
-  const maxSize = max <= 6 ? 54 : max <= 10 ? 44 : 36
+  const maxSize = max <= 6 ? 64 : max <= 10 ? 54 : 44
   const dots = Array.from({ length: max }, (_, i) => i < current)
 
   return (
