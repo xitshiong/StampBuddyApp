@@ -166,7 +166,7 @@ export default function CustomerWalletPage() {
         ) : cards.length === 0 ? (
           <EmptyState />
         ) : (
-          <div className={`wallet-stack ${liftingCardId !== null ? 'is-active' : ''}`} style={{ position: 'relative', height: 320, marginTop: 20 }}>
+          <div className={`wallet-stack ${liftingCardId !== null ? 'is-active' : ''}`} style={{ position: 'relative', height: 400, marginTop: 20 }}>
             <AnimatePresence mode="popLayout">
               {cards.slice(0, 3).map((card, i) => (
                 <WalletCard

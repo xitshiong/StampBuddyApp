@@ -52,14 +52,13 @@ export default function WalletCard({
 
   // Stack styling logic:
   // Apple Wallet stacks downwards in Y, but visually upwards in Z.
-  // Card 2 is at y:0, Card 1 at y:40, Card 0 at y:80
   const maxDisplayedCards = 3
-  const baseOffset = (maxDisplayedCards - 1 - stackIndex) * 40
+  const baseOffset = (maxDisplayedCards - 1 - stackIndex) * 72
   
   // Active/Expand overrides
   let topOffset = baseOffset
   if (isExpanded) topOffset = 0
-  else if (isAnotherExpanded) topOffset = 400 // push down
+  else if (isAnotherExpanded) topOffset = 500 // push down
   else if (isActive && isLifting) topOffset = baseOffset - 10 // lift slightly
 
   const scale = (isExpanded || isActive) ? 1 : Math.max(0.9, 1 - stackIndex * 0.03)
