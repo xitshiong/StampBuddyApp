@@ -162,46 +162,61 @@ export default function WalletCard({
               </div>
             </div>
 
-            {/* Banner Image — shown when expanded and banner exists */}
-            {isExpanded && biz.banner_url && (
+            {/* Store / Product Image Banner or Empty Placeholder — shown when expanded */}
+            {isExpanded && (
               <div style={{
                 position: 'relative', zIndex: 2,
                 marginTop: 20,
-                width: '100%',
-                aspectRatio: '16 / 9',
-                overflow: 'hidden',
-              }}>
-                <img
-                  src={biz.banner_url}
-                  alt={biz.name}
-                  style={{
-                    width: '100%',
-                    height: '100%',
-                    objectFit: 'cover',
-                    display: 'block',
-                  }}
-                />
-              </div>
-            )}
-
-            {/* Reward text — shown when expanded */}
-            {isExpanded && (
-              <p style={{
-                position: 'relative', zIndex: 2,
-                margin: 0, marginTop: 24,
                 padding: '0 24px',
-                fontSize: 15, fontWeight: 800,
-                fontStyle: 'italic',
-                color: 'var(--card-accent)',
-                letterSpacing: '0.02em',
-                lineHeight: 1.4,
-                textTransform: 'uppercase',
+                width: '100%',
+                boxSizing: 'border-box',
               }}>
-                {isComplete
-                  ? `You've earned ${biz.voucher_reward}!`
-                  : `Collect ${stampsLeft} more stamp${stampsLeft !== 1 ? 's' : ''} to receive ${biz.voucher_reward}`
-                }
-              </p>
+                <div style={{
+                  width: '100%',
+                  aspectRatio: '16 / 9',
+                  borderRadius: 12,
+                  overflow: 'hidden',
+                  position: 'relative',
+                  background: 'color-mix(in srgb, var(--card-text-clr) 4%, transparent)',
+                  border: biz.banner_url ? 'none' : '2px dashed color-mix(in srgb, var(--card-text-clr) 20%, transparent)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: 12,
+                }}>
+                  {biz.banner_url ? (
+                    <img
+                      src={biz.banner_url}
+                      alt={biz.name}
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'cover',
+                        display: 'block',
+                      }}
+                    />
+                  ) : (
+                    <>
+                      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ opacity: 0.45, color: 'var(--card-text-clr)' }}>
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                        <circle cx="8.5" cy="8.5" r="1.5" />
+                        <polyline points="21 15 16 10 5 21" />
+                      </svg>
+                      <span style={{
+                        fontSize: 13,
+                        fontWeight: 700,
+                        color: 'var(--card-text-clr)',
+                        opacity: 0.5,
+                        letterSpacing: '0.02em',
+                        textTransform: 'uppercase',
+                      }}>
+                        Store / Product Image
+                      </span>
+                    </>
+                  )}
+                </div>
+              </div>
             )}
 
             {/* Stamp Grid */}

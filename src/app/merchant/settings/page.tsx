@@ -16,6 +16,7 @@ export default function MerchantSettings() {
   const [business, setBusiness] = useState<Business | null>(null)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
+  const [isPreviewExpanded, setIsPreviewExpanded] = useState(false)
 
   // Form state
   const [name, setName] = useState('')
@@ -25,6 +26,7 @@ export default function MerchantSettings() {
   
   // Branding state
   const [logoUrl, setLogoUrl] = useState('')
+  const [bannerUrl, setBannerUrl] = useState('')
   const [cardBgColor, setCardBgColor] = useState('#1c1c1e')
   const [cardAccentColor, setCardAccentColor] = useState('#956afa')
   const [cardPattern, setCardPattern] = useState('')
@@ -49,6 +51,7 @@ export default function MerchantSettings() {
       setVoucherReward(biz.voucher_reward)
       
       setLogoUrl(biz.logo_url || '')
+      setBannerUrl(biz.banner_url || '')
       setCardBgColor(biz.card_bg_color || '#1c1c1e')
       setCardAccentColor(biz.card_accent_color || biz.color || '#956afa')
       setCardPattern(biz.card_pattern || '')
@@ -76,6 +79,7 @@ export default function MerchantSettings() {
         voucher_reward: voucherReward.trim(),
         color: cardAccentColor, // Keep legacy color in sync with accent
         logo_url: logoUrl.trim() || null,
+        banner_url: bannerUrl.trim() || null,
         card_bg_color: cardBgColor,
         card_accent_color: cardAccentColor,
         card_pattern: cardPattern.trim() || null,
@@ -117,6 +121,7 @@ export default function MerchantSettings() {
       voucher_reward: voucherReward || 'Reward',
       created_at: new Date().toISOString(),
       logo_url: logoUrl,
+      banner_url: bannerUrl,
       card_bg_color: cardBgColor,
       card_accent_color: cardAccentColor,
       card_text_color: null,
@@ -168,19 +173,21 @@ export default function MerchantSettings() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
 
           {/* Live card preview */}
-          <div style={{ marginBottom: 40, height: 260, position: 'relative' }}>
-            <p style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 16 }}>Live Preview</p>
-            <div style={{ position: 'relative', height: 240, width: '100%' }}>
+          <div style={{ marginBottom: 40, minHeight: isPreviewExpanded ? 460 : 260, position: 'relative', transition: 'min-height 0.35s ease' }}>
+            <p style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 16 }}>
+              Live Preview <span style={{ fontWeight: 400, opacity: 0.6, fontSize: 12 }}>— Tap card to preview expanded view</span>
+            </p>
+            <div style={{ position: 'relative', height: isPreviewExpanded ? 'auto' : 240, width: '100%' }}>
                <WalletCard
                   card={previewCard}
                   isActive={true}
-                  isExpanded={false}
+                  isExpanded={isPreviewExpanded}
                   isAnotherExpanded={false}
                   isLifting={false}
                   stackIndex={0}
                   onPointerDown={() => {}}
                   onPointerUp={() => {}}
-                  onTap={() => {}}
+                  onTap={() => setIsPreviewExpanded(!isPreviewExpanded)}
                   onStampsUpdated={() => {}}
                />
             </div>
@@ -228,6 +235,10 @@ export default function MerchantSettings() {
 
           <FieldGroup label="Logo URL" hint="Direct link to your logo image (PNG/SVG)">
             <input value={logoUrl} onChange={e => setLogoUrl(e.target.value)} placeholder="https://example.com/logo.png" style={inputStyle} />
+          </FieldGroup>
+
+          <FieldGroup label="Store/Product Banner URL (Optional)" hint="Direct link to a beautiful store front or product photo (16:9 ratio)">
+            <input value={bannerUrl} onChange={e => setBannerUrl(e.target.value)} placeholder="https://example.com/store-banner.jpg" style={inputStyle} />
           </FieldGroup>
 
           <FieldGroup label="Pattern URL (Optional)" hint="Direct link to a subtle background pattern">
