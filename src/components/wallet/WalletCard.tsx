@@ -141,7 +141,15 @@ export default function WalletCard({
               padding: isExpanded ? '24px 24px 0' : 0,
             }}>
               {biz.logo_url ? (
-                <img src={biz.logo_url} alt={biz.name} style={{ height: 40, width: 'auto', objectFit: 'contain' }} />
+                <>
+                  <img src={biz.logo_url} alt={biz.name} style={{ height: 40, width: 'auto', objectFit: 'contain' }} />
+                  <h3 style={{
+                    fontSize: 18, fontWeight: 700, color: 'var(--card-text-clr)',
+                    margin: 0, letterSpacing: '-0.3px', opacity: 0.95
+                  }}>
+                    {biz.name}
+                  </h3>
+                </>
               ) : (
                 <h3 style={{
                   fontSize: 22, fontWeight: 800, color: 'var(--card-text-clr)',
@@ -150,16 +158,6 @@ export default function WalletCard({
                   {biz.name}
                 </h3>
               )}
-              <div style={{
-                background: 'color-mix(in srgb, var(--card-bg) 70%, #000)',
-                padding: '6px 12px',
-                borderRadius: 20,
-                color: 'var(--card-text-clr)',
-                fontWeight: 800,
-                fontSize: 14,
-              }}>
-                {card.current_stamps} / {biz.max_stamps}
-              </div>
             </div>
 
             {/* Store / Product Image Banner or Empty Placeholder — shown when expanded */}
@@ -167,18 +165,17 @@ export default function WalletCard({
               <div style={{
                 position: 'relative', zIndex: 2,
                 marginTop: 20,
-                padding: '0 24px',
                 width: '100%',
                 boxSizing: 'border-box',
               }}>
                 <div style={{
                   width: '100%',
                   aspectRatio: '16 / 9',
-                  borderRadius: 12,
                   overflow: 'hidden',
                   position: 'relative',
                   background: 'color-mix(in srgb, var(--card-text-clr) 4%, transparent)',
-                  border: biz.banner_url ? 'none' : '2px dashed color-mix(in srgb, var(--card-text-clr) 20%, transparent)',
+                  borderTop: biz.banner_url ? 'none' : '2px dashed color-mix(in srgb, var(--card-text-clr) 15%, transparent)',
+                  borderBottom: biz.banner_url ? 'none' : '2px dashed color-mix(in srgb, var(--card-text-clr) 15%, transparent)',
                   display: 'flex',
                   flexDirection: 'column',
                   alignItems: 'center',
