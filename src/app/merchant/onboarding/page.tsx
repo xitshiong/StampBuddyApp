@@ -59,6 +59,8 @@ export default function MerchantOnboarding() {
       max_stamps: maxStamps,
       voucher_reward: voucherReward.trim(),
       color: BG_TO_HEX[selectedColor.value] ?? '#6366f1',
+      card_bg_color: selectedColor.value,
+      card_accent_color: selectedColor.accent,
     } as any)
 
     setLoading(false)
