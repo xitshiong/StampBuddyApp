@@ -10,6 +10,7 @@ import toast from 'react-hot-toast'
 import type { Business, LoyaltyCardWithBusiness } from '@/types/database'
 import { ChevronLeft, Save } from 'lucide-react'
 import WalletCard from '@/components/wallet/WalletCard'
+import ImageUpload from '@/components/merchant/ImageUpload'
 
 export default function MerchantSettings() {
   const router = useRouter()
@@ -233,12 +234,12 @@ export default function MerchantSettings() {
             </div>
           </FieldGroup>
 
-          <FieldGroup label="Logo URL" hint="Direct link to your logo image (PNG/SVG)">
-            <input value={logoUrl} onChange={e => setLogoUrl(e.target.value)} placeholder="https://example.com/logo.png" style={inputStyle} />
+          <FieldGroup label="Business Logo" hint="Upload your store logo (PNG, JPG, SVG - 1:1 ratio recommended)">
+            <ImageUpload value={logoUrl} onChange={setLogoUrl} label="Logo" aspectRatio="1/1" placeholderText="Upload Logo" />
           </FieldGroup>
 
-          <FieldGroup label="Store/Product Banner URL (Optional)" hint="Direct link to a beautiful store front or product photo (16:9 ratio)">
-            <input value={bannerUrl} onChange={e => setBannerUrl(e.target.value)} placeholder="https://example.com/store-banner.jpg" style={inputStyle} />
+          <FieldGroup label="Store/Product Banner" hint="Upload a photo of your shop or products (16:9 ratio recommended)">
+            <ImageUpload value={bannerUrl} onChange={setBannerUrl} label="Banner" aspectRatio="16/9" placeholderText="Upload Banner" />
           </FieldGroup>
 
           <FieldGroup label="Pattern URL (Optional)" hint="Direct link to a subtle background pattern">
