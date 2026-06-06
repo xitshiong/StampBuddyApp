@@ -79,22 +79,24 @@ export default function WalletCard({
         onPointerLeave={onPointerUp}
         initial={false}
         animate={{
-          y: isExpanded ? -20 : topOffset,
-          scale: isExpanded ? 1.02 : scale,
+          y: isExpanded ? 0 : topOffset,
+          scale: isExpanded ? 1 : scale,
+          opacity: isAnotherExpanded ? 0 : 1,
           filter: `brightness(${brightness})`,
           zIndex: isExpanded ? 100 : 50 - stackIndex,
         }}
         transition={{ duration: 0.35, ease }}
         style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
+          position: isExpanded ? 'relative' : 'absolute',
+          top: isExpanded ? undefined : 0,
+          left: isExpanded ? undefined : 0,
+          right: isExpanded ? undefined : 0,
           height: isExpanded ? 'auto' : 240, 
           width: '100%',
           cursor: isExpanded ? 'default' : 'pointer',
           borderRadius: 14,
           boxShadow: isActive && (isLifting || isExpanded) ? '0 24px 48px rgba(0,0,0,0.25)' : 'none',
+          pointerEvents: isAnotherExpanded ? 'none' : 'auto',
           '--card-bg': bg,
           '--card-accent': accent,
           '--card-text-clr': textClr,
@@ -117,22 +119,27 @@ export default function WalletCard({
             flex: '1',
             background: 'var(--card-bg)',
             position: 'relative',
-            padding: 24,
+            padding: isExpanded ? 0 : 24,
             display: 'flex',
             flexDirection: 'column',
-            borderTopLeftRadius: 14,
-            borderTopRightRadius: 14,
-            minHeight: 240,
+            borderRadius: 14,
+            minHeight: isExpanded ? undefined : 240,
           }}>
             {/* Optional Pattern */}
             {pattern && (
               <div style={{
                 position: 'absolute', inset: 0, opacity: 0.15,
-                backgroundImage: `url(${pattern})`, backgroundSize: 'cover', pointerEvents: 'none'
+                backgroundImage: `url(${pattern})`, backgroundSize: 'cover', pointerEvents: 'none',
+                borderRadius: 14,
               }} />
             )}
-            
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'relative', zIndex: 2 }}>
+
+            {/* Header */}
+            <div style={{
+              display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+              position: 'relative', zIndex: 2,
+              padding: isExpanded ? '24px 24px 0' : 0,
+            }}>
               {biz.logo_url ? (
                 <img src={biz.logo_url} alt={biz.name} style={{ height: 40, width: 'auto', objectFit: 'contain' }} />
               ) : (
@@ -155,23 +162,71 @@ export default function WalletCard({
               </div>
             </div>
 
+            {/* Banner Image — shown when expanded and banner exists */}
+            {isExpanded && biz.banner_url && (
+              <div style={{
+                position: 'relative', zIndex: 2,
+                marginTop: 20,
+                width: '100%',
+                aspectRatio: '16 / 9',
+                overflow: 'hidden',
+              }}>
+                <img
+                  src={biz.banner_url}
+                  alt={biz.name}
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover',
+                    display: 'block',
+                  }}
+                />
+              </div>
+            )}
+
+            {/* Reward text — shown when expanded */}
+            {isExpanded && (
+              <p style={{
+                position: 'relative', zIndex: 2,
+                margin: 0, marginTop: 24,
+                padding: '0 24px',
+                fontSize: 15, fontWeight: 800,
+                fontStyle: 'italic',
+                color: 'var(--card-accent)',
+                letterSpacing: '0.02em',
+                lineHeight: 1.4,
+                textTransform: 'uppercase',
+              }}>
+                {isComplete
+                  ? `You've earned ${biz.voucher_reward}!`
+                  : `Collect ${stampsLeft} more stamp${stampsLeft !== 1 ? 's' : ''} to receive ${biz.voucher_reward}`
+                }
+              </p>
+            )}
+
             {/* Stamp Grid */}
-            <div style={{ position: 'relative', zIndex: 2, marginTop: 'auto', paddingTop: 20 }}>
+            <div style={{
+              position: 'relative', zIndex: 2,
+              marginTop: isExpanded ? 20 : 'auto',
+              padding: isExpanded ? '0 24px' : '20px 0 0',
+            }}>
               <StampGrid current={card.current_stamps} max={biz.max_stamps} accentColor="var(--card-accent)" stampShape={shape} />
             </div>
-            
+
+            {/* Action button — shown when expanded */}
             {isExpanded && (
-              <div style={{ marginTop: 40, position: 'relative', zIndex: 2, paddingBottom: 10 }}>
+              <div style={{ marginTop: 32, position: 'relative', zIndex: 2, padding: '0 24px 32px' }}>
                  {isComplete ? (
                   <VoucherCard card={card} onRedeemed={() => { onStampsUpdated(card.id, 0); onTap() }} />
                 ) : (
                   <button
                     onClick={e => { e.stopPropagation(); setShowScanner(true) }}
                     style={{
-                      width: '100%', padding: '16px', borderRadius: 12, border: 'none',
+                      width: '100%', padding: '18px', borderRadius: 14, border: 'none',
                       background: 'var(--card-accent)', color: '#fff',
                       fontWeight: 700, fontSize: 16, cursor: 'pointer',
-                      boxShadow: '0 8px 24px rgba(0,0,0,0.2)'
+                      boxShadow: '0 8px 24px rgba(0,0,0,0.2)',
+                      letterSpacing: '0.01em',
                     }}
                   >
                     Scan QR to Stamp
