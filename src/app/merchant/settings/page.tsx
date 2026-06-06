@@ -220,17 +220,98 @@ export default function MerchantSettings() {
 
           <h2 style={{ fontSize: 18, fontWeight: 800, marginTop: 20, marginBottom: 20, paddingBottom: 10, borderBottom: '1px solid var(--border)' }}>Card Branding</h2>
 
-          <FieldGroup label="Card Background Color">
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-               <input type="color" value={cardBgColor} onChange={e => setCardBgColor(e.target.value)} style={{ width: 44, height: 44, padding: 0, border: 'none', borderRadius: 8, cursor: 'pointer', background: 'transparent' }} />
-               <input value={cardBgColor} onChange={e => setCardBgColor(e.target.value)} placeholder="#000000" style={{ ...inputStyle, flex: 1, fontFamily: 'monospace' }} />
+          <FieldGroup label="Select Card Theme" hint="Choose from our curated premium themes or customize your colors below">
+            <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginTop: 8 }}>
+              {[
+                { name: 'Amber', bg: 'oklch(0.26 0.08 55)', accent: 'oklch(0.76 0.14 78)' },
+                { name: 'Rose', bg: 'oklch(0.24 0.07 15)', accent: 'oklch(0.70 0.17 15)' },
+                { name: 'Emerald', bg: 'oklch(0.22 0.07 155)', accent: 'oklch(0.66 0.16 155)' },
+                { name: 'Indigo', bg: 'oklch(0.22 0.08 260)', accent: 'oklch(0.65 0.18 260)' },
+                { name: 'Violet', bg: 'oklch(0.22 0.08 300)', accent: 'oklch(0.65 0.17 300)' },
+                { name: 'Cyan', bg: 'oklch(0.22 0.07 210)', accent: 'oklch(0.68 0.15 210)' },
+                { name: 'Midnight', bg: '#111111', accent: '#956afa' },
+                { name: 'Slate', bg: '#1c1c1e', accent: '#38bdf8' },
+              ].map(theme => {
+                const isActive = cardBgColor === theme.bg && cardAccentColor === theme.accent
+                return (
+                  <button
+                    key={theme.name}
+                    type="button"
+                    onClick={() => {
+                      setCardBgColor(theme.bg)
+                      setCardAccentColor(theme.accent)
+                    }}
+                    title={theme.name}
+                    style={{
+                      width: 44, height: 44, borderRadius: '50%',
+                      background: `linear-gradient(135deg, ${theme.bg} 50%, ${theme.accent} 50%)`,
+                      border: 'none', cursor: 'pointer', flexShrink: 0,
+                      outline: isActive ? `3px solid var(--accent)` : '3px solid transparent',
+                      outlineOffset: 3,
+                      transform: isActive ? 'scale(1.1)' : 'scale(1)',
+                      transition: 'transform 0.2s, outline 0.15s',
+                    }}
+                  />
+                )
+              })}
             </div>
           </FieldGroup>
 
-          <FieldGroup label="Card Accent Color">
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-               <input type="color" value={cardAccentColor} onChange={e => setCardAccentColor(e.target.value)} style={{ width: 44, height: 44, padding: 0, border: 'none', borderRadius: 8, cursor: 'pointer', background: 'transparent' }} />
-               <input value={cardAccentColor} onChange={e => setCardAccentColor(e.target.value)} placeholder="#000000" style={{ ...inputStyle, flex: 1, fontFamily: 'monospace' }} />
+          <FieldGroup label="Custom Colors" hint="Tap color circles to fine-tune custom background and accent colors">
+            <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap', marginTop: 8 }}>
+              {/* Background Color Circle */}
+              <label style={{ display: 'flex', alignItems: 'center', gap: 12, cursor: 'pointer' }}>
+                <div style={{
+                  width: 44, height: 44, borderRadius: '50%',
+                  border: '2px solid var(--border-soft)',
+                  background: cardBgColor,
+                  position: 'relative',
+                  overflow: 'hidden',
+                  boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                  transition: 'transform 0.2s',
+                }}
+                onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.05)'}
+                onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
+                >
+                  <input
+                    type="color"
+                    value={cardBgColor.startsWith('oklch') ? '#1c1c1e' : cardBgColor}
+                    onChange={e => setCardBgColor(e.target.value)}
+                    style={{
+                      position: 'absolute', top: -10, left: -10,
+                      width: 64, height: 64, opacity: 0, cursor: 'pointer'
+                    }}
+                  />
+                </div>
+                <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)' }}>Card Background</span>
+              </label>
+
+              {/* Accent Color Circle */}
+              <label style={{ display: 'flex', alignItems: 'center', gap: 12, cursor: 'pointer' }}>
+                <div style={{
+                  width: 44, height: 44, borderRadius: '50%',
+                  border: '2px solid var(--border-soft)',
+                  background: cardAccentColor,
+                  position: 'relative',
+                  overflow: 'hidden',
+                  boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                  transition: 'transform 0.2s',
+                }}
+                onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.05)'}
+                onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
+                >
+                  <input
+                    type="color"
+                    value={cardAccentColor.startsWith('oklch') ? '#956afa' : cardAccentColor}
+                    onChange={e => setCardAccentColor(e.target.value)}
+                    style={{
+                      position: 'absolute', top: -10, left: -10,
+                      width: 64, height: 64, opacity: 0, cursor: 'pointer'
+                    }}
+                  />
+                </div>
+                <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)' }}>Card Accent</span>
+              </label>
             </div>
           </FieldGroup>
 
