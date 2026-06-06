@@ -31,13 +31,21 @@ export async function updateSession(request: NextRequest) {
   if (!user && !isPublic) {
     const url = request.nextUrl.clone()
     url.pathname = '/auth'
-    return NextResponse.redirect(url)
+    const redirectResponse = NextResponse.redirect(url)
+    supabaseResponse.cookies.getAll().forEach((cookie) => {
+      redirectResponse.cookies.set(cookie.name, cookie.value, cookie)
+    })
+    return redirectResponse
   }
 
   if (user && pathname === '/auth') {
     const url = request.nextUrl.clone()
     url.pathname = '/'
-    return NextResponse.redirect(url)
+    const redirectResponse = NextResponse.redirect(url)
+    supabaseResponse.cookies.getAll().forEach((cookie) => {
+      redirectResponse.cookies.set(cookie.name, cookie.value, cookie)
+    })
+    return redirectResponse
   }
 
   return supabaseResponse
