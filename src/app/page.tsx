@@ -230,13 +230,24 @@ export default function HomePage() {
 
   useEffect(() => {
     const supabase = createClient()
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
       if (!session) return
-      if (profile?.role === 'merchant') router.replace('/merchant')
-      else if (profile?.role === 'customer') router.replace('/customer')
-      else router.replace('/auth/role')
+      
+      const { data: profileData } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', session.user.id)
+        .single()
+
+      if (profileData?.role === 'merchant') {
+        router.replace('/merchant')
+      } else if (profileData?.role === 'customer') {
+        router.replace('/customer')
+      } else {
+        router.replace('/auth/role')
+      }
     })
-  }, [router, profile])
+  }, [router])
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
