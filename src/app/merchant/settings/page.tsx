@@ -30,7 +30,6 @@ export default function MerchantSettings() {
   const [bannerUrl, setBannerUrl] = useState('')
   const [cardBgColor, setCardBgColor] = useState('#1c1c1e')
   const [cardAccentColor, setCardAccentColor] = useState('#956afa')
-  const [cardPattern, setCardPattern] = useState('')
   const [stampShape, setStampShape] = useState('circle')
 
   useEffect(() => {
@@ -55,7 +54,6 @@ export default function MerchantSettings() {
       setBannerUrl(biz.banner_url || '')
       setCardBgColor(biz.card_bg_color || '#1c1c1e')
       setCardAccentColor(biz.card_accent_color || biz.color || '#956afa')
-      setCardPattern(biz.card_pattern || '')
       setStampShape(biz.stamp_shape || 'circle')
 
       setLoading(false)
@@ -82,7 +80,6 @@ export default function MerchantSettings() {
         logo_url: logoUrl.trim() || null,
         card_bg_color: cardBgColor,
         card_accent_color: cardAccentColor,
-        card_pattern: cardPattern.trim() || null,
         stamp_shape: stampShape,
       } as never)
       .eq('id', business.id)
@@ -125,7 +122,6 @@ export default function MerchantSettings() {
       card_bg_color: cardBgColor,
       card_accent_color: cardAccentColor,
       card_text_color: null,
-      card_pattern: cardPattern,
       stamp_shape: stampShape
     }
   } as LoyaltyCardWithBusiness
@@ -320,10 +316,6 @@ export default function MerchantSettings() {
 
           <FieldGroup label="Store/Product Banner" hint="Upload a photo of your shop or products (16:9 ratio)">
             <ImageUpload value={bannerUrl} onChange={setBannerUrl} label="Banner" aspectRatio="16/9" placeholderText="Upload Banner" />
-          </FieldGroup>
-
-          <FieldGroup label="Pattern URL (Optional)" hint="Direct link to a subtle background pattern">
-            <input value={cardPattern} onChange={e => setCardPattern(e.target.value)} placeholder="https://example.com/pattern.png" style={inputStyle} />
           </FieldGroup>
 
           <FieldGroup label="Stamp Shape">

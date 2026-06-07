@@ -47,7 +47,6 @@ export default function WalletCard({
   const bg = biz.card_bg_color || '#1c1c1e'
   const accent = biz.card_accent_color || biz.color || '#956afa'
   const textClr = biz.card_text_color || getContrastYIQ(bg)
-  const pattern = biz.card_pattern || ''
   const shape = biz.stamp_shape || 'circle'
 
   // Stack styling logic:
@@ -100,7 +99,6 @@ export default function WalletCard({
           '--card-bg': bg,
           '--card-accent': accent,
           '--card-text-clr': textClr,
-          '--card-pattern': pattern,
         } as React.CSSProperties}
         className="card"
       >
@@ -125,15 +123,6 @@ export default function WalletCard({
             borderRadius: 14,
             minHeight: isExpanded ? undefined : 240,
           }}>
-            {/* Optional Pattern */}
-            {pattern && (
-              <div style={{
-                position: 'absolute', inset: 0, opacity: 0.15,
-                backgroundImage: `url(${pattern})`, backgroundSize: 'cover', pointerEvents: 'none',
-                borderRadius: 14,
-              }} />
-            )}
-
             {/* Header */}
             <div style={{
               display: 'flex', justifyContent: 'space-between', alignItems: 'center',
