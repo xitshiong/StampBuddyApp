@@ -17,6 +17,7 @@ interface Props {
 export default function QRScanner({ card, onClose, onSuccess, mode = 'stamp' }: Props) {
   const scannerRef = useRef<HTMLDivElement>(null)
   const scannerInstance = useRef<unknown>(null)
+  const scannedRef = useRef(false)
   const [scanning, setScanning] = useState(true)
   const [error, setError] = useState('')
   const [showSuccess, setShowSuccess] = useState(false)
@@ -34,7 +35,8 @@ export default function QRScanner({ card, onClose, onSuccess, mode = 'stamp' }: 
           { facingMode: 'environment' },
           { fps: 10, qrbox: { width: 220, height: 220 } },
           async (decodedText) => {
-            if (!scanning) return
+            if (scannedRef.current) return
+            scannedRef.current = true
             setScanning(false)
             
             // Do NOT call scanner.stop() here. Stopping the video track inside its own 
