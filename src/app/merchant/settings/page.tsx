@@ -8,7 +8,7 @@ import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import toast from 'react-hot-toast'
 import type { Business, LoyaltyCardWithBusiness } from '@/types/database'
-import { ChevronLeft, Save } from 'lucide-react'
+import { ChevronLeft, Save, LogOut } from 'lucide-react'
 import WalletCard from '@/components/wallet/WalletCard'
 import ImageUpload from '@/components/merchant/ImageUpload'
 
@@ -88,6 +88,12 @@ export default function MerchantSettings() {
     if (error) { toast.error(error.message); return }
     toast.success('Settings saved!')
     router.push('/merchant')
+  }
+
+  async function handleSignOut() {
+    const supabase = createClient()
+    await supabase.auth.signOut()
+    window.location.href = '/auth'
   }
 
   if (loading) return (
@@ -348,6 +354,32 @@ export default function MerchantSettings() {
           >
             <Save size={16} />
             {saving ? 'Saving…' : 'Save Changes'}
+          </motion.button>
+
+          {/* Sign out button */}
+          <motion.button
+            onClick={handleSignOut}
+            whileTap={{ scale: 0.98 }}
+            style={{
+              width: '100%', padding: '17px', borderRadius: 16,
+              background: 'transparent', border: '2px solid var(--border-soft)',
+              color: '#ef4444', fontWeight: 700, fontSize: 15,
+              cursor: 'pointer', letterSpacing: '-0.2px',
+              marginTop: 16,
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+              transition: 'border-color 0.2s, background 0.2s',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.borderColor = '#ef4444'
+              e.currentTarget.style.background = 'rgba(239, 68, 68, 0.05)'
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.borderColor = 'var(--border-soft)'
+              e.currentTarget.style.background = 'transparent'
+            }}
+          >
+            <LogOut size={16} />
+            Sign out
           </motion.button>
         </div>
       </div>

@@ -9,7 +9,7 @@ import { createClient } from '@/lib/supabase/client'
 import toast from 'react-hot-toast'
 import type { Business } from '@/types/database'
 import NumPad from '@/components/merchant/NumPad'
-import { LogOut, RefreshCw, Settings, QrCode, Sparkles } from 'lucide-react'
+import { RefreshCw, Settings, QrCode, Sparkles } from 'lucide-react'
 import { useSearchParams } from 'next/navigation'
 import { Suspense } from 'react'
 
@@ -80,11 +80,7 @@ function MerchantPageInner() {
     setSessionId(session.id)
   }
 
-  async function handleSignOut() {
-    const supabase = createClient()
-    await supabase.auth.signOut()
-    window.location.href = '/auth'
-  }
+
 
   function downloadBusinessQR() {
     if (!business) return
@@ -259,9 +255,9 @@ function MerchantPageInner() {
             whileTap={{ scale: 0.95 }}
             style={{
               background: 'var(--bg-surface)', border: '2px solid var(--border-soft)',
-              borderRadius: 14, padding: '10px 16px', cursor: 'pointer',
+              borderRadius: 14, padding: '10px 12px', cursor: 'pointer',
               color: 'var(--text-secondary)',
-              display: 'flex', alignItems: 'center', gap: 8, fontSize: 14, fontWeight: 600,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
               transition: 'border-color 0.2s, background 0.2s',
             }}
             onMouseEnter={(e) => {
@@ -272,32 +268,9 @@ function MerchantPageInner() {
               e.currentTarget.style.borderColor = 'var(--border-soft)'
               e.currentTarget.style.background = 'var(--bg-surface)'
             }}
+            title="Settings"
           >
-            <Settings size={15} /> Settings
-          </motion.button>
-          <motion.button
-            onClick={handleSignOut}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.1, duration: 0.3 }}
-            whileTap={{ scale: 0.95 }}
-            style={{
-              background: 'var(--bg-surface)', border: '2px solid var(--border-soft)',
-              borderRadius: 14, padding: '10px 16px', cursor: 'pointer',
-              color: 'var(--text-secondary)',
-              display: 'flex', alignItems: 'center', gap: 8, fontSize: 14, fontWeight: 600,
-              transition: 'border-color 0.2s, background 0.2s',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.borderColor = 'var(--border)'
-              e.currentTarget.style.background = 'var(--bg-elevated)'
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.borderColor = 'var(--border-soft)'
-              e.currentTarget.style.background = 'var(--bg-surface)'
-            }}
-          >
-            <LogOut size={15} /> Sign out
+            <Settings size={16} />
           </motion.button>
         </div>
       </div>
