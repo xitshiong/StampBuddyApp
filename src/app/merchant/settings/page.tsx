@@ -185,7 +185,7 @@ export default function MerchantSettings() {
                   isExpanded={isPreviewExpanded}
                   isAnotherExpanded={false}
                   isLifting={false}
-                  stackIndex={0}
+                  stackIndex={2}
                   onPointerDown={() => {}}
                   onPointerUp={() => {}}
                   onTap={() => setIsPreviewExpanded(!isPreviewExpanded)}
