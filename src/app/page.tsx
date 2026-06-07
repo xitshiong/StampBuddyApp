@@ -239,9 +239,11 @@ export default function HomePage() {
         .eq('id', session.user.id)
         .single()
 
-      if (profileData?.role === 'merchant') {
+      const role = (profileData as any)?.role
+
+      if (role === 'merchant') {
         router.replace('/merchant')
-      } else if (profileData?.role === 'customer') {
+      } else if (role === 'customer') {
         router.replace('/customer')
       } else {
         router.replace('/auth/role')
