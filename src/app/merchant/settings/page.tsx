@@ -78,6 +78,7 @@ export default function MerchantSettings() {
         voucher_reward: voucherReward.trim(),
         color: cardAccentColor, // Keep legacy color in sync with accent
         logo_url: logoUrl.trim() || null,
+        banner_url: bannerUrl.trim() || null,
         card_bg_color: cardBgColor,
         card_accent_color: cardAccentColor,
         stamp_shape: stampShape,
