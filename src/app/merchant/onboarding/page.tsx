@@ -20,6 +20,15 @@ const COLORS = [
   { label: 'Cyan',    value: 'oklch(0.22 0.07 210)',  accent: 'oklch(0.68 0.15 210)' },
 ]
 
+const THEMES = [
+  { label: 'Amber',   value: 'oklch(0.26 0.08 55)',  accent: 'oklch(0.76 0.14 78)',  description: 'Warm espresso tones' },
+  { label: 'Rose',    value: 'oklch(0.24 0.07 15)',   accent: 'oklch(0.70 0.17 15)',  description: 'Deep berry warmth' },
+  { label: 'Emerald', value: 'oklch(0.22 0.07 155)',  accent: 'oklch(0.66 0.16 155)', description: 'Fresh forest green' },
+  { label: 'Indigo',  value: 'oklch(0.22 0.08 260)',  accent: 'oklch(0.65 0.18 260)', description: 'Cool night blue' },
+  { label: 'Violet',  value: 'oklch(0.22 0.08 300)',  accent: 'oklch(0.65 0.17 300)', description: 'Rich purple dusk' },
+  { label: 'Cyan',    value: 'oklch(0.22 0.07 210)',  accent: 'oklch(0.68 0.15 210)', description: 'Ocean morning mist' },
+]
+
 const BG_TO_HEX: Record<string, string> = {
   'oklch(0.26 0.08 55)':  '#f59e0b',
   'oklch(0.24 0.07 15)':  '#f97316',
@@ -434,24 +443,49 @@ function StepStyle({
         </p>
       </motion.div>
 
-      {/* Colour swatches */}
-      <FieldGroup label="Card colour">
-        <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-          {COLORS.map((c, i) => (
-            <button
-              key={c.value} type="button"
-              onClick={() => setColorIndex(i)}
-              title={c.label}
-              style={{
-                width: 40, height: 40, borderRadius: '50%',
-                background: c.accent, border: 'none', cursor: 'pointer', flexShrink: 0,
-                outline: colorIndex === i ? `3px solid ${c.accent}` : '3px solid transparent',
-                outlineOffset: 3,
-                transform: colorIndex === i ? 'scale(1.18)' : 'scale(1)',
-                transition: 'transform 0.2s, outline 0.15s',
-              }}
-            />
-          ))}
+      {/* Theme picker */}
+      <FieldGroup label="Card theme">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          {THEMES.map((t, i) => {
+            const active = colorIndex === i
+            return (
+              <button
+                key={t.label} type="button"
+                onClick={() => setColorIndex(i)}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 14,
+                  padding: '12px 14px', borderRadius: 14, border: 'none',
+                  background: active ? 'var(--bg-elevated)' : 'var(--bg-surface)',
+                  cursor: 'pointer', textAlign: 'left',
+                  outline: active ? `2px solid ${t.accent}` : '2px solid transparent',
+                  outlineOffset: 0,
+                  transition: 'background 0.15s, outline 0.15s',
+                }}
+              >
+                {/* Swatch */}
+                <div style={{
+                  width: 40, height: 40, borderRadius: 10, flexShrink: 0,
+                  background: `linear-gradient(135deg, ${t.value} 50%, ${t.accent} 50%)`,
+                  boxShadow: active ? `0 4px 14px ${t.accent}50` : 'none',
+                  transition: 'box-shadow 0.2s',
+                }} />
+                <div>
+                  <p style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 2 }}>{t.label}</p>
+                  <p style={{ fontSize: 12, color: 'var(--text-muted)' }}>{t.description}</p>
+                </div>
+                {active && (
+                  <div style={{
+                    marginLeft: 'auto', width: 20, height: 20, borderRadius: '50%',
+                    background: t.accent, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+                  }}>
+                    <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                      <path d="M1.5 5l2.5 2.5 4.5-4.5" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </div>
+                )}
+              </button>
+            )
+          })}
         </div>
       </FieldGroup>
     </div>

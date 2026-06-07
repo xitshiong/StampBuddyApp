@@ -319,10 +319,6 @@ export default function MerchantSettings() {
             <ImageUpload value={logoUrl} onChange={setLogoUrl} label="Logo" aspectRatio="1/1" placeholderText="Upload Logo" />
           </FieldGroup>
 
-          <FieldGroup label="Store/Product Banner" hint="Upload a photo of your shop or products (16:9 ratio recommended)">
-            <ImageUpload value={bannerUrl} onChange={setBannerUrl} label="Banner" aspectRatio="16/9" placeholderText="Upload Banner" />
-          </FieldGroup>
-
           <FieldGroup label="Pattern URL (Optional)" hint="Direct link to a subtle background pattern">
             <input value={cardPattern} onChange={e => setCardPattern(e.target.value)} placeholder="https://example.com/pattern.png" style={inputStyle} />
           </FieldGroup>
