@@ -117,7 +117,7 @@ export default function WalletCard({
             flex: '1',
             background: 'var(--card-bg)',
             position: 'relative',
-            padding: isExpanded ? 0 : 24,
+            padding: isExpanded ? 0 : '24px 0 0',
             display: 'flex',
             flexDirection: 'column',
             borderRadius: 14,
@@ -127,7 +127,7 @@ export default function WalletCard({
             <div style={{
               display: 'flex', justifyContent: 'space-between', alignItems: 'center',
               position: 'relative', zIndex: 2,
-              padding: isExpanded ? '24px 24px 0' : 0,
+              padding: isExpanded ? '24px 24px 0' : '0 24px',
             }}>
               {biz.logo_url ? (
                 <>
@@ -149,91 +149,96 @@ export default function WalletCard({
               )}
             </div>
 
-            {/* Store / Product Image Banner or Empty Placeholder — shown when expanded */}
-            {isExpanded && (
-              <div style={{
-                position: 'relative', zIndex: 2,
-                marginTop: 20,
-                width: '100%',
-                boxSizing: 'border-box',
-              }}>
-                <div style={{
-                  width: '100%',
-                  aspectRatio: '16 / 9',
-                  overflow: 'hidden',
-                  position: 'relative',
-                  background: 'color-mix(in srgb, var(--card-text-clr) 4%, transparent)',
-                  borderTop: biz.banner_url ? 'none' : '2px dashed color-mix(in srgb, var(--card-text-clr) 15%, transparent)',
-                  borderBottom: biz.banner_url ? 'none' : '2px dashed color-mix(in srgb, var(--card-text-clr) 15%, transparent)',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: 12,
-                }}>
-                  {biz.banner_url ? (
-                    <img
-                      src={biz.banner_url}
-                      alt={biz.name}
-                      style={{
-                        width: '100%',
-                        height: '100%',
-                        objectFit: 'cover',
-                        display: 'block',
-                      }}
-                    />
-                  ) : (
-                    <>
-                      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ opacity: 0.45, color: 'var(--card-text-clr)' }}>
-                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
-                        <circle cx="8.5" cy="8.5" r="1.5" />
-                        <polyline points="21 15 16 10 5 21" />
-                      </svg>
-                      <span style={{
-                        fontSize: 13,
-                        fontWeight: 700,
-                        color: 'var(--card-text-clr)',
-                        opacity: 0.5,
-                        letterSpacing: '0.02em',
-                        textTransform: 'uppercase',
-                      }}>
-                        Store / Product Image
-                      </span>
-                    </>
-                  )}
-                </div>
-              </div>
-            )}
-
-            {/* Stamp Grid */}
+            {/* Store / Product Image Banner or Empty Placeholder */}
             <div style={{
               position: 'relative', zIndex: 2,
-              marginTop: isExpanded ? 20 : 'auto',
-              padding: isExpanded ? '0 24px' : '20px 0 0',
+              marginTop: isExpanded ? 20 : 16,
+              width: '100%',
+              flex: isExpanded ? 'none' : '1',
+              boxSizing: 'border-box',
+              display: 'flex',
+              flexDirection: 'column',
             }}>
-              <StampGrid current={card.current_stamps} max={biz.max_stamps} accentColor="var(--card-accent)" stampShape={shape} />
-            </div>
-
-            {/* Action button — shown when expanded */}
-            {isExpanded && (
-              <div style={{ marginTop: 32, position: 'relative', zIndex: 2, padding: '0 24px 32px' }}>
-                 {isComplete ? (
-                  <VoucherCard card={card} onRedeemed={(newStamps) => { onStampsUpdated(card.id, newStamps ?? 0); onTap() }} />
-                ) : (
-                  <button
-                    onClick={e => { e.stopPropagation(); setShowScanner(true) }}
+              <div style={{
+                width: '100%',
+                aspectRatio: isExpanded ? '16 / 9' : undefined,
+                flex: isExpanded ? 'none' : '1',
+                overflow: 'hidden',
+                position: 'relative',
+                background: 'color-mix(in srgb, var(--card-text-clr) 4%, transparent)',
+                borderTop: (biz.banner_url || !isExpanded) ? 'none' : '2px dashed color-mix(in srgb, var(--card-text-clr) 15%, transparent)',
+                borderBottom: (biz.banner_url || !isExpanded) ? 'none' : '2px dashed color-mix(in srgb, var(--card-text-clr) 15%, transparent)',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 12,
+              }}>
+                {biz.banner_url ? (
+                  <img
+                    src={biz.banner_url}
+                    alt={biz.name}
                     style={{
-                      width: '100%', padding: '18px', borderRadius: 14, border: 'none',
-                      background: 'var(--card-accent)', color: '#fff',
-                      fontWeight: 700, fontSize: 16, cursor: 'pointer',
-                      boxShadow: '0 8px 24px rgba(0,0,0,0.2)',
-                      letterSpacing: '0.01em',
+                      width: '100%',
+                      height: '100%',
+                      objectFit: 'cover',
+                      display: 'block',
                     }}
-                  >
-                    Scan QR to Stamp
-                  </button>
+                  />
+                ) : (
+                  <>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ opacity: 0.45, color: 'var(--card-text-clr)' }}>
+                      <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                      <circle cx="8.5" cy="8.5" r="1.5" />
+                      <polyline points="21 15 16 10 5 21" />
+                    </svg>
+                    <span style={{
+                      fontSize: 11,
+                      fontWeight: 700,
+                      color: 'var(--card-text-clr)',
+                      opacity: 0.5,
+                      letterSpacing: '0.02em',
+                      textTransform: 'uppercase',
+                    }}>
+                      Store Image
+                    </span>
+                  </>
                 )}
               </div>
+            </div>
+
+            {/* Stamp Grid & Actions — only shown when card is expanded */}
+            {isExpanded && (
+              <>
+                {/* Stamp Grid */}
+                <div style={{
+                  position: 'relative', zIndex: 2,
+                  marginTop: 20,
+                  padding: '0 24px',
+                }}>
+                  <StampGrid current={card.current_stamps} max={biz.max_stamps} accentColor="var(--card-accent)" stampShape={shape} />
+                </div>
+
+                {/* Action button */}
+                <div style={{ marginTop: 32, position: 'relative', zIndex: 2, padding: '0 24px 32px' }}>
+                   {isComplete ? (
+                    <VoucherCard card={card} onRedeemed={(newStamps) => { onStampsUpdated(card.id, newStamps ?? 0); onTap() }} />
+                  ) : (
+                    <button
+                      onClick={e => { e.stopPropagation(); setShowScanner(true) }}
+                      style={{
+                        width: '100%', padding: '18px', borderRadius: 14, border: 'none',
+                        background: 'var(--card-accent)', color: '#fff',
+                        fontWeight: 700, fontSize: 16, cursor: 'pointer',
+                        boxShadow: '0 8px 24px rgba(0,0,0,0.2)',
+                        letterSpacing: '0.01em',
+                      }}
+                    >
+                      Scan QR to Stamp
+                    </button>
+                  )}
+                </div>
+              </>
             )}
           </div>
         </div>
