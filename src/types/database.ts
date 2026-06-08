@@ -68,4 +68,5 @@ export interface RedeemVoucherResult {
   ok: boolean
   error?: string
   expires_at?: string
+  new_stamps?: number
 }

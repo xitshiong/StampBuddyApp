@@ -218,7 +218,7 @@ export default function WalletCard({
             {isExpanded && (
               <div style={{ marginTop: 32, position: 'relative', zIndex: 2, padding: '0 24px 32px' }}>
                  {isComplete ? (
-                  <VoucherCard card={card} onRedeemed={() => { onStampsUpdated(card.id, 0); onTap() }} />
+                  <VoucherCard card={card} onRedeemed={(newStamps) => { onStampsUpdated(card.id, newStamps ?? 0); onTap() }} />
                 ) : (
                   <button
                     onClick={e => { e.stopPropagation(); setShowScanner(true) }}
