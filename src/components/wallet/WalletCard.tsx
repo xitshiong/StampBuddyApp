@@ -90,7 +90,7 @@ export default function WalletCard({
           top: isExpanded ? undefined : 0,
           left: isExpanded ? undefined : 0,
           right: isExpanded ? undefined : 0,
-          height: isExpanded ? 'auto' : 240, 
+          height: isExpanded ? 'auto' : 250, 
           width: '100%',
           cursor: isExpanded ? 'default' : 'pointer',
           borderRadius: 14,
@@ -121,7 +121,7 @@ export default function WalletCard({
             display: 'flex',
             flexDirection: 'column',
             borderRadius: 14,
-            minHeight: isExpanded ? undefined : 240,
+            minHeight: isExpanded ? undefined : 250,
           }}>
             {/* Header */}
             <div style={{
@@ -149,20 +149,19 @@ export default function WalletCard({
               )}
             </div>
 
-            {/* Store / Product Image Banner or Empty Placeholder */}
             <div style={{
               position: 'relative', zIndex: 2,
               marginTop: isExpanded ? 20 : 16,
               width: '100%',
-              flex: isExpanded ? 'none' : '1',
+              flex: 'none',
               boxSizing: 'border-box',
               display: 'flex',
               flexDirection: 'column',
             }}>
               <div style={{
                 width: '100%',
-                aspectRatio: isExpanded ? '16 / 9' : undefined,
-                flex: isExpanded ? 'none' : '1',
+                aspectRatio: '16 / 9',
+                flex: 'none',
                 overflow: 'hidden',
                 position: 'relative',
                 background: 'color-mix(in srgb, var(--card-text-clr) 4%, transparent)',

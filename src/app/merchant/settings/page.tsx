@@ -200,7 +200,7 @@ export default function MerchantSettings() {
             <p style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 16 }}>
               Live Preview <span style={{ fontWeight: 400, opacity: 0.6, fontSize: 12 }}>— Tap card to preview expanded view</span>
             </p>
-            <div style={{ position: 'relative', height: isPreviewExpanded ? 'auto' : 240, width: '100%' }}>
+            <div style={{ position: 'relative', height: isPreviewExpanded ? 'auto' : 250, width: '100%' }}>
                <WalletCard
                   card={previewCard}
                   isActive={true}
