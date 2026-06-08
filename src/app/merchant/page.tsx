@@ -9,7 +9,7 @@ import { createClient } from '@/lib/supabase/client'
 import toast from 'react-hot-toast'
 import type { Business } from '@/types/database'
 import NumPad from '@/components/merchant/NumPad'
-import { RefreshCw, Settings, QrCode, Sparkles } from 'lucide-react'
+import { RefreshCw, Settings, QrCode, Sparkles, BarChart3 } from 'lucide-react'
 import { useSearchParams } from 'next/navigation'
 import { Suspense } from 'react'
 
@@ -223,6 +223,30 @@ function MerchantPageInner() {
           </h1>
         </motion.div>
         <div style={{ display: 'flex', gap: 10 }}>
+          <motion.button
+            onClick={() => window.location.href = '/merchant/analytics'}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.1, duration: 0.3 }}
+            whileTap={{ scale: 0.95 }}
+            style={{
+              background: 'var(--bg-surface)', border: '2px solid var(--border-soft)',
+              borderRadius: 14, padding: '10px 16px', cursor: 'pointer',
+              color: 'var(--text-secondary)',
+              display: 'flex', alignItems: 'center', gap: 8, fontSize: 14, fontWeight: 600,
+              transition: 'border-color 0.2s, background 0.2s',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.borderColor = 'var(--border)'
+              e.currentTarget.style.background = 'var(--bg-elevated)'
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.borderColor = 'var(--border-soft)'
+              e.currentTarget.style.background = 'var(--bg-surface)'
+            }}
+          >
+            <BarChart3 size={15} /> Analytics
+          </motion.button>
           <motion.button
             onClick={() => window.location.href = '/merchant/qr'}
             initial={{ opacity: 0 }}

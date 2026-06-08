@@ -29,9 +29,9 @@ export interface Database {
         Relationships: []
       }
       voucher_redemptions: {
-        Row: { id: string; loyalty_card_id: string; redeemed_at: string; expires_at: string }
-        Insert: { loyalty_card_id: string; expires_at: string }
-        Update: Record<string, never>
+        Row: { id: string; loyalty_card_id: string; redeemed_at: string; expires_at: string; campaign_name: string | null; branch_name: string | null }
+        Insert: { loyalty_card_id: string; expires_at: string; campaign_name?: string | null; branch_name?: string | null }
+        Update: { campaign_name?: string | null; branch_name?: string | null }
         Relationships: []
       }
     }
