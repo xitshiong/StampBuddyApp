@@ -146,7 +146,7 @@ export default function MerchantAnalytics() {
         .eq('business_id', biz.id)
 
       if (cardsData) {
-        const total = cardsData.reduce((sum, card) => {
+        const total = (cardsData as any[]).reduce((sum, card) => {
           return sum + card.current_stamps + (card.total_redeemed * biz.max_stamps)
         }, 0)
         setTotalStampsCount(total)
