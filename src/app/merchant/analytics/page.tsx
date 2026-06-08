@@ -24,96 +24,13 @@ import {
 } from 'lucide-react'
 import toast from 'react-hot-toast'
 
-// Mock Demo Data Generator
-function generateMockData() {
-  const data: Array<{
-    id: string
-    redeemed_at: string
-    expires_at: string
-    campaign_name: string
-    branch_name: string
-    customer_phone: string
-  }> = []
-
-  const campaigns = ['Free Specialty Coffee', '1 Free Sourdough Pastry', '10% Storewide Discount', 'Double Stamp Reward Day']
-  const branches = ['Main Store (HQ)', 'Uptown Branch', 'Downtown Express']
-  const phonePrefixes = ['+60 12', '+60 17', '+60 19', '+60 11', '+60 13']
-
-  // Create 30 days of data
-  const now = new Date()
-  for (let i = 0; i < 120; i++) {
-    // Distribute randomly across last 30 days
-    const dayOffset = Math.floor(Math.random() * 30)
-    // Create spikes on weekends (Friday=5, Saturday=6, Sunday=0)
-    const claimDate = new Date(now.getTime() - dayOffset * 24 * 60 * 60 * 1000)
-    const dayOfWeek = claimDate.getDay()
-    const isWeekend = dayOfWeek === 0 || dayOfWeek === 5 || dayOfWeek === 6
-    
-    // Add extra transactions if weekend
-    const count = isWeekend ? Math.floor(Math.random() * 3) + 1 : 1
-    for (let c = 0; c < count; c++) {
-      // Create random hour, heavier around morning coffee rush (8am-11am)
-      const hourRand = Math.random()
-      let hour = 8 + Math.floor(Math.random() * 4) // 8am-11am
-      if (hourRand > 0.6) {
-        hour = 12 + Math.floor(Math.random() * 8) // 12pm-8pm
-      } else if (hourRand > 0.9) {
-        hour = 6 + Math.floor(Math.random() * 2) // 6am-7am
-      }
-      
-      claimDate.setHours(hour, Math.floor(Math.random() * 60), Math.floor(Math.random() * 60))
-      
-      // Calculate expiration time (5 mins later)
-      const expireDate = new Date(claimDate.getTime() + 5 * 60 * 1000)
-      
-      // Select random campaign, heavily skewing to Specialty Coffee
-      const campRand = Math.random()
-      const campaign = campRand < 0.5 ? campaigns[0] : campRand < 0.75 ? campaigns[1] : campRand < 0.9 ? campaigns[2] : campaigns[3]
-      
-      // Select random branch (HQ gets most traffic)
-      const branchRand = Math.random()
-      const branch = branchRand < 0.55 ? branches[0] : branchRand < 0.85 ? branches[1] : branches[2]
-      
-      // Generate phone number
-      const phone = `${phonePrefixes[Math.floor(Math.random() * phonePrefixes.length)]}-${(1000000 + Math.floor(Math.random() * 9000000)).toString().substring(1)}`
-
-      data.push({
-        id: `mock-${i}-${c}`,
-        redeemed_at: claimDate.toISOString(),
-        expires_at: expireDate.toISOString(),
-        campaign_name: campaign,
-        branch_name: branch,
-        customer_phone: phone
-      })
-    }
-  }
-
-  // Sort by redeemed_at descending
-  return data.sort((a, b) => new Date(b.redeemed_at).getTime() - new Date(a.redeemed_at).getTime())
-}
 
 export default function MerchantAnalytics() {
   const router = useRouter()
   const [business, setBusiness] = useState<Business | null>(null)
   const [loading, setLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
-  const [demoMode, setDemoMode] = useState(false)
 
-  // Real data state
-  const [realClaims, setRealClaims] = useState<any[]>([])
-  const [activeCustomersCount, setActiveCustomersCount] = useState(0)
-  const [totalStampsCount, setTotalStampsCount] = useState(0)
-
-  // Filter state
-  const [dateRange, setDateRange] = useState<'7d' | '30d' | '90d'>('30d')
-  const [selectedCampaign, setSelectedCampaign] = useState<string>('all')
-  const [selectedBranch, setSelectedBranch] = useState<string>('all')
-  const [searchQuery, setSearchQuery] = useState('')
-  const [chartView, setChartView] = useState<'day' | 'week' | 'month'>('day')
-  const [hoveredBar, setHoveredBar] = useState<number | null>(null)
-
-  // Demo data state (static)
-  const demoClaims = useMemo(() => generateMockData(), [])
 
   // Sync / load database data
   const loadData = async (showToast = false) => {
@@ -205,8 +122,21 @@ export default function MerchantAnalytics() {
     return () => clearInterval(timer)
   }, [])
 
+  // Real data state
+  const [realClaims, setRealClaims] = useState<any[]>([])
+  const [activeCustomersCount, setActiveCustomersCount] = useState(0)
+  const [totalStampsCount, setTotalStampsCount] = useState(0)
+
+  // Filter state
+  const [dateRange, setDateRange] = useState<'7d' | '30d' | '90d'>('30d')
+  const [selectedCampaign, setSelectedCampaign] = useState<string>('all')
+  const [selectedBranch, setSelectedBranch] = useState<string>('all')
+  const [searchQuery, setSearchQuery] = useState('')
+  const [chartView, setChartView] = useState<'day' | 'week' | 'month'>('day')
+  const [hoveredBar, setHoveredBar] = useState<number | null>(null)
+
   // Dynamic claims list based on Demo vs Real
-  const activeClaims = demoMode ? demoClaims : realClaims
+  const activeClaims = realClaims
 
   // Filter lists: unique campaigns and branches
   const campaignsList = useMemo(() => {
@@ -476,25 +406,6 @@ export default function MerchantAnalytics() {
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            {/* Demo Mode Toggle */}
-            <button
-              onClick={() => {
-                setDemoMode(!demoMode)
-                toast.success(demoMode ? 'Switched to Live Data' : 'Switched to Demo Data')
-              }}
-              style={{
-                display: 'flex', alignItems: 'center', gap: 8,
-                background: demoMode ? 'oklch(0.76 0.14 78 / 0.15)' : 'var(--bg-surface)',
-                border: `1.5px solid ${demoMode ? 'var(--accent)' : 'var(--border-soft)'}`,
-                borderRadius: 14, padding: '10px 16px', cursor: 'pointer',
-                fontSize: 13, fontWeight: 700,
-                color: demoMode ? 'var(--accent)' : 'var(--text-secondary)',
-                transition: 'all 0.2s ease',
-              }}
-            >
-              <Sparkles size={14} />
-              {demoMode ? 'Demo Mode Active' : 'Enable Demo Data'}
-            </button>
 
             {/* Manual Refresh Button */}
             <button
@@ -619,7 +530,7 @@ export default function MerchantAnalytics() {
             <SummaryCard
               title="Unique Customers"
               value={comparisonStats.uniqueCustCount}
-              subtitle={`Out of ${demoMode ? 84 : activeCustomersCount} total loyalty card members`}
+              subtitle={`Out of ${activeCustomersCount} total loyalty card members`}
               icon={Users}
               color="oklch(0.68 0.15 210)"
             />
@@ -627,7 +538,7 @@ export default function MerchantAnalytics() {
             {/* Total Stamps Issued */}
             <SummaryCard
               title="Total Stamps Issued"
-              value={demoMode ? 2840 : totalStampsCount}
+              value={totalStampsCount}
               subtitle="All-time customer loyalty stamps"
               icon={Sparkles}
               color="oklch(0.76 0.14 78)"
