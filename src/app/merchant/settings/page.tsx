@@ -69,7 +69,13 @@ export default function MerchantSettings() {
 
     setSaving(true)
     const supabase = createClient()
-    const { error } = await supabase
+    
+    const cleanLogoUrl = (logoUrl && typeof logoUrl === 'string') ? logoUrl.trim() : null
+    const cleanBannerUrl = (bannerUrl && typeof bannerUrl === 'string') ? bannerUrl.trim() : null
+
+    console.log('Saving settings. logoUrl:', cleanLogoUrl, 'bannerUrl:', cleanBannerUrl)
+
+    const { data, error } = await supabase
       .from('businesses')
       .update({
         name: name.trim(),
@@ -77,16 +83,30 @@ export default function MerchantSettings() {
         max_stamps: maxStamps,
         voucher_reward: voucherReward.trim(),
         color: cardAccentColor, // Keep legacy color in sync with accent
-        logo_url: logoUrl.trim() || null,
-        banner_url: bannerUrl.trim() || null,
+        logo_url: cleanLogoUrl || null,
+        banner_url: cleanBannerUrl || null,
         card_bg_color: cardBgColor,
         card_accent_color: cardAccentColor,
         stamp_shape: stampShape,
       } as never)
       .eq('id', business.id)
+      .select()
+
+    console.log('Update result - data:', data, 'error:', error)
 
     setSaving(false)
-    if (error) { toast.error(error.message); return }
+    if (error) { 
+      console.error('Update error:', error)
+      toast.error(error.message)
+      return 
+    }
+
+    if (!data || data.length === 0) {
+      console.warn('No rows updated. RLS policy might be blocking the write or business.id is incorrect.')
+      toast.error('Failed to save settings: Update blocked or invalid permission.')
+      return
+    }
+
     toast.success('Settings saved!')
     router.push('/merchant')
   }
