@@ -478,7 +478,7 @@ export const PricingComponent: React.FC<PricingComponentProps> = ({
           color: 'var(--text-secondary)',
           lineHeight: 1.6,
         }}>
-          Start with a 14-day free trial. Setup takes under 2 minutes. No credit card required.
+          Start with a 7-day free trial. Setup takes under 2 minutes. No credit card required.
         </p>
       </header>
 

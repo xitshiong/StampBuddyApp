@@ -118,7 +118,7 @@ export default function TermsOfService() {
               Merchants must choose a subscription plan to list their business and offer active loyalty cards.
             </p>
             <ul style={{ paddingLeft: 20, display: 'flex', flexDirection: 'column', gap: 8 }}>
-              <li><strong>Free Trial:</strong> We offer a 14-day free trial for new merchants. No credit card is required to sign up. At the end of the trial, you must choose a paid plan to keep your cards active.</li>
+              <li><strong>Free Trial:</strong> We offer a 7-day free trial for new merchants. No credit card is required to sign up. At the end of the trial, you must choose a paid plan to keep your cards active.</li>
               <li><strong>Billing & Cancellation:</strong> Subscriptions are billed in advance on a recurring monthly or annual basis depending on your choice. You may cancel your subscription at any time; your access will continue until the end of the paid billing period.</li>
               <li><strong>Refunds:</strong> All merchant payments are final and non-refundable, except as required by law. We do not provide refunds or credits for partial subscription months or unused locations.</li>
             </ul>

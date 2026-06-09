@@ -448,7 +448,7 @@ export default function HomePage() {
               className="cta-row"
             >
               <button className="btn-primary" onClick={() => router.push('/auth')}>
-                Start 14-day free trial
+                Start 7-day free trial
                 <ArrowRight size={18} />
               </button>
               <button className="btn-secondary" onClick={() => {
@@ -807,7 +807,7 @@ export default function HomePage() {
             <FaqRow q="Can one customer follow multiple cafes?" a="Yes. Each cafe gets its own loyalty card in the customer's wallet." />
             <FaqRow q="Is there a limit on how many stamps a card can hold?" a="Merchants set this when creating their business, anywhere from 1 to 20 stamps per card." />
             <FaqRow q="Is StampBuddy free for customers?" a="Yes, completely free. Customers can follow as many cafes as they like, collect stamps, and redeem rewards without ever paying." />
-            <FaqRow q="How does the 14-day free trial work for merchants?" a="Merchants get full access to all features of their selected plan for 14 days without entering a credit card. At the end of the trial, choose the plan that best fits your business." />
+            <FaqRow q="How does the 7-day free trial work for merchants?" a="Merchants get full access to all features of their selected plan for 7 days without entering a credit card. At the end of the trial, choose the plan that best fits your business." />
           </div>
         </SectionReveal>
       </section>
