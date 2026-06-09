@@ -494,11 +494,10 @@ export default function HomePage() {
                   fontSize: 'clamp(5rem, 12vw, 10rem)',
                   fontWeight: 900,
                   lineHeight: 0.85,
-                  color: 'var(--accent)',
+                  color: 'transparent',
+                  WebkitTextStroke: '2px oklch(0.76 0.14 78 / 0.35)',
                   letterSpacing: '-0.05em',
                   marginBottom: 24,
-                  opacity: 0.15,
-                  textShadow: '0 4px 32px oklch(0.76 0.14 78 / 0.4)',
                 }}>
                   {feature.num}
                 </div>
