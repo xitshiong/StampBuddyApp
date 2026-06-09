@@ -85,7 +85,7 @@ export default function QRScanner({ card, onClose, onSuccess, mode = 'stamp' }: 
         : data?.error === 'session_already_used'
         ? 'This QR code has already been used.'
         : data?.error === 'business_mismatch'
-        ? 'Wrong café QR code.'
+        ? 'Wrong business QR code.'
         : 'Could not redeem stamp. Try again.'
       toast.error(msg)
       onClose()
@@ -209,7 +209,7 @@ export default function QRScanner({ card, onClose, onSuccess, mode = 'stamp' }: 
                 ))}
               </div>
               <p style={{ fontSize: 13, color: 'oklch(0.55 0.01 260)', marginTop: 16, lineHeight: 1.5 }}>
-                {mode === 'follow' ? 'Point camera at cafe\'s QR code' : 'Point camera at merchant\'s QR code'}
+                {mode === 'follow' ? "Point camera at business's QR code" : "Point camera at merchant's QR code"}
               </p>
             </>
           )}

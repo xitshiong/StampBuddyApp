@@ -17,7 +17,7 @@ const EDITORIAL_FEATURES = [
   {
     num: '01',
     kicker: 'For customers',
-    title: 'All your cafes, one wallet',
+    title: 'All your spots, one wallet',
     body: 'Follow every spot you love. Collect stamps with a scan. Redeem real rewards. No paper cards falling out of your wallet, no app store friction.',
     visual: 'wallet'
   },
@@ -449,12 +449,12 @@ export default function HomePage() {
               }}>
                 <span>DIGITAL LOYALTY FOR</span>
                 <div className="cycler-words">
-                  <span className="cycler-word">RESTAURANTS</span>
                   <span className="cycler-word">CAFES</span>
-                  <span className="cycler-word">BARS</span>
+                  <span className="cycler-word">PICKLEBALL</span>
                   <span className="cycler-word">BARBERS</span>
-                  <span className="cycler-word">SHOPS</span>
-                  <span className="cycler-word" aria-hidden="true">RESTAURANTS</span>
+                  <span className="cycler-word">SALONS</span>
+                  <span className="cycler-word">SERVICES</span>
+                  <span className="cycler-word" aria-hidden="true">CAFES</span>
                 </div>
               </div>
             </motion.div>
@@ -488,7 +488,7 @@ export default function HomePage() {
                 fontWeight: 400,
               }}
             >
-              Follow every cafe you love. Collect stamps with a scan. Redeem real rewards.
+              Follow every local business you love. Collect stamps with a scan. Redeem real rewards.
               No paper cards, no app store, no friction.
             </motion.p>
 
@@ -592,7 +592,7 @@ export default function HomePage() {
                 margin: 0,
                 fontWeight: 500,
               }}>
-                Set up a digital loyalty card for your cafe in under 2 minutes. No hardware. No app for your customers to download. No monthly contract to start.
+                Set up a digital loyalty card for your business in under 2 minutes. No hardware. No app for your customers to download. No monthly contract to start.
               </p>
               
               <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', alignItems: 'center' }}>
@@ -601,7 +601,7 @@ export default function HomePage() {
                   <ArrowRight size={18} />
                 </button>
                 <a
-                  href="https://wa.me/601161665322?text=Hi%2C%20I%27m%20interested%20in%20StampBuddy%20for%20my%20cafe"
+                  href="https://wa.me/601161665322?text=Hi%2C%20I%27m%20interested%20in%20StampBuddy%20for%20my%20business"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="btn-secondary"
@@ -635,7 +635,7 @@ export default function HomePage() {
               color: 'var(--text-muted)',
               margin: 0,
             }}>
-              Trusted by cafes in Subang Jaya & KL
+              Trusted by local spots in Subang Jaya & KL
             </p>
             <div style={{
               display: 'flex',
@@ -646,8 +646,8 @@ export default function HomePage() {
               opacity: 0.5,
               padding: '8px 0',
             }}>
-              {['Roast & Co.', 'Kopi & Co.', 'Subang Coffee Co.', 'The Brew Bar', 'Merchant’s Cup'].map((cafe) => (
-                <div key={cafe} style={{
+              {['Roast & Co.', 'Court Side Pickleball', 'Subang Barbershop', 'The Wellness Spa', 'Merchant’s Cup'].map((biz) => (
+                <div key={biz} style={{
                   display: 'flex',
                   alignItems: 'center',
                   gap: 8,
@@ -656,8 +656,8 @@ export default function HomePage() {
                   color: 'var(--text-primary)',
                   letterSpacing: '-0.3px',
                 }}>
-                  <span style={{ fontSize: 16 }}>☕</span>
-                  <span>{cafe}</span>
+                  <span style={{ fontSize: 16 }}>✨</span>
+                  <span>{biz}</span>
                 </div>
               ))}
             </div>
@@ -963,9 +963,9 @@ export default function HomePage() {
           <div>
             <FaqRow q="Does the customer need to create an account?" a="Yes, a quick sign-in with Google takes about 10 seconds. No forms, no passwords." />
             <FaqRow q="What if the QR expires before the customer scans?" a="The merchant taps a button to generate a fresh one. Takes one second." />
-            <FaqRow q="Can one customer follow multiple cafes?" a="Yes. Each cafe gets its own loyalty card in the customer's wallet." />
+            <FaqRow q="Can one customer follow multiple businesses?" a="Yes. Each business gets its own loyalty card in the customer's wallet." />
             <FaqRow q="Is there a limit on how many stamps a card can hold?" a="Merchants set this when creating their business, anywhere from 1 to 20 stamps per card." />
-            <FaqRow q="Is StampBuddy free for customers?" a="Yes, completely free. Customers can follow as many cafes as they like, collect stamps, and redeem rewards without ever paying." />
+            <FaqRow q="Is StampBuddy free for customers?" a="Yes, completely free. Customers can follow as many spots as they like, collect stamps, and redeem rewards without ever paying." />
             <FaqRow q="How does the 7-day free trial work for merchants?" a="Merchants get full access to all features of their selected plan for 7 days without entering a credit card. At the end of the trial, choose the plan that best fits your business." />
           </div>
         </SectionReveal>
@@ -1015,7 +1015,7 @@ export default function HomePage() {
                 <ArrowRight size={18} />
               </button>
               <a
-                href="https://wa.me/601161665322?text=Hi%2C%20I%27m%20interested%20in%20StampBuddy%20for%20my%20cafe"
+                href="https://wa.me/601161665322?text=Hi%2C%20I%27m%20interested%20in%20StampBuddy%20for%20my%20business"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn-secondary"
@@ -1050,7 +1050,7 @@ export default function HomePage() {
         <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
           <StampBuddyLogo size={32} />
           <span style={{ fontSize: 14, color: 'var(--text-muted)', fontWeight: 500 }}>
-            Made for neighbourhood cafes
+            Made for neighborhood spots & services
           </span>
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6 }}>
@@ -1067,7 +1067,7 @@ export default function HomePage() {
 
       {/* FLOATING WHATSAPP BUTTON */}
       <a
-        href="https://wa.me/601161665322?text=Hi%2C%20I%27m%20interested%20in%20StampBuddy%20for%20my%20cafe"
+        href="https://wa.me/601161665322?text=Hi%2C%20I%27m%20interested%20in%20StampBuddy%20for%20my%20business"
         target="_blank"
         rel="noopener noreferrer"
         style={{

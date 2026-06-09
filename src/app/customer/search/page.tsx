@@ -50,7 +50,7 @@ export default function SearchPage() {
       .insert(insertData as any)
       .select('id,user_id,business_id,current_stamps,total_redeemed,created_at')
       .single()
-    if (error) { toast.error('Could not follow café'); return }
+    if (error) { toast.error('Could not follow business'); return }
     const data = cardData as LoyaltyCard
     const card: LoyaltyCardWithBusiness = { ...data, businesses: business }
     setFollowed(prev => new Set([...prev, business.id]))
@@ -81,7 +81,7 @@ export default function SearchPage() {
             marginBottom: 20,
             textShadow: '0 2px 12px oklch(0 0 0 / 0.2)',
           }}>
-            Find cafes
+            Find spots
           </h1>
         </motion.div>
 
@@ -102,7 +102,7 @@ export default function SearchPage() {
           />
           <input
             type="text"
-            placeholder="Search cafes…"
+            placeholder="Search businesses or services…"
             value={query}
             onChange={e => setQuery(e.target.value)}
             autoFocus
@@ -145,7 +145,7 @@ export default function SearchPage() {
               Popular categories
             </p>
             <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-              {['Coffee', 'Matcha', 'Bubble Tea', 'Specialty'].map((tag, i) => (
+              {['Coffee', 'Pickleball', 'Barber', 'Matcha', 'Services'].map((tag, i) => (
                 <button
                   key={tag}
                   onClick={() => setQuery(tag)}
@@ -167,7 +167,7 @@ export default function SearchPage() {
             animate={{ opacity: 1 }}
             style={{ textAlign: 'center', color: 'var(--text-muted)', paddingTop: 48, fontSize: 14 }}
           >
-            No cafes found for "{query}"
+            No spots found for "{query}"
           </motion.p>
         )}
 
@@ -198,7 +198,7 @@ export default function SearchPage() {
                   border: `1px solid ${colors.accent}30`,
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   fontSize: 20,
-                }}>☕</div>
+                }}>🎫</div>
 
                 {/* Info */}
                 <div style={{ flex: 1, minWidth: 0 }}>

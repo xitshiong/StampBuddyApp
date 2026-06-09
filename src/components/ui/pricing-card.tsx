@@ -330,7 +330,7 @@ export const PricingComponent: React.FC<PricingComponentProps> = ({
     { name: 'Customer Scan Analytics', values: ['Basic counter', 'Advanced Scan History & CSV', 'Advanced Scan History & CSV'] },
     { name: 'Card Color Themes', values: [true, true, true] },
     { name: 'Upload Logo & Banner', values: [false, true, true] },
-    { name: 'Co-op Cross-cafe Campaigns', values: [false, false, true] },
+    { name: 'Co-op Cross-store Campaigns', values: [false, false, true] },
     { name: 'Support Channels', values: ['Self-serve FAQ', 'Priority Email & Text', '1-on-1 Support & Setup'] },
   ];
 
@@ -495,7 +495,7 @@ export const PricingComponent: React.FC<PricingComponentProps> = ({
           letterSpacing: '-0.03em',
           color: 'var(--text-primary)',
         }}>
-          Simple, honest pricing for your cafe.
+          Simple, honest pricing for your business.
         </h2>
         <p style={{
           marginTop: 16,
@@ -538,7 +538,7 @@ const cafePlans: [PriceTier, PriceTier, PriceTier] = [
   {
     id: 'starter',
     name: 'Starter',
-    description: 'Perfect for independent local cafes and single-location shops.',
+    description: 'Perfect for independent local spots, services, and single-location shops.',
     priceMonthly: 59,
     priceAnnually: 49,
     isPopular: false,
@@ -580,7 +580,7 @@ const cafePlans: [PriceTier, PriceTier, PriceTier] = [
     features: [
       { name: 'Unlimited loyalty cards & terminals', isIncluded: true },
       { name: 'Unlimited stamps & scans', isIncluded: true },
-      { name: 'Cross-cafe community loyalty campaigns', isIncluded: true },
+      { name: 'Cross-store community loyalty campaigns', isIncluded: true },
       { name: 'Co-op branding & configuration configs', isIncluded: true },
       { name: '1-on-1 merchant training & setup help', isIncluded: true },
       { name: 'Dedicated Support Account Manager', isIncluded: true },
@@ -598,7 +598,7 @@ const ExampleComp = () => {
 
   const handlePlanSelect = (planId: string, currentCycle: BillingCycle) => {
     if (planId === 'pro') {
-      window.open('https://wa.me/601161665322?text=Hi%2C%20I%27m%20interested%20in%20StampBuddy%20for%20my%20cafe', '_blank');
+      window.open('https://wa.me/601161665322?text=Hi%2C%20I%27m%20interested%20in%20StampBuddy%20for%20my%20business', '_blank');
     } else {
       router.push('/auth');
     }

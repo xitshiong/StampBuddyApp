@@ -4,7 +4,7 @@ import { Toaster } from 'react-hot-toast'
 
 export const metadata: Metadata = {
   title: 'StampBuddy',
-  description: 'Digital loyalty wallet for your favourite cafes',
+  description: 'Digital loyalty wallet for your favourite local spots and services',
   manifest: '/manifest.json',
   appleWebApp: { capable: true, statusBarStyle: 'black-translucent', title: 'StampBuddy' },
 }

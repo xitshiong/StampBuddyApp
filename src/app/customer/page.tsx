@@ -230,12 +230,12 @@ function EmptyState() {
         border: '1px solid var(--border-soft)',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         fontSize: 40,
-      }}>☕</div>
+      }}>🎫</div>
       <h2 style={{ fontSize: 20, fontWeight: 700, letterSpacing: '-0.3px', marginBottom: 10 }}>
         No loyalty cards yet
       </h2>
       <p style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.6, maxWidth: 280, margin: '0 auto 24px' }}>
-        Scan a cafe's QR code to collect your first loyalty card and start earning stamps
+        Scan a business's QR code to collect your first loyalty card and start earning stamps
       </p>
 
       {/* Scan QR button in empty state */}
