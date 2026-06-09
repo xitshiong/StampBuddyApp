@@ -8,7 +8,7 @@ import { motion, useInView } from 'framer-motion'
 import { createClient } from '@/lib/supabase/client'
 import { useAppStore } from '@/store/app'
 import StampBuddyLogo from '@/components/ui/Logo'
-import { QrCode, Gift, Zap, ShieldCheck, ChevronDown, ArrowRight } from 'lucide-react'
+import { QrCode, ChevronDown, ArrowRight } from 'lucide-react'
 import PricingSection from '@/components/ui/pricing-card'
 
 const ease = [0.16, 1, 0.3, 1] as [number, number, number, number]
@@ -742,67 +742,7 @@ export default function HomePage() {
         </SectionReveal>
       </section>
 
-      {/* TRUST REASSURANCE */}
-      <section style={{
-        padding: '0 clamp(24px, 5vw, 64px) clamp(100px, 14vh, 140px)',
-        maxWidth: 1080, margin: '0 auto', textAlign: 'center',
-      }}>
-        <SectionReveal>
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-            gap: 24,
-            maxWidth: 800,
-            margin: '0 auto',
-          }}>
-            {[
-              { icon: <Zap size={24} />, label: 'No hardware', sub: 'Just your phone' },
-              { icon: <ShieldCheck size={24} />, label: "Can't be faked", sub: '60s expiry' },
-              { icon: <Gift size={24} />, label: 'Real rewards', sub: 'Not points' },
-            ].map(item => (
-              <div key={item.label} style={{
-                padding: '36px 24px',
-                borderRadius: 20,
-                background: 'var(--bg-surface)',
-                border: '1px solid var(--border)',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                gap: 14,
-              }}>
-                <div style={{
-                  width: 56,
-                  height: 56,
-                  borderRadius: 14,
-                  background: 'var(--accent-dim)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: 'var(--accent)',
-                }}>
-                  {item.icon}
-                </div>
-                <div>
-                  <p style={{
-                    fontSize: 17,
-                    fontWeight: 800,
-                    color: 'var(--text-primary)',
-                    marginBottom: 4,
-                  }}>
-                    {item.label}
-                  </p>
-                  <p style={{
-                    fontSize: 14,
-                    color: 'var(--text-muted)',
-                  }}>
-                    {item.sub}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </SectionReveal>
-      </section>
+
 
       {/* RULED DIVIDER */}
       <div style={{
