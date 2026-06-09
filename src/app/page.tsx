@@ -359,6 +359,14 @@ export default function HomePage() {
           97% { transform: translateY(-502%); }
           100% { transform: translateY(-500%); }
         }
+        .flow-step-card {
+          transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.4s, box-shadow 0.4s !important;
+        }
+        .flow-step-card:hover {
+          transform: translateY(-6px) !important;
+          border-color: var(--accent) !important;
+          box-shadow: 0 24px 48px oklch(0 0 0 / 0.8) !important;
+        }
       `}</style>
 
       {/* NAV */}
@@ -664,34 +672,58 @@ export default function HomePage() {
                   <div style={{
                     display: 'flex',
                     flexDirection: 'column',
-                    gap: 24,
+                    gap: 20,
                     width: 'min(90vw, 400px)',
                   }}>
                     {['Tap count', 'QR appears', 'Scan & done'].map((step, idx) => (
                       <div key={step} style={{
-                        padding: '32px 36px',
-                        borderRadius: 20,
+                        padding: '24px 28px',
+                        borderRadius: 18,
                         background: 'var(--bg-elevated)',
-                        border: '2px solid var(--border)',
-                        borderLeft: `6px solid var(--accent)`,
-                        boxShadow: '0 8px 24px oklch(0 0 0 / 0.4)',
-                        transform: `translateX(${idx * 12}px)`,
-                      }}>
+                        border: '1.5px solid var(--border-soft)',
+                        boxShadow: '0 12px 32px rgba(0,0,0,0.5)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 20,
+                      }}
+                      className="flow-step-card"
+                      >
                         <div style={{
-                          fontSize: 13,
-                          fontWeight: 800,
-                          letterSpacing: '0.12em',
+                          width: 44,
+                          height: 44,
+                          borderRadius: '50%',
+                          border: '1.5px solid var(--accent)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
                           color: 'var(--accent)',
-                          marginBottom: 12,
-                        }}>
-                          STEP {idx + 1}
-                        </div>
-                        <div style={{
-                          fontSize: 20,
+                          fontFamily: 'var(--font-sans)',
+                          fontSize: 16,
                           fontWeight: 800,
-                          color: 'var(--text-primary)',
+                          flexShrink: 0,
+                          background: 'var(--accent-dim)',
                         }}>
-                          {step}
+                          {idx + 1}
+                        </div>
+                        <div>
+                          <div style={{
+                            fontSize: 11,
+                            fontWeight: 800,
+                            letterSpacing: '0.08em',
+                            color: 'var(--text-muted)',
+                            textTransform: 'uppercase',
+                            marginBottom: 4,
+                          }}>
+                            Step {idx + 1}
+                          </div>
+                          <div style={{
+                            fontSize: 18,
+                            fontWeight: 800,
+                            color: 'var(--text-primary)',
+                            letterSpacing: '-0.3px',
+                          }}>
+                            {step}
+                          </div>
                         </div>
                       </div>
                     ))}
