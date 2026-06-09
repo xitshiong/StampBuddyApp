@@ -75,7 +75,7 @@ export const PricingComponent: React.FC<PricingComponentProps> = ({
   className,
   ...props
 }) => {
-  const annualDiscountPercent = 20;
+  const annualDiscountPercent = 17;
 
   // --- Toggle ---
   const CycleToggle = (
@@ -219,6 +219,15 @@ export const PricingComponent: React.FC<PricingComponentProps> = ({
 
             <div style={{ marginBottom: 32 }}>
               <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
+                <span style={{
+                  fontSize: 20,
+                  fontWeight: 900,
+                  color: 'var(--text-primary)',
+                  marginRight: 4,
+                  alignSelf: 'center',
+                }}>
+                  RM
+                </span>
                 <span className="num" style={{
                   fontSize: 52,
                   fontWeight: 900,
@@ -226,7 +235,7 @@ export const PricingComponent: React.FC<PricingComponentProps> = ({
                   letterSpacing: '-1.5px',
                   lineHeight: 1,
                 }}>
-                  ${displayPrice}
+                  {displayPrice}
                 </span>
                 <span style={{
                   fontSize: 15,
@@ -243,10 +252,26 @@ export const PricingComponent: React.FC<PricingComponentProps> = ({
                 fontWeight: 500,
               }}>
                 {billingCycle === 'annually' 
-                  ? `Billed annually ($${totalBilled}/yr)` 
+                  ? `Billed annually (RM ${totalBilled.toLocaleString()}/yr)` 
                   : "Billed monthly, cancel anytime"
                 }
               </p>
+              {billingCycle === 'annually' && (
+                <div style={{ marginTop: 8 }}>
+                  <span style={{
+                    fontSize: 11,
+                    fontWeight: 900,
+                    color: 'var(--accent)',
+                    background: 'oklch(0.76 0.14 78 / 0.12)',
+                    padding: '3px 10px',
+                    borderRadius: 12,
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.04em',
+                  }}>
+                    Save RM {((plan.priceMonthly - plan.priceAnnually) * 12).toLocaleString()}
+                  </span>
+                </div>
+              )}
             </div>
 
             <div style={{ flexGrow: 1, marginBottom: 32 }}>
@@ -484,8 +509,22 @@ export const PricingComponent: React.FC<PricingComponentProps> = ({
 
       {CycleToggle}
 
-      <section aria-labelledby="pricing-plans">
+      <section aria-labelledby="pricing-plans" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         {PricingCards}
+        <div style={{
+          textAlign: 'center',
+          marginTop: 40,
+          fontSize: 'clamp(13px, 1.8vw, 15px)',
+          fontWeight: 700,
+          color: 'var(--text-secondary)',
+          background: 'var(--bg-elevated)',
+          border: '1.5px solid var(--border-soft)',
+          padding: '12px 28px',
+          borderRadius: 30,
+          boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
+        }}>
+          7-day free trial on all plans. Cancel anytime. Setup takes under 2 minutes.
+        </div>
       </section>
 
       <section aria-label="Detailed Feature Comparison">
@@ -497,13 +536,13 @@ export const PricingComponent: React.FC<PricingComponentProps> = ({
 
 const cafePlans: [PriceTier, PriceTier, PriceTier] = [
   {
-    id: 'single',
-    name: 'Single Shop',
+    id: 'starter',
+    name: 'Starter',
     description: 'Perfect for independent local cafes and single-location shops.',
-    priceMonthly: 9,
-    priceAnnually: 7, // $7/mo billed annually ($84/yr)
+    priceMonthly: 59,
+    priceAnnually: 49,
     isPopular: false,
-    buttonLabel: 'Start free trial',
+    buttonLabel: 'Start free — no card needed',
     features: [
       { name: '1 active digital loyalty card', isIncluded: true },
       { name: '1 location terminal key', isIncluded: true },
@@ -514,11 +553,11 @@ const cafePlans: [PriceTier, PriceTier, PriceTier] = [
     ],
   },
   {
-    id: 'chain',
-    name: 'Local Chain',
+    id: 'growth',
+    name: 'Growth',
     description: 'For growing neighborhood brands with up to 5 locations.',
-    priceMonthly: 24,
-    priceAnnually: 19, // $19/mo billed annually ($228/yr)
+    priceMonthly: 119,
+    priceAnnually: 99,
     isPopular: true,
     buttonLabel: 'Start free trial',
     features: [
@@ -531,13 +570,13 @@ const cafePlans: [PriceTier, PriceTier, PriceTier] = [
     ],
   },
   {
-    id: 'coop',
-    name: 'Neighborhood Co-op',
+    id: 'pro',
+    name: 'Pro',
     description: 'For merchant associations or local business networks.',
-    priceMonthly: 49,
-    priceAnnually: 39, // $39/mo billed annually ($468/yr)
+    priceMonthly: 229,
+    priceAnnually: 189,
     isPopular: false,
-    buttonLabel: 'Start free trial',
+    buttonLabel: 'Talk to us',
     features: [
       { name: 'Unlimited loyalty cards & terminals', isIncluded: true },
       { name: 'Unlimited stamps & scans', isIncluded: true },
@@ -558,7 +597,11 @@ const ExampleComp = () => {
   };
 
   const handlePlanSelect = (planId: string, currentCycle: BillingCycle) => {
-    router.push('/auth');
+    if (planId === 'pro') {
+      window.open('https://wa.me/601161665322?text=Hi%2C%20I%27m%20interested%20in%20StampBuddy%20for%20my%20cafe', '_blank');
+    } else {
+      router.push('/auth');
+    }
   };
 
   return (

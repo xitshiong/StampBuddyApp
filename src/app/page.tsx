@@ -24,8 +24,8 @@ const EDITORIAL_FEATURES = [
   {
     num: '02',
     kicker: 'For merchants',
-    title: 'Zero hardware cost',
-    body: 'Your phone is the terminal. Generate one-time QR codes in two seconds. No printer, no monthly fees, no POS integration. Impossible to fake.',
+    title: 'Turn one-time visitors into regulars',
+    body: "Customers who collect stamps come back to complete their card. StampBuddy runs entirely from your phone — no hardware, no POS integration, no IT setup. You're live in under 2 minutes.",
     visual: 'qr'
   },
   {
@@ -367,6 +367,24 @@ export default function HomePage() {
           border-color: var(--accent) !important;
           box-shadow: 0 24px 48px oklch(0 0 0 / 0.8) !important;
         }
+        .merchant-hero-grid {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 40px;
+        }
+        @media(min-width:1024px){
+          .merchant-hero-grid {
+            grid-template-columns: 1.2fr 1fr !important;
+            gap: 64px !important;
+          }
+        }
+        .whatsapp-btn:hover {
+          transform: translateY(-4px) scale(1.03);
+          box-shadow: 0 12px 36px rgba(37, 211, 102, 0.5) !important;
+        }
+        .whatsapp-btn:active {
+          transform: translateY(0) scale(1);
+        }
       `}</style>
 
       {/* NAV */}
@@ -475,6 +493,130 @@ export default function HomePage() {
             <CardStack />
           </motion.div>
         </div>
+      </section>
+
+      {/* MERCHANT HERO CALLOUT */}
+      <section style={{
+        padding: '20px clamp(24px, 5vw, 80px) 40px',
+        maxWidth: 1440,
+        margin: '0 auto',
+      }}>
+        <SectionReveal>
+          <div style={{
+            background: 'linear-gradient(135deg, var(--bg-surface) 0%, rgba(26,18,12,0.85) 100%)',
+            border: '1px solid var(--border-soft)',
+            borderRadius: 28,
+            padding: 'clamp(40px, 6vw, 72px) clamp(24px, 5vw, 64px)',
+            display: 'grid',
+            boxShadow: '0 24px 64px rgba(0,0,0,0.6)',
+            position: 'relative',
+            overflow: 'hidden',
+          }} className="merchant-hero-grid">
+            {/* Ambient gold glow in corner */}
+            <div style={{
+              position: 'absolute',
+              top: '-50%',
+              right: '-20%',
+              width: '60%',
+              aspectRatio: '1',
+              borderRadius: '50%',
+              background: 'radial-gradient(circle, oklch(0.76 0.14 78 / 0.08) 0%, transparent 70%)',
+              pointerEvents: 'none',
+            }} />
+            
+            <div style={{ maxWidth: 680 }}>
+              <div style={{
+                fontSize: 12, fontWeight: 900, letterSpacing: '0.14em',
+                textTransform: 'uppercase', color: 'var(--accent)', marginBottom: 16
+              }}>
+                For Business Owners
+              </div>
+              <h2 style={{
+                fontSize: 'clamp(2.25rem, 5vw, 3.5rem)',
+                fontWeight: 900,
+                lineHeight: 1.05,
+                letterSpacing: '-0.04em',
+                color: 'var(--text-primary)',
+                marginBottom: 20,
+              }}>
+                Bring customers back.<br />Without the paper.
+              </h2>
+            </div>
+            
+            <div style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 28,
+              justifyContent: 'center',
+              alignItems: 'flex-start',
+            }}>
+              <p style={{
+                fontSize: 'clamp(15px, 2.2vw, 17px)',
+                color: 'var(--text-secondary)',
+                lineHeight: 1.6,
+                margin: 0,
+                fontWeight: 500,
+              }}>
+                Set up a digital loyalty card for your cafe in under 2 minutes. No hardware. No app for your customers to download. No monthly contract to start.
+              </p>
+              
+              <button className="btn-primary" onClick={() => router.push('/auth')}>
+                Get started free
+                <ArrowRight size={18} />
+              </button>
+            </div>
+          </div>
+        </SectionReveal>
+      </section>
+
+      {/* SOCIAL PROOF STRIP */}
+      <section style={{
+        padding: '0 clamp(24px, 5vw, 80px) 80px',
+        textAlign: 'center',
+      }}>
+        <SectionReveal>
+          <div style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: 24,
+          }}>
+            <p style={{
+              fontSize: 12,
+              fontWeight: 800,
+              letterSpacing: '0.12em',
+              textTransform: 'uppercase',
+              color: 'var(--text-muted)',
+              margin: 0,
+            }}>
+              Trusted by cafes in Subang Jaya & KL
+            </p>
+            <div style={{
+              display: 'flex',
+              flexWrap: 'wrap',
+              justifyContent: 'center',
+              alignItems: 'center',
+              gap: 'clamp(24px, 5vw, 48px)',
+              opacity: 0.5,
+              padding: '8px 0',
+            }}>
+              {['Roast & Co.', 'Kopi & Co.', 'Subang Coffee Co.', 'The Brew Bar', 'Merchant’s Cup'].map((cafe) => (
+                <div key={cafe} style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 8,
+                  fontSize: 15,
+                  fontWeight: 900,
+                  color: 'var(--text-primary)',
+                  letterSpacing: '-0.3px',
+                }}>
+                  <span style={{ fontSize: 16 }}>☕</span>
+                  <span>{cafe}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </SectionReveal>
       </section>
 
       {/* RULED DIVIDER */}
@@ -810,6 +952,43 @@ export default function HomePage() {
           </p>
         </div>
       </footer>
+
+      {/* FLOATING WHATSAPP BUTTON */}
+      <a
+        href="https://wa.me/601161665322?text=Hi%2C%20I%27m%20interested%20in%20StampBuddy%20for%20my%20cafe"
+        target="_blank"
+        rel="noopener noreferrer"
+        style={{
+          position: 'fixed',
+          bottom: 24,
+          right: 24,
+          zIndex: 9999,
+          background: '#25D366',
+          color: '#ffffff',
+          borderRadius: 50,
+          padding: '12px 20px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 8,
+          boxShadow: '0 8px 32px rgba(37, 211, 102, 0.35)',
+          textDecoration: 'none',
+          fontWeight: 800,
+          fontSize: 14,
+          fontFamily: 'var(--font-sans)',
+          transition: 'transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s',
+        }}
+        className="whatsapp-btn"
+      >
+        <svg
+          viewBox="0 0 24 24"
+          width="20"
+          height="20"
+          fill="currentColor"
+        >
+          <path d="M12.012 2c-5.506 0-9.989 4.478-9.99 9.984a9.96 9.96 0 0 0 1.371 5.028L2 22l5.132-1.347a9.926 9.926 0 0 0 4.877 1.277h.005c5.505 0 9.989-4.478 9.99-9.985A9.98 9.98 0 0 0 12.012 2zm5.72 14.158c-.313.88-1.528 1.575-2.114 1.637-.585.062-1.17.292-3.76-.732-3.116-1.234-5.123-4.385-5.278-4.594-.156-.208-1.252-1.664-1.252-3.175 0-1.512.793-2.254 1.074-2.553.282-.3.616-.375.82-.375H8.05c.156 0 .375.059.57.531.2.477.676 1.652.735 1.77.06.12.1.259.02.419-.08.16-.12.259-.24.399-.12.14-.25.312-.357.419-.12.12-.245.25-.105.49.14.239.62 1.02 1.332 1.652.915.814 1.685 1.067 1.923 1.186.24.119.378.1.517-.06.14-.16.6-1.042.756-1.252.156-.21.312-.179.528-.1.216.08 1.37.646 1.606.76.236.12.393.18.45.28.058.1.058.58-.255 1.46z" />
+        </svg>
+        <span>Chat on WhatsApp</span>
+      </a>
     </div>
   )
 }
