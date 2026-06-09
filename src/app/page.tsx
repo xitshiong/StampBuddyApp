@@ -9,6 +9,7 @@ import { createClient } from '@/lib/supabase/client'
 import { useAppStore } from '@/store/app'
 import StampBuddyLogo from '@/components/ui/Logo'
 import { QrCode, Gift, Zap, ShieldCheck, ChevronDown, ArrowRight } from 'lucide-react'
+import PricingSection from '@/components/ui/pricing-card'
 
 const ease = [0.16, 1, 0.3, 1] as [number, number, number, number]
 
@@ -447,11 +448,13 @@ export default function HomePage() {
               className="cta-row"
             >
               <button className="btn-primary" onClick={() => router.push('/auth')}>
-                Get started free
+                Start 14-day free trial
                 <ArrowRight size={18} />
               </button>
-              <button className="btn-secondary" onClick={() => router.push('/auth')}>
-                I run a cafe
+              <button className="btn-secondary" onClick={() => {
+                document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' });
+              }}>
+                View pricing
               </button>
             </motion.div>
           </div>
@@ -701,39 +704,25 @@ export default function HomePage() {
         </section>
       ))}
 
-      {/* TRUST / CTA */}
+      {/* PRICING PLANS */}
+      <section id="pricing" style={{ position: 'relative' }}>
+        <SectionReveal>
+          <PricingSection />
+        </SectionReveal>
+      </section>
+
+      {/* TRUST REASSURANCE */}
       <section style={{
-        padding: 'clamp(100px, 14vh, 140px) clamp(24px, 5vw, 64px)',
+        padding: '0 clamp(24px, 5vw, 64px) clamp(100px, 14vh, 140px)',
         maxWidth: 1080, margin: '0 auto', textAlign: 'center',
       }}>
         <SectionReveal>
-          <div className="ruled-divider" style={{ marginBottom: 32 }} />
-          <h2 style={{
-            fontSize: 'clamp(2.25rem, 6.5vw, 4rem)',
-            fontWeight: 900,
-            lineHeight: 1,
-            letterSpacing: '-0.03em',
-            color: 'var(--text-primary)',
-            marginBottom: 24,
-          }}>
-            Free for everyone.<br />Always.
-          </h2>
-          <p style={{
-            fontSize: 18,
-            color: 'var(--text-secondary)',
-            maxWidth: '44ch',
-            margin: '0 auto 64px',
-            lineHeight: 1.7,
-          }}>
-            No plans. No upsells. No credit card. StampBuddy is free for customers and merchants alike.
-          </p>
-
           <div style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
             gap: 24,
             maxWidth: 800,
-            margin: '0 auto 64px',
+            margin: '0 auto',
           }}>
             {[
               { icon: <Zap size={24} />, label: 'No hardware', sub: 'Just your phone' },
@@ -781,13 +770,6 @@ export default function HomePage() {
               </div>
             ))}
           </div>
-
-          <button className="btn-primary" onClick={() => router.push('/auth')} style={{
-            fontSize: 17,
-            padding: '1.1em 3em',
-          }}>
-            Get started free
-          </button>
         </SectionReveal>
       </section>
 
@@ -824,7 +806,8 @@ export default function HomePage() {
             <FaqRow q="What if the QR expires before the customer scans?" a="The merchant taps a button to generate a fresh one. Takes one second." />
             <FaqRow q="Can one customer follow multiple cafes?" a="Yes. Each cafe gets its own loyalty card in the customer's wallet." />
             <FaqRow q="Is there a limit on how many stamps a card can hold?" a="Merchants set this when creating their business, anywhere from 1 to 20 stamps per card." />
-            <FaqRow q="How much does it cost?" a="Free for customers. Free for merchants. No plans, no upsells." />
+            <FaqRow q="Is StampBuddy free for customers?" a="Yes, completely free. Customers can follow as many cafes as they like, collect stamps, and redeem rewards without ever paying." />
+            <FaqRow q="How does the 14-day free trial work for merchants?" a="Merchants get full access to all features of their selected plan for 14 days without entering a credit card. At the end of the trial, choose the plan that best fits your business." />
           </div>
         </SectionReveal>
       </section>
@@ -845,9 +828,16 @@ export default function HomePage() {
             Made for neighbourhood cafes
           </span>
         </div>
-        <p style={{ fontSize: 14, color: 'var(--text-muted)' }}>
-          Free for customers and merchants
-        </p>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6 }}>
+          <p style={{ fontSize: 14, color: 'var(--text-muted)' }}>
+            Free for customers • Paid plans for merchants
+          </p>
+          <p style={{ fontSize: 12, color: 'var(--text-muted)', fontWeight: 500 }}>
+            <a href="/terms" style={{ color: 'inherit', textDecoration: 'underline' }}>Terms of Service</a>
+            {" • "}
+            <a href="/privacy" style={{ color: 'inherit', textDecoration: 'underline' }}>Privacy Policy</a>
+          </p>
+        </div>
       </footer>
     </div>
   )

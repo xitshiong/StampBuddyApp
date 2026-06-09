@@ -1,3 +1,6 @@
+import { clsx, type ClassValue } from "clsx"
+import { twMerge } from "tailwind-merge"
+
 export const CARD_COLORS = [
   { bg: 'oklch(0.26 0.08 55)',  accent: 'oklch(0.76 0.14 78)'  },  // Amber
   { bg: 'oklch(0.24 0.07 15)',  accent: 'oklch(0.70 0.17 15)'  },  // Rose
@@ -16,4 +19,8 @@ export function getCardColor(hex: string) {
     '#06b6d4': CARD_COLORS[5],  // Cyan
   }
   return map[hex] ?? CARD_COLORS[0]
+}
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs))
 }
