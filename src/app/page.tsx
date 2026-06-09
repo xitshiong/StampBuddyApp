@@ -385,6 +385,12 @@ export default function HomePage() {
         .whatsapp-btn:active {
           transform: translateY(0) scale(1);
         }
+        .nav-link {
+          transition: color 0.2s;
+        }
+        .nav-link:hover {
+          color: var(--accent) !important;
+        }
       `}</style>
 
       {/* NAV */}
@@ -397,9 +403,27 @@ export default function HomePage() {
         background: 'oklch(0.09 0.012 55 / 0.92)',
       }}>
         <StampBuddyLogo size={32} />
-        <button className="btn-primary" onClick={() => router.push('/auth')} style={{ padding: '0.7em 1.8em', fontSize: 14, minHeight: 44 }}>
-          Get started
-        </button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
+          <a
+            href="#pricing"
+            onClick={(e) => {
+              e.preventDefault();
+              document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' });
+            }}
+            style={{
+              fontSize: 14,
+              fontWeight: 700,
+              color: 'var(--text-secondary)',
+              textDecoration: 'none',
+            }}
+            className="nav-link"
+          >
+            For merchants
+          </a>
+          <button className="btn-primary" onClick={() => router.push('/auth')} style={{ padding: '0.7em 1.8em', fontSize: 14, minHeight: 44 }}>
+            Get started
+          </button>
+        </div>
       </nav>
 
       {/* HERO */}
@@ -471,17 +495,28 @@ export default function HomePage() {
             <motion.div
               initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.3, ease }}
-              className="cta-row"
+              style={{ display: 'flex', flexDirection: 'column', gap: 16 }}
             >
-              <button className="btn-primary" onClick={() => router.push('/auth')}>
-                Start 7-day free trial
-                <ArrowRight size={18} />
-              </button>
-              <button className="btn-secondary" onClick={() => {
-                document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' });
+              <div className="cta-row">
+                <button className="btn-primary" onClick={() => router.push('/auth')}>
+                  Start 7-day free trial
+                  <ArrowRight size={18} />
+                </button>
+                <button className="btn-secondary" onClick={() => {
+                  document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' });
+                }}>
+                  View pricing
+                </button>
+              </div>
+              <p style={{
+                fontSize: 13,
+                color: 'var(--text-muted)',
+                margin: '4px 0 0 4px',
+                fontWeight: 500,
+                letterSpacing: '-0.1px',
               }}>
-                View pricing
-              </button>
+                7-day free trial • No credit card required • Set up in under 2 minutes
+              </p>
             </motion.div>
           </div>
 
@@ -560,10 +595,21 @@ export default function HomePage() {
                 Set up a digital loyalty card for your cafe in under 2 minutes. No hardware. No app for your customers to download. No monthly contract to start.
               </p>
               
-              <button className="btn-primary" onClick={() => router.push('/auth')}>
-                Get started free
-                <ArrowRight size={18} />
-              </button>
+              <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', alignItems: 'center' }}>
+                <button className="btn-primary" onClick={() => router.push('/auth')}>
+                  Get started free
+                  <ArrowRight size={18} />
+                </button>
+                <a
+                  href="https://wa.me/601161665322?text=Hi%2C%20I%27m%20interested%20in%20StampBuddy%20for%20my%20cafe"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn-secondary"
+                  style={{ textDecoration: 'none' }}
+                >
+                  Ask a question
+                </a>
+              </div>
             </div>
           </div>
         </SectionReveal>
@@ -921,6 +967,72 @@ export default function HomePage() {
             <FaqRow q="Is there a limit on how many stamps a card can hold?" a="Merchants set this when creating their business, anywhere from 1 to 20 stamps per card." />
             <FaqRow q="Is StampBuddy free for customers?" a="Yes, completely free. Customers can follow as many cafes as they like, collect stamps, and redeem rewards without ever paying." />
             <FaqRow q="How does the 7-day free trial work for merchants?" a="Merchants get full access to all features of their selected plan for 7 days without entering a credit card. At the end of the trial, choose the plan that best fits your business." />
+          </div>
+        </SectionReveal>
+      </section>
+
+      {/* CLOSING CTA */}
+      <section style={{
+        padding: 'clamp(80px, 12vh, 120px) clamp(24px, 5vw, 80px)',
+        textAlign: 'center',
+        background: 'linear-gradient(180deg, transparent, rgba(26,18,12,0.4))',
+        borderTop: '1px solid var(--border-soft)',
+        maxWidth: 1440,
+        margin: '0 auto',
+      }}>
+        <SectionReveal>
+          <div style={{
+            maxWidth: 640,
+            margin: '0 auto',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: 32,
+          }}>
+            <h2 style={{
+              fontSize: 'clamp(2.25rem, 6vw, 3.5rem)',
+              fontWeight: 900,
+              lineHeight: 1.05,
+              letterSpacing: '-0.04em',
+              color: 'var(--text-primary)',
+              margin: 0,
+            }}>
+              Ready to grow your regular customer base?
+            </h2>
+            <p style={{
+              fontSize: 'clamp(15px, 2vw, 17px)',
+              color: 'var(--text-secondary)',
+              lineHeight: 1.6,
+              margin: 0,
+              maxWidth: 480,
+            }}>
+              Get started now and put your digital loyalty card in your customers' hands today.
+            </p>
+            
+            <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', justifyContent: 'center', alignItems: 'center' }}>
+              <button className="btn-primary" onClick={() => router.push('/auth')}>
+                Start 7-day free trial
+                <ArrowRight size={18} />
+              </button>
+              <a
+                href="https://wa.me/601161665322?text=Hi%2C%20I%27m%20interested%20in%20StampBuddy%20for%20my%20cafe"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-secondary"
+                style={{ textDecoration: 'none' }}
+              >
+                Chat with us
+              </a>
+            </div>
+            
+            <p style={{
+              fontSize: 13,
+              color: 'var(--text-muted)',
+              margin: 0,
+              fontWeight: 500,
+            }}>
+              7-day free trial • Cancel anytime • Setup takes under 2 minutes
+            </p>
           </div>
         </SectionReveal>
       </section>
