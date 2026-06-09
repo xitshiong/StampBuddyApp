@@ -615,55 +615,7 @@ export default function HomePage() {
         </SectionReveal>
       </section>
 
-      {/* SOCIAL PROOF STRIP */}
-      <section style={{
-        padding: '0 clamp(24px, 5vw, 80px) 80px',
-        textAlign: 'center',
-      }}>
-        <SectionReveal>
-          <div style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            gap: 24,
-          }}>
-            <p style={{
-              fontSize: 12,
-              fontWeight: 800,
-              letterSpacing: '0.12em',
-              textTransform: 'uppercase',
-              color: 'var(--text-muted)',
-              margin: 0,
-            }}>
-              Trusted by local spots in Subang Jaya & KL
-            </p>
-            <div style={{
-              display: 'flex',
-              flexWrap: 'wrap',
-              justifyContent: 'center',
-              alignItems: 'center',
-              gap: 'clamp(24px, 5vw, 48px)',
-              opacity: 0.5,
-              padding: '8px 0',
-            }}>
-              {['Roast & Co.', 'Court Side Pickleball', 'Subang Barbershop', 'The Wellness Spa', 'Merchant’s Cup'].map((biz) => (
-                <div key={biz} style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 8,
-                  fontSize: 15,
-                  fontWeight: 900,
-                  color: 'var(--text-primary)',
-                  letterSpacing: '-0.3px',
-                }}>
-                  <span style={{ fontSize: 16 }}>✨</span>
-                  <span>{biz}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </SectionReveal>
-      </section>
+
 
       {/* RULED DIVIDER */}
       <div style={{
