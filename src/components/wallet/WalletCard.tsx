@@ -1,10 +1,8 @@
 'use client'
 
-import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import type { LoyaltyCardWithBusiness } from '@/types/database'
 import StampGrid from './StampGrid'
-import QRScanner from './QRScanner'
 import VoucherCard from './VoucherCard'
 
 interface Props {
@@ -39,7 +37,6 @@ export default function WalletCard({
   card, isActive, isExpanded, isAnotherExpanded, isLifting, stackIndex, 
   onPointerDown, onPointerUp, onTap, onStampsUpdated, preview = false,
 }: Props) {
-  const [showScanner, setShowScanner] = useState(false)
   const { businesses: biz } = card
   
   const isComplete = card.current_stamps >= biz.max_stamps
@@ -253,18 +250,17 @@ export default function WalletCard({
                   ) : isComplete ? (
                     <VoucherCard card={card} onRedeemed={(newStamps) => { onStampsUpdated(card.id, newStamps ?? 0); onTap() }} />
                   ) : (
-                    <button
-                      onClick={e => { e.stopPropagation(); setShowScanner(true) }}
-                      style={{
-                        width: '100%', padding: '18px', borderRadius: 14, border: 'none',
-                        background: 'var(--card-accent)', color: '#fff',
-                        fontWeight: 700, fontSize: 16, cursor: 'pointer',
-                        boxShadow: '0 8px 24px var(--shadow-mid)',
-                        letterSpacing: '0.01em',
-                      }}
-                    >
-                      Scan QR to Stamp
-                    </button>
+                    <p style={{
+                      margin: 0,
+                      textAlign: 'center',
+                      fontSize: 13,
+                      fontWeight: 600,
+                      color: 'var(--card-text-clr)',
+                      opacity: 0.8,
+                      lineHeight: 1.5,
+                    }}>
+                      {stampsLeft} more stamp{stampsLeft !== 1 ? 's' : ''} until {biz.voucher_reward}
+                    </p>
                   )}
                 </div>
                 </motion.div>
@@ -273,19 +269,6 @@ export default function WalletCard({
           </div>
         </div>
       </motion.div>
-
-      <AnimatePresence>
-        {showScanner && (
-          <QRScanner
-            card={card}
-            onClose={() => setShowScanner(false)}
-            onSuccess={newStamps => {
-              onStampsUpdated(card.id, newStamps ?? card.current_stamps)
-              setShowScanner(false)
-            }}
-          />
-        )}
-      </AnimatePresence>
     </>
   )
 }

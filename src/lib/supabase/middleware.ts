@@ -25,12 +25,12 @@ export async function updateSession(request: NextRequest) {
 
   const { pathname } = request.nextUrl
 
-  const publicPaths = ['/', '/auth', '/auth/callback', '/auth/role', '/merchant/onboarding', '/terms', '/privacy']
+  const publicPaths = ['/', '/auth', '/join', '/auth/callback', '/auth/role', '/merchant/onboarding', '/terms', '/privacy']
   const isPublic = publicPaths.some(p => pathname === p || pathname.startsWith(p + '/'))
 
   if (!user && !isPublic) {
     const url = request.nextUrl.clone()
-    url.pathname = '/auth'
+    url.pathname = pathname.startsWith('/customer') ? '/join' : '/auth'
     const redirectResponse = NextResponse.redirect(url)
     supabaseResponse.cookies.getAll().forEach((cookie) => {
       redirectResponse.cookies.set(cookie.name, cookie.value, cookie)
@@ -38,7 +38,7 @@ export async function updateSession(request: NextRequest) {
     return redirectResponse
   }
 
-  if (user && pathname === '/auth') {
+  if (user && (pathname === '/auth' || pathname === '/join')) {
     const url = request.nextUrl.clone()
     url.pathname = '/'
     const redirectResponse = NextResponse.redirect(url)

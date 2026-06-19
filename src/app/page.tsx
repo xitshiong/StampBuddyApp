@@ -873,7 +873,7 @@ export default function HomePage() {
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6 }}>
           <p style={{ fontSize: 14, color: 'var(--text-muted)' }}>
             Loyalty software for merchants ·{' '}
-            <a href="/auth?intent=customer" style={{ color: 'inherit', textDecoration: 'underline' }}>
+            <a href="/join" style={{ color: 'inherit', textDecoration: 'underline' }}>
               Free for customers
             </a>
           </p>

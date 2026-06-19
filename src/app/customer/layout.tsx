@@ -2,10 +2,11 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Wallet, Compass } from 'lucide-react'
+import { QrCode, Wallet, Compass } from 'lucide-react'
 
 const tabs = [
-  { href: '/customer',        label: 'Wallet',  Icon: Wallet   },
+  { href: '/customer',        label: 'Scan',    Icon: QrCode   },
+  { href: '/customer/wallet', label: 'Wallet',  Icon: Wallet   },
   { href: '/customer/search', label: 'Explore', Icon: Compass  },
 ]
 
@@ -28,7 +29,7 @@ export default function CustomerLayout({ children }: { children: React.ReactNode
         paddingBottom: 'env(safe-area-inset-bottom, 0px)',
       }}>
         {tabs.map(({ href, label, Icon }) => {
-          const active = pathname === href
+          const active = pathname === href || (href === '/customer/wallet' && pathname.startsWith('/customer/wallet'))
           return (
             <Link key={href} href={href} style={{
               flex: 1, display: 'flex', flexDirection: 'column',

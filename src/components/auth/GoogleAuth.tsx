@@ -1,32 +1,27 @@
 'use client'
 
-import { useEffect } from 'react'
-import Link from 'next/link'
-import { useSearchParams } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { createClient } from '@/lib/supabase/client'
 import toast from 'react-hot-toast'
 import StampBuddyLogo from '@/components/ui/Logo'
-import { isAuthIntent, setAuthIntentCookie, type AuthIntent } from '@/lib/auth-intent'
+import { setAuthIntentCookie, type AuthIntent } from '@/lib/auth-intent'
+import { getAppOrigin } from '@/lib/app-url'
+import { Store, ScanLine } from 'lucide-react'
 
 const ease = [0.16, 1, 0.3, 1] as [number, number, number, number]
 
-export default function GoogleAuth() {
-  const searchParams = useSearchParams()
-  const intentParam = searchParams.get('intent')
-  const intent: AuthIntent = isAuthIntent(intentParam) ? intentParam : 'merchant'
-  const isMerchant = intent === 'merchant'
+interface Props {
+  variant: 'merchant' | 'customer'
+}
 
-  useEffect(() => {
-    if (isAuthIntent(intentParam)) {
-      setAuthIntentCookie(intentParam)
-    }
-  }, [intentParam])
+export default function GoogleAuth({ variant }: Props) {
+  const isMerchant = variant === 'merchant'
+  const intent: AuthIntent = isMerchant ? 'merchant' : 'customer'
 
   async function signInWithGoogle() {
     setAuthIntentCookie(intent)
     const supabase = createClient()
-    const redirectUrl = `${window.location.origin}/auth/callback`
+    const redirectUrl = `${getAppOrigin()}/auth/callback`
 
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
@@ -54,7 +49,7 @@ export default function GoogleAuth() {
         transition={{ duration: 0.6, ease }}
         style={{ width: '100%', maxWidth: 420, position: 'relative' }}
       >
-        <div style={{ textAlign: 'center', marginBottom: 40 }}>
+        <div style={{ textAlign: 'center', marginBottom: 32 }}>
           <motion.div
             initial={{ scale: 0.7, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
@@ -78,9 +73,8 @@ export default function GoogleAuth() {
             letterSpacing: '-0.03em',
             marginBottom: 8,
             lineHeight: 1,
-            textShadow: '0 2px 16px oklch(0 0 0 / 0.3)',
           }}>
-            {isMerchant ? 'Start your free trial' : 'Welcome back'}
+            {isMerchant ? 'Start your free trial' : 'Collect stamps'}
           </h1>
           <p style={{
             fontSize: 15,
@@ -90,66 +84,67 @@ export default function GoogleAuth() {
             margin: '0 auto',
           }}>
             {isMerchant
-              ? 'Sign in with Google to set up your business loyalty program. Live in under 2 minutes.'
-              : 'Sign in to collect stamps and redeem rewards at your favourite spots.'}
+              ? 'Sign in with Google to set up your business loyalty program.'
+              : 'Sign in with Google to scan merchant QRs and collect rewards.'}
           </p>
         </div>
 
         <motion.button
+          type="button"
           onClick={signInWithGoogle}
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2, duration: 0.4, ease }}
           whileTap={{ scale: 0.98 }}
           style={{
-            width: '100%', padding: '16px 24px', borderRadius: 60,
-            background: 'oklch(0.97 0.004 65)',
-            border: '2px solid oklch(0.88 0.012 65)',
+            width: '100%',
+            padding: '16px 18px',
+            borderRadius: 18,
+            background: 'var(--bg-elevated)',
+            border: '2px solid var(--accent)',
             cursor: 'pointer',
-            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 14,
-            fontSize: 15, fontWeight: 700,
-            color: 'oklch(0.15 0.02 55)',
-            letterSpacing: '0.01em',
-            boxShadow: '0 4px 20px oklch(0 0 0 / 0.2)',
-            transition: 'transform 0.2s, box-shadow 0.2s',
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.transform = 'translateY(-2px)'
-            e.currentTarget.style.boxShadow = '0 8px 28px oklch(0 0 0 / 0.25)'
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.transform = 'translateY(0)'
-            e.currentTarget.style.boxShadow = '0 4px 20px oklch(0 0 0 / 0.2)'
+            textAlign: 'left',
+            boxShadow: '0 8px 24px var(--accent-dim)',
           }}
         >
-          <GoogleIcon />
-          Continue with Google
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 14 }}>
+            <div style={{
+              width: 40,
+              height: 40,
+              borderRadius: 12,
+              background: 'var(--accent-dim)',
+              border: '1px solid var(--border-soft)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: 'var(--accent)',
+              flexShrink: 0,
+            }}>
+              {isMerchant ? <Store size={20} strokeWidth={2.2} /> : <ScanLine size={20} strokeWidth={2.2} />}
+            </div>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                gap: 10,
+                marginBottom: 4,
+              }}>
+                <span style={{ fontSize: 16, fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-0.02em' }}>
+                  Continue with Google
+                </span>
+                <GoogleIcon />
+              </div>
+              <p style={{ fontSize: 13, color: 'var(--text-secondary)', margin: 0, lineHeight: 1.45 }}>
+                {isMerchant ? 'For business owners' : 'For customers collecting stamps'}
+              </p>
+            </div>
+          </div>
         </motion.button>
 
         <p style={{
-          fontSize: 13, color: 'var(--text-secondary)', textAlign: 'center',
-          marginTop: 24, lineHeight: 1.6,
-        }}>
-          {isMerchant ? (
-            <>
-              Collecting stamps?{' '}
-              <Link href="/auth?intent=customer" style={{ color: 'var(--accent)', fontWeight: 700 }}>
-                Sign in as a customer
-              </Link>
-            </>
-          ) : (
-            <>
-              Running a business?{' '}
-              <Link href="/auth?intent=merchant" style={{ color: 'var(--accent)', fontWeight: 700 }}>
-                Start your free trial
-              </Link>
-            </>
-          )}
-        </p>
-
-        <p style={{
           fontSize: 12, color: 'var(--text-muted)', textAlign: 'center',
-          marginTop: 16, lineHeight: 1.6,
+          marginTop: 24, lineHeight: 1.6,
         }}>
           By continuing you agree to our terms of service and privacy policy.
         </p>

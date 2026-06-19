@@ -231,7 +231,7 @@ function RolePageInner() {
           lineHeight: 1.6,
         }}>
           Collecting stamps?{' '}
-          <Link href="/auth?intent=customer" style={{ color: 'var(--accent)', fontWeight: 700, textDecoration: 'underline' }}>
+          <Link href="/join" style={{ color: 'var(--accent)', fontWeight: 700, textDecoration: 'underline' }}>
             Continue as a customer
           </Link>
         </p>
