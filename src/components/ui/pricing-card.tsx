@@ -50,7 +50,7 @@ const FeatureItem: React.FC<{ feature: Feature }> = ({ feature }) => {
           justifyContent: 'center',
           flexShrink: 0,
           marginTop: 2,
-          background: feature.isIncluded ? 'oklch(0.76 0.14 78 / 0.15)' : 'rgba(255,255,255,0.05)',
+          background: feature.isIncluded ? 'var(--accent-dim)' : 'var(--bg-surface)',
           color: feature.isIncluded ? 'var(--accent)' : 'var(--text-muted)',
         }}
       >
@@ -87,7 +87,7 @@ export const PricingComponent: React.FC<PricingComponentProps> = ({
         padding: 6,
         display: 'flex',
         gap: 6,
-        boxShadow: 'inset 0 2px 8px rgba(0,0,0,0.4)'
+        boxShadow: 'inset 0 2px 8px var(--shadow-soft)'
       }}>
         <button
           onClick={() => onCycleChange('monthly')}
@@ -101,7 +101,7 @@ export const PricingComponent: React.FC<PricingComponentProps> = ({
             transition: 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
             background: billingCycle === 'monthly' ? 'var(--accent)' : 'transparent',
             color: billingCycle === 'monthly' ? 'var(--accent-text)' : 'var(--text-secondary)',
-            boxShadow: billingCycle === 'monthly' ? '0 4px 12px oklch(0.76 0.14 78 / 0.25)' : 'none',
+            boxShadow: billingCycle === 'monthly' ? '0 4px 12px var(--accent-dim)' : 'none',
           }}
           className="toggle-btn"
         >
@@ -120,7 +120,7 @@ export const PricingComponent: React.FC<PricingComponentProps> = ({
             position: 'relative',
             background: billingCycle === 'annually' ? 'var(--accent)' : 'transparent',
             color: billingCycle === 'annually' ? 'var(--accent-text)' : 'var(--text-secondary)',
-            boxShadow: billingCycle === 'annually' ? '0 4px 12px oklch(0.76 0.14 78 / 0.25)' : 'none',
+            boxShadow: billingCycle === 'annually' ? '0 4px 12px var(--accent-dim)' : 'none',
           }}
           className="toggle-btn"
         >
@@ -139,7 +139,7 @@ export const PricingComponent: React.FC<PricingComponentProps> = ({
             padding: '2px 8px',
             borderRadius: 20,
             whiteSpace: 'nowrap',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.3)'
+            boxShadow: '0 2px 8px var(--shadow-soft)'
           }}>
             Save {annualDiscountPercent}%
           </span>
@@ -168,8 +168,8 @@ export const PricingComponent: React.FC<PricingComponentProps> = ({
               padding: '40px 32px 32px',
               position: 'relative',
               boxShadow: isFeatured 
-                ? '0 24px 56px oklch(0.76 0.14 78 / 0.12)' 
-                : '0 16px 40px rgba(0,0,0,0.5)',
+                ? '0 24px 56px var(--accent-dim)' 
+                : '0 16px 40px var(--shadow-mid)',
               transform: isFeatured ? 'scale(1.04)' : 'scale(1)',
               zIndex: isFeatured ? 10 : 1,
               ['--hover-scale' as any]: isFeatured ? '1.05' : '1.02',
@@ -190,7 +190,7 @@ export const PricingComponent: React.FC<PricingComponentProps> = ({
                 borderRadius: 20,
                 background: 'var(--accent)',
                 color: 'var(--accent-text)',
-                boxShadow: '0 4px 12px oklch(0.76 0.14 78 / 0.35)',
+                boxShadow: '0 4px 12px var(--accent-dim)',
                 whiteSpace: 'nowrap',
               }}>
                 Most Popular
@@ -262,7 +262,7 @@ export const PricingComponent: React.FC<PricingComponentProps> = ({
                     fontSize: 11,
                     fontWeight: 900,
                     color: 'var(--accent)',
-                    background: 'oklch(0.76 0.14 78 / 0.12)',
+                    background: 'var(--accent-dim)',
                     padding: '3px 10px',
                     borderRadius: 12,
                     textTransform: 'uppercase',
@@ -351,7 +351,7 @@ export const PricingComponent: React.FC<PricingComponentProps> = ({
                   fontSize: 16,
                   fontWeight: 900,
                   color: 'var(--text-primary)',
-                  background: plan.isPopular ? 'oklch(0.76 0.14 78 / 0.04)' : 'transparent',
+                  background: plan.isPopular ? 'var(--accent-dim)' : 'transparent',
                 }}
               >
                 {plan.name}
@@ -359,7 +359,7 @@ export const PricingComponent: React.FC<PricingComponentProps> = ({
             ))}
           </tr>
         </thead>
-        <tbody style={{ background: 'rgba(255,255,255,0.01)' }}>
+        <tbody>
           {comparisonFeatures.map((feat) => (
             <tr key={feat.name} className="table-row" style={{ borderBottom: '1px solid var(--border-soft)' }}>
               <td style={{ padding: '16px 24px', fontSize: 14, fontWeight: 700, color: 'var(--text-primary)' }}>
@@ -377,7 +377,7 @@ export const PricingComponent: React.FC<PricingComponentProps> = ({
                       textAlign: 'center',
                       fontSize: 14,
                       fontWeight: 700,
-                      background: isPopular ? 'oklch(0.76 0.14 78 / 0.04)' : 'transparent',
+                      background: isPopular ? 'var(--accent-dim)' : 'transparent',
                     }}
                   >
                     {typeof val === 'boolean' ? (
@@ -387,7 +387,7 @@ export const PricingComponent: React.FC<PricingComponentProps> = ({
                           width: 24,
                           height: 24,
                           borderRadius: '50%',
-                          background: 'oklch(0.76 0.14 78 / 0.15)',
+                          background: 'var(--accent-dim)',
                           color: 'var(--accent)',
                           alignItems: 'center',
                           justifyContent: 'center',
@@ -400,7 +400,7 @@ export const PricingComponent: React.FC<PricingComponentProps> = ({
                           width: 24,
                           height: 24,
                           borderRadius: '50%',
-                          background: 'rgba(255,255,255,0.04)',
+                          background: 'var(--bg-surface)',
                           color: 'var(--text-muted)',
                           alignItems: 'center',
                           justifyContent: 'center',
@@ -448,13 +448,13 @@ export const PricingComponent: React.FC<PricingComponentProps> = ({
         }
         .pricing-card-el:hover {
           transform: translateY(-8px) scale(var(--hover-scale, 1.02)) !important;
-          box-shadow: 0 24px 64px rgba(0,0,0,0.7) !important;
+          box-shadow: 0 24px 48px var(--shadow-strong) !important;
         }
         .toggle-btn:hover {
           color: var(--text-primary) !important;
         }
         .card-btn-popular:hover {
-          box-shadow: 0 12px 28px oklch(0.76 0.14 78 / 0.4) !important;
+          box-shadow: 0 12px 28px var(--accent-dim) !important;
           transform: translateY(-2px);
         }
         .card-btn-popular:active {
@@ -462,7 +462,7 @@ export const PricingComponent: React.FC<PricingComponentProps> = ({
         }
         .card-btn-standard:hover {
           background: var(--border-soft) !important;
-          color: white !important;
+          color: var(--text-primary) !important;
         }
         .comparison-table-wrapper {
           display: none;
@@ -471,7 +471,7 @@ export const PricingComponent: React.FC<PricingComponentProps> = ({
           border-radius: 22px;
           overflow: hidden;
           background: var(--bg-surface);
-          box-shadow: 0 24px 64px rgba(0,0,0,0.5);
+          box-shadow: 0 16px 48px var(--shadow-mid);
         }
         @media (min-width: 768px) {
           .comparison-table-wrapper {
@@ -482,7 +482,7 @@ export const PricingComponent: React.FC<PricingComponentProps> = ({
           transition: background-color 0.2s;
         }
         .table-row:hover {
-          background-color: rgba(255, 255, 255, 0.015) !important;
+          background-color: var(--accent-dim) !important;
         }
       `}</style>
 
@@ -503,7 +503,7 @@ export const PricingComponent: React.FC<PricingComponentProps> = ({
           color: 'var(--text-secondary)',
           lineHeight: 1.6,
         }}>
-          Start with a 7-day free trial. Setup takes under 2 minutes. No credit card required.
+          Start with a 7-day free trial. One plan for every stage — from your first location to a full network.
         </p>
       </header>
 
@@ -521,7 +521,7 @@ export const PricingComponent: React.FC<PricingComponentProps> = ({
           border: '1.5px solid var(--border-soft)',
           padding: '12px 28px',
           borderRadius: 30,
-          boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
+          boxShadow: '0 4px 12px var(--shadow-soft)',
         }}>
           7-day free trial on all plans. Cancel anytime. Setup takes under 2 minutes.
         </div>
@@ -600,7 +600,7 @@ const ExampleComp = () => {
     if (planId === 'pro') {
       window.open('https://wa.me/601161665322?text=Hi%2C%20I%27m%20interested%20in%20StampBuddy%20for%20my%20business', '_blank');
     } else {
-      router.push('/auth');
+      router.push('/auth?intent=merchant');
     }
   };
 

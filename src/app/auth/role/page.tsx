@@ -2,41 +2,51 @@
 
 export const dynamic = 'force-dynamic'
 
-import { useState } from 'react'
+import { Suspense, useEffect, useState } from 'react'
+import Link from 'next/link'
 import { motion } from 'framer-motion'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import toast from 'react-hot-toast'
+import { isAuthIntent } from '@/lib/auth-intent'
 
 const ease = [0.16, 1, 0.3, 1] as [number, number, number, number]
 
 const ROLES = [
-  {
-    id: 'customer' as const,
-    icon: '☕',
-    title: 'Customer',
-    desc: 'Collect stamps at your favourite local spots and redeem rewards.',
-    detail: ['Follow spots', 'Scan QR codes', 'Redeem rewards'],
-    accent: 'oklch(0.76 0.14 78)',
-    bg: 'oklch(0.76 0.14 78 / 0.08)',
-    border: 'oklch(0.76 0.14 78 / 0.25)',
-  },
   {
     id: 'merchant' as const,
     icon: '🏪',
     title: 'Merchant',
     desc: 'Run a digital loyalty program for your business or service.',
     detail: ['Generate QR stamps', 'Track customers', 'Manage rewards'],
-    accent: 'oklch(0.66 0.16 155)',
+    accent: 'var(--accent)',
+    bg: 'var(--accent-dim)',
+    border: 'oklch(0.50 0.16 28 / 0.25)',
+  },
+  {
+    id: 'customer' as const,
+    icon: '☕',
+    title: 'Customer',
+    desc: 'Collect stamps at your favourite local spots and redeem rewards.',
+    detail: ['Follow spots', 'Scan QR codes', 'Redeem rewards'],
+    accent: 'var(--success)',
     bg: 'oklch(0.66 0.16 155 / 0.08)',
     border: 'oklch(0.66 0.16 155 / 0.25)',
   },
 ]
 
-export default function RolePage() {
-  const [role, setRole] = useState<'customer' | 'merchant'>('customer')
+function RolePageInner() {
+  const searchParams = useSearchParams()
+  const intentParam = searchParams.get('intent')
+  const [role, setRole] = useState<'customer' | 'merchant'>('merchant')
   const [loading, setLoading] = useState(false)
   const router = useRouter()
+
+  useEffect(() => {
+    if (isAuthIntent(intentParam)) {
+      setRole(intentParam)
+    }
+  }, [intentParam])
 
   async function saveRole() {
     setLoading(true)
@@ -63,16 +73,7 @@ export default function RolePage() {
       minHeight: '100dvh',
       display: 'flex',
       flexDirection: 'column',
-      padding: '52px 28px 40px',
       background: 'var(--bg-base)',
-      backgroundImage: `
-        linear-gradient(45deg, oklch(0.12 0.015 55) 25%, transparent 25%),
-        linear-gradient(-45deg, oklch(0.12 0.015 55) 25%, transparent 25%),
-        linear-gradient(45deg, transparent 75%, oklch(0.12 0.015 55) 75%),
-        linear-gradient(-45deg, transparent 75%, oklch(0.12 0.015 55) 75%)
-      `,
-      backgroundSize: '40px 40px',
-      backgroundPosition: '0 0, 0 20px, 20px -20px, -20px 0px',
     }}>
       <motion.div
         initial={{ opacity: 0, y: 24 }}
@@ -146,7 +147,7 @@ export default function RolePage() {
                     transition={{ type: 'spring', stiffness: 400, damping: 30 }}
                   >
                     <svg width="12" height="9" viewBox="0 0 11 8" fill="none">
-                      <path d="M1 4L4 7L10 1" stroke="oklch(0.09 0.012 55)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+                      <path d="M1 4L4 7L10 1" stroke="var(--accent-text)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
                     </svg>
                   </motion.div>
                 )}
@@ -221,7 +222,28 @@ export default function RolePage() {
         >
           {loading ? 'Setting up…' : `Continue as ${selected.title}`}
         </motion.button>
+
+        <p style={{
+          fontSize: 13,
+          color: 'var(--text-secondary)',
+          textAlign: 'center',
+          marginTop: 20,
+          lineHeight: 1.6,
+        }}>
+          Collecting stamps?{' '}
+          <Link href="/auth?intent=customer" style={{ color: 'var(--accent)', fontWeight: 700, textDecoration: 'underline' }}>
+            Continue as a customer
+          </Link>
+        </p>
       </motion.div>
     </div>
+  )
+}
+
+export default function RolePage() {
+  return (
+    <Suspense>
+      <RolePageInner />
+    </Suspense>
   )
 }

@@ -9,7 +9,7 @@ interface Props {
   stampShape?: string
 }
 
-export default function StampGrid({ current, max, accentColor = 'oklch(0.76 0.14 78)', stampShape = 'circle' }: Props) {
+export default function StampGrid({ current, max, accentColor = 'oklch(0.50 0.16 28)', stampShape = 'circle' }: Props) {
   const cols = max <= 6 ? 3 : max <= 10 ? 4 : 5
   const gap = max > 10 ? 6 : 8
   const maxSize = max <= 6 ? 64 : max <= 10 ? 54 : 44
@@ -37,8 +37,8 @@ export default function StampGrid({ current, max, accentColor = 'oklch(0.76 0.14
             borderRadius: '50%',
             background: filled
               ? `radial-gradient(circle at 35% 35%, ${accentColor}ee, ${accentColor})`
-              : 'oklch(1 0 0 / 0.07)',
-            border: `1.5px solid ${filled ? `${accentColor}cc` : 'oklch(1 0 0 / 0.18)'}`,
+              : `color-mix(in srgb, ${accentColor} 8%, transparent)`,
+            border: `2.5px solid ${accentColor}`,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             boxShadow: filled ? `0 0 14px ${accentColor}45` : 'none',
             transition: 'background 0.25s, box-shadow 0.25s',

@@ -10,31 +10,39 @@ import { useAppStore } from '@/store/app'
 import StampBuddyLogo from '@/components/ui/Logo'
 import { QrCode, ChevronDown, ArrowRight } from 'lucide-react'
 import PricingSection from '@/components/ui/pricing-card'
+import LandingCardSample from '@/components/wallet/LandingCardSample'
+import MerchantStampQRPreview from '@/components/merchant/MerchantStampQRPreview'
 
 const ease = [0.16, 1, 0.3, 1] as [number, number, number, number]
 
 const EDITORIAL_FEATURES = [
   {
     num: '01',
-    kicker: 'For customers',
-    title: 'All your spots, one wallet',
-    body: 'Follow every spot you love. Collect stamps with a scan. Redeem real rewards. No paper cards falling out of your wallet, no app store friction.',
-    visual: 'wallet'
+    kicker: 'Your brand',
+    title: 'Set up your loyalty card',
+    body: 'Name your reward, choose how many stamps to earn it, and pick your colors and logo. Your branded digital card goes live in under 2 minutes — no designer, no developer, no IT.',
+    visual: 'brand',
   },
   {
     num: '02',
-    kicker: 'For merchants',
-    title: 'Turn one-time visitors into regulars',
-    body: "Customers who collect stamps come back to complete their card. StampBuddy runs entirely from your phone — no hardware, no POS integration, no IT setup. You're live in under 2 minutes.",
-    visual: 'qr'
+    kicker: 'At the counter',
+    title: 'Stamp customers in seconds',
+    body: 'Tap the stamp count, show the QR. Each code is single-use and expires in 60 seconds — screenshots and fraud don\'t work. Need a new one? Generate it in one tap.',
+    visual: 'qr',
   },
   {
     num: '03',
-    kicker: 'The flow',
-    title: 'Three taps. Done.',
-    body: 'Merchant taps stamp count. QR appears with 60-second countdown. Customer scans, stamps land instantly. The whole transaction takes under 10 seconds.',
-    visual: 'flow'
+    kicker: 'The results',
+    title: 'Watch them come back',
+    body: 'Track active customers, stamp activity, and reward redemptions from your dashboard. See who\'s close to a voucher and who\'s already a regular.',
+    visual: 'results',
   },
+]
+
+const TRUST_BULLETS = [
+  'Live in under 2 minutes',
+  'No hardware or POS',
+  'Free for your customers',
 ]
 
 function SectionReveal({ children }: { children: React.ReactNode }) {
@@ -111,7 +119,7 @@ function CardStack() {
             background: card.isImage ? 'transparent' : card.color,
             border: card.isImage ? 'none' : `2px solid ${card.accent}60`,
             padding: card.isImage ? 0 : 'clamp(24px, 4vw, 36px) clamp(28px, 5vw, 44px)',
-            boxShadow: `0 ${16 + i * 8}px ${40 + i * 16}px oklch(0 0 0 / 0.7)`,
+            boxShadow: `0 ${16 + i * 8}px ${40 + i * 16}px var(--shadow-mid)`,
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'space-between',
@@ -265,14 +273,6 @@ export default function HomePage() {
       background: 'var(--bg-base)',
       minHeight: '100vh',
       position: 'relative',
-      backgroundImage: `
-        linear-gradient(45deg, oklch(0.12 0.015 55) 25%, transparent 25%),
-        linear-gradient(-45deg, oklch(0.12 0.015 55) 25%, transparent 25%),
-        linear-gradient(45deg, transparent 75%, oklch(0.12 0.015 55) 75%),
-        linear-gradient(-45deg, transparent 75%, oklch(0.12 0.015 55) 75%)
-      `,
-      backgroundSize: '40px 40px',
-      backgroundPosition: '0 0, 0 20px, 20px -20px, -20px 0px',
     }}>
       {/* CUSTOM CURSOR */}
       <div style={{
@@ -313,7 +313,7 @@ export default function HomePage() {
         .cta-row{display:flex;gap:16px;flex-wrap:wrap;align-items:center}
         .btn-primary{font-size:15px;font-weight:700;padding:1.1em 2.4em;border-radius:60px;border:none;background:var(--accent);color:var(--accent-text);cursor:pointer;font-family:var(--font-sans);letter-spacing:0.01em;transition:transform 0.2s,box-shadow 0.2s;position:relative;overflow:hidden;min-height:52px;display:inline-flex;align-items:center;justify-content:center;gap:8px}
         @media(min-width:640px){.btn-primary{font-size:16px;padding:1.15em 2.6em}}
-        .btn-primary:hover{transform:translateY(-2px);box-shadow:0 16px 40px oklch(0.76 0.14 78 / 0.35)}
+        .btn-primary:hover{transform:translateY(-2px);box-shadow:0 16px 40px oklch(0.50 0.16 28 / 0.25)}
         .btn-primary:active{transform:translateY(0)}
         .btn-secondary{font-size:15px;font-weight:600;padding:1em 2em;border-radius:60px;border:2px solid var(--border);background:transparent;color:var(--text-primary);cursor:pointer;font-family:var(--font-sans);letter-spacing:0.01em;transition:border-color 0.2s,color 0.2s,background 0.2s;min-height:52px;display:inline-flex;align-items:center;justify-content:center}
         @media(min-width:640px){.btn-secondary{font-size:16px;padding:1.05em 2.2em}}
@@ -321,7 +321,7 @@ export default function HomePage() {
         .ruled-divider{height:4px;background:var(--accent);margin:0;max-width:100px;border-radius:2px}
         .editorial-grid{display:grid;grid-template-columns:1fr;gap:0}
         @media(min-width:1024px){.editorial-grid{grid-template-columns:1fr 1fr;gap:80px}}
-        .hover-card:hover{transform:translateX(-50%) rotate(var(--rotate)) translateY(-12px) !important;box-shadow:0 32px 72px oklch(0 0 0 / 0.9) !important}
+        .hover-card:hover{transform:translateX(-50%) rotate(var(--rotate)) translateY(-12px) !important;box-shadow:0 24px 48px var(--shadow-strong) !important}
         .cycler-words {
           overflow: hidden;
           position: relative;
@@ -365,7 +365,7 @@ export default function HomePage() {
         .flow-step-card:hover {
           transform: translateY(-6px) !important;
           border-color: var(--accent) !important;
-          box-shadow: 0 24px 48px oklch(0 0 0 / 0.8) !important;
+          box-shadow: 0 16px 40px var(--shadow-mid) !important;
         }
         .merchant-hero-grid {
           display: grid;
@@ -400,10 +400,26 @@ export default function HomePage() {
         padding: '0 clamp(24px, 5vw, 80px)', height: 72,
         borderBottom: '1px solid var(--border-soft)',
         backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)',
-        background: 'oklch(0.09 0.012 55 / 0.92)',
+        background: 'var(--bg-elevated)',
       }}>
         <StampBuddyLogo size={32} />
         <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
+          <a
+            href="#how-it-works"
+            onClick={(e) => {
+              e.preventDefault();
+              document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' });
+            }}
+            style={{
+              fontSize: 14,
+              fontWeight: 700,
+              color: 'var(--text-secondary)',
+              textDecoration: 'none',
+            }}
+            className="nav-link"
+          >
+            How it works
+          </a>
           <a
             href="#pricing"
             onClick={(e) => {
@@ -418,10 +434,10 @@ export default function HomePage() {
             }}
             className="nav-link"
           >
-            For merchants
+            Pricing
           </a>
-          <button className="btn-primary" onClick={() => router.push('/auth')} style={{ padding: '0.7em 1.8em', fontSize: 14, minHeight: 44 }}>
-            Get started
+          <button className="btn-primary" onClick={() => router.push('/auth?intent=merchant')} style={{ padding: '0.7em 1.8em', fontSize: 14, minHeight: 44 }}>
+            Start free trial
           </button>
         </div>
       </nav>
@@ -470,10 +486,10 @@ export default function HomePage() {
                 color: 'var(--text-primary)',
                 marginBottom: 40,
                 maxWidth: '14ch',
-                textShadow: '0 2px 24px oklch(0 0 0 / 0.5)',
+                textShadow: '0 1px 0 oklch(1 0 0 / 0.6)',
               }}
             >
-              Your stamps, finally in one place
+              Turn visitors into regulars
             </motion.h1>
 
             <motion.p
@@ -488,8 +504,7 @@ export default function HomePage() {
                 fontWeight: 400,
               }}
             >
-              Follow every local business you love. Collect stamps with a scan. Redeem real rewards.
-              No paper cards, no app store, no friction.
+              Launch a branded digital stamp card in under 2 minutes. Stamp customers from your phone — no hardware, no POS integration, no app for them to download.
             </motion.p>
 
             <motion.div
@@ -498,7 +513,7 @@ export default function HomePage() {
               style={{ display: 'flex', flexDirection: 'column', gap: 16 }}
             >
               <div className="cta-row">
-                <button className="btn-primary" onClick={() => router.push('/auth')}>
+                <button className="btn-primary" onClick={() => router.push('/auth?intent=merchant')}>
                   Start 7-day free trial
                   <ArrowRight size={18} />
                 </button>
@@ -515,8 +530,34 @@ export default function HomePage() {
                 fontWeight: 500,
                 letterSpacing: '-0.1px',
               }}>
-                7-day free trial • No credit card required • Set up in under 2 minutes
+                7-day free trial · No credit card required · Set up in under 2 minutes
               </p>
+              <div style={{
+                display: 'flex',
+                flexWrap: 'wrap',
+                gap: '10px 20px',
+                marginTop: 8,
+              }}>
+                {TRUST_BULLETS.map((bullet) => (
+                  <span key={bullet} style={{
+                    fontSize: 13,
+                    fontWeight: 600,
+                    color: 'var(--text-secondary)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 8,
+                  }}>
+                    <span style={{
+                      width: 6,
+                      height: 6,
+                      borderRadius: '50%',
+                      background: 'var(--accent)',
+                      flexShrink: 0,
+                    }} />
+                    {bullet}
+                  </span>
+                ))}
+              </div>
             </motion.div>
           </div>
 
@@ -525,97 +566,10 @@ export default function HomePage() {
             transition={{ duration: 0.8, delay: 0.2, ease }}
             style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
           >
-            <CardStack />
+            <MerchantStampQRPreview />
           </motion.div>
         </div>
       </section>
-
-      {/* MERCHANT HERO CALLOUT */}
-      <section style={{
-        padding: '20px clamp(24px, 5vw, 80px) 40px',
-        maxWidth: 1440,
-        margin: '0 auto',
-      }}>
-        <SectionReveal>
-          <div style={{
-            background: 'linear-gradient(135deg, var(--bg-surface) 0%, rgba(26,18,12,0.85) 100%)',
-            border: '1px solid var(--border-soft)',
-            borderRadius: 28,
-            padding: 'clamp(40px, 6vw, 72px) clamp(24px, 5vw, 64px)',
-            display: 'grid',
-            boxShadow: '0 24px 64px rgba(0,0,0,0.6)',
-            position: 'relative',
-            overflow: 'hidden',
-          }} className="merchant-hero-grid">
-            {/* Ambient gold glow in corner */}
-            <div style={{
-              position: 'absolute',
-              top: '-50%',
-              right: '-20%',
-              width: '60%',
-              aspectRatio: '1',
-              borderRadius: '50%',
-              background: 'radial-gradient(circle, oklch(0.76 0.14 78 / 0.08) 0%, transparent 70%)',
-              pointerEvents: 'none',
-            }} />
-            
-            <div style={{ maxWidth: 680 }}>
-              <div style={{
-                fontSize: 12, fontWeight: 900, letterSpacing: '0.14em',
-                textTransform: 'uppercase', color: 'var(--accent)', marginBottom: 16
-              }}>
-                For Business Owners
-              </div>
-              <h2 style={{
-                fontSize: 'clamp(2.25rem, 5vw, 3.5rem)',
-                fontWeight: 900,
-                lineHeight: 1.05,
-                letterSpacing: '-0.04em',
-                color: 'var(--text-primary)',
-                marginBottom: 20,
-              }}>
-                Bring customers back.<br />Without the paper.
-              </h2>
-            </div>
-            
-            <div style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 28,
-              justifyContent: 'center',
-              alignItems: 'flex-start',
-            }}>
-              <p style={{
-                fontSize: 'clamp(15px, 2.2vw, 17px)',
-                color: 'var(--text-secondary)',
-                lineHeight: 1.6,
-                margin: 0,
-                fontWeight: 500,
-              }}>
-                Set up a digital loyalty card for your business in under 2 minutes. No hardware. No app for your customers to download. No monthly contract to start.
-              </p>
-              
-              <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', alignItems: 'center' }}>
-                <button className="btn-primary" onClick={() => router.push('/auth')}>
-                  Get started free
-                  <ArrowRight size={18} />
-                </button>
-                <a
-                  href="https://wa.me/601161665322?text=Hi%2C%20I%27m%20interested%20in%20StampBuddy%20for%20my%20business"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn-secondary"
-                  style={{ textDecoration: 'none' }}
-                >
-                  Ask a question
-                </a>
-              </div>
-            </div>
-          </div>
-        </SectionReveal>
-      </section>
-
-
 
       {/* RULED DIVIDER */}
       <div style={{
@@ -625,9 +579,12 @@ export default function HomePage() {
         opacity: 0.6,
       }} />
 
-      {/* EDITORIAL FEATURES */}
+      {/* HOW IT WORKS */}
       {EDITORIAL_FEATURES.map((feature, i) => (
-        <section key={feature.num} style={{
+        <section
+          key={feature.num}
+          id={i === 0 ? 'how-it-works' : undefined}
+          style={{
           padding: 'clamp(120px, 16vh, 180px) clamp(24px, 5vw, 80px)',
           maxWidth: 1440, margin: '0 auto',
           background: i === 1 ? 'var(--bg-surface)' : 'transparent',
@@ -643,7 +600,7 @@ export default function HomePage() {
                   fontWeight: 900,
                   lineHeight: 0.85,
                   color: 'transparent',
-                  WebkitTextStroke: '2px oklch(0.76 0.14 78 / 0.35)',
+                  WebkitTextStroke: '2px oklch(0.50 0.16 28 / 0.25)',
                   letterSpacing: '-0.05em',
                   marginBottom: 24,
                 }}>
@@ -666,7 +623,7 @@ export default function HomePage() {
                   letterSpacing: '-0.04em',
                   color: 'var(--text-primary)',
                   marginBottom: 32,
-                  textShadow: '0 2px 16px oklch(0 0 0 / 0.3)',
+                  textShadow: 'none',
                 }}>
                   {feature.title}
                 </h2>
@@ -688,182 +645,47 @@ export default function HomePage() {
                 justifyContent: 'center',
                 minHeight: 400,
               }}>
-                {feature.visual === 'wallet' && (
-                  <div style={{
-                    position: 'relative',
-                    width: 'min(90vw, 480px)',
-                    height: 400,
-                  }}>
-                    {[
-                      { isImage: true, imagePath: '/Card1.png', y: 0, rotate: -4 },
-                      { isImage: true, imagePath: '/Card2.png', y: 70, rotate: 2 },
-                      { color: 'oklch(0.22 0.08 260)', accent: 'oklch(0.65 0.18 260)', name: 'Roast & Co.', y: 140, rotate: -2 },
-                    ].map((card, idx) => (
-                      <div key={idx} style={{
-                        position: 'absolute',
-                        top: card.y,
-                        left: '50%',
-                        transform: `translateX(-50%) rotate(${card.rotate}deg)`,
-                        width: '100%',
-                        aspectRatio: '1.586',
-                        borderRadius: 18,
-                        background: card.isImage ? 'transparent' : card.color,
-                        border: card.isImage ? 'none' : `2px solid ${card.accent}40`,
-                        padding: card.isImage ? 0 : '20px 28px',
-                        boxShadow: `0 ${16 + idx * 8}px ${40 + idx * 16}px oklch(0 0 0 / 0.6)`,
-                        display: 'flex',
-                        flexDirection: 'column',
-                        justifyContent: 'space-between',
-                        zIndex: 3 - idx,
-                        overflow: 'hidden',
-                      }}>
-                        {card.isImage ? (
-                          <img
-                            src={card.imagePath}
-                            alt="Loyalty card"
-                            style={{
-                              width: '100%',
-                              height: '100%',
-                              objectFit: 'cover',
-                              borderRadius: 18,
-                            }}
-                          />
-                        ) : (
-                          <>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                              <span style={{ fontSize: 18, fontWeight: 900, color: card.accent }}>{card.name}</span>
-                              <div style={{
-                                width: 40, height: 40, borderRadius: 10,
-                                background: `${card.accent}30`,
-                                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                              }}>
-                                <QrCode size={18} color={card.accent} />
-                              </div>
-                            </div>
-                            <div style={{ display: 'flex', gap: 10, justifyContent: 'center' }}>
-                              {Array.from({ length: 8 }).map((_, i) => (
-                                <div key={i} style={{
-                                  width: 32, height: 32, borderRadius: '50%',
-                                  background: i < (idx + 1) * 2 ? card.accent : 'transparent',
-                                  border: `2.5px solid ${card.accent}`,
-                                }} />
-                              ))}
-                            </div>
-                          </>
-                        )}
-                      </div>
-                    ))}
-                  </div>
+                {feature.visual === 'brand' && (
+                  <LandingCardSample />
                 )}
 
                 {feature.visual === 'qr' && (
-                  <div style={{
-                    width: 'min(90vw, 380px)',
-                    padding: 48,
-                    borderRadius: 24,
-                    background: 'var(--bg-elevated)',
-                    border: '2px solid var(--border)',
-                    boxShadow: '0 24px 64px oklch(0 0 0 / 0.7), 0 0 0 1px var(--accent-dim) inset',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    gap: 32,
-                  }}>
-                    <div style={{
-                      width: '100%',
-                      aspectRatio: '1',
-                      borderRadius: 16,
-                      background: 'white',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      position: 'relative',
-                      overflow: 'hidden',
-                    }}>
-                      <QrCode size={180} color="oklch(0.09 0.012 55)" strokeWidth={1.5} />
-                      <div style={{
-                        position: 'absolute',
-                        bottom: 16,
-                        left: '50%',
-                        transform: 'translateX(-50%)',
-                        background: 'var(--accent)',
-                        color: 'var(--accent-text)',
-                        padding: '8px 20px',
-                        borderRadius: 20,
-                        fontSize: 14,
-                        fontWeight: 800,
-                        letterSpacing: '0.05em',
-                      }}>
-                        60s
-                      </div>
-                    </div>
-                    <p style={{
-                      fontSize: 15,
-                      color: 'var(--text-secondary)',
-                      textAlign: 'center',
-                      fontWeight: 600,
-                    }}>
-                      One-time QR • Expires in 60 seconds
-                    </p>
-                  </div>
+                  <MerchantStampQRPreview />
                 )}
 
-                {feature.visual === 'flow' && (
+                {feature.visual === 'results' && (
                   <div style={{
                     display: 'flex',
                     flexDirection: 'column',
-                    gap: 20,
+                    gap: 16,
                     width: 'min(90vw, 400px)',
                   }}>
-                    {['Tap count', 'QR appears', 'Scan & done'].map((step, idx) => (
-                      <div key={step} style={{
-                        padding: '24px 28px',
+                    {[
+                      { label: 'Active customers', value: '48', trend: '+12% this month' },
+                      { label: 'Stamps given', value: '312', trend: 'Last 30 days' },
+                      { label: 'Rewards redeemed', value: '27', trend: 'Repeat visits up' },
+                    ].map((stat) => (
+                      <div key={stat.label} style={{
+                        padding: '22px 26px',
                         borderRadius: 18,
                         background: 'var(--bg-elevated)',
                         border: '1.5px solid var(--border-soft)',
-                        boxShadow: '0 12px 32px rgba(0,0,0,0.5)',
+                        boxShadow: '0 8px 24px var(--shadow-soft)',
                         display: 'flex',
+                        justifyContent: 'space-between',
                         alignItems: 'center',
-                        gap: 20,
-                      }}
-                      className="flow-step-card"
-                      >
-                        <div style={{
-                          width: 44,
-                          height: 44,
-                          borderRadius: '50%',
-                          border: '1.5px solid var(--accent)',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          color: 'var(--accent)',
-                          fontFamily: 'var(--font-sans)',
-                          fontSize: 16,
-                          fontWeight: 800,
-                          flexShrink: 0,
-                          background: 'var(--accent-dim)',
-                        }}>
-                          {idx + 1}
-                        </div>
+                        gap: 16,
+                      }}>
                         <div>
-                          <div style={{
-                            fontSize: 11,
-                            fontWeight: 800,
-                            letterSpacing: '0.08em',
-                            color: 'var(--text-muted)',
-                            textTransform: 'uppercase',
-                            marginBottom: 4,
-                          }}>
-                            Step {idx + 1}
+                          <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: '0.08em', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: 6 }}>
+                            {stat.label}
                           </div>
-                          <div style={{
-                            fontSize: 18,
-                            fontWeight: 800,
-                            color: 'var(--text-primary)',
-                            letterSpacing: '-0.3px',
-                          }}>
-                            {step}
+                          <div className="num" style={{ fontSize: 32, fontWeight: 900, color: 'var(--text-primary)', letterSpacing: '-0.03em', lineHeight: 1 }}>
+                            {stat.value}
                           </div>
+                        </div>
+                        <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--accent)', textAlign: 'right' }}>
+                          {stat.trend}
                         </div>
                       </div>
                     ))}
@@ -874,6 +696,49 @@ export default function HomePage() {
           </SectionReveal>
         </section>
       ))}
+
+      {/* CUSTOMER EXPERIENCE — supporting proof, not the lead */}
+      <section style={{
+        padding: 'clamp(80px, 12vh, 120px) clamp(24px, 5vw, 80px)',
+        maxWidth: 1440,
+        margin: '0 auto',
+        background: 'var(--bg-surface)',
+        borderTop: '1px solid var(--border-soft)',
+        borderBottom: '1px solid var(--border-soft)',
+      }}>
+        <SectionReveal>
+          <div className="editorial-grid" style={{ alignItems: 'center' }}>
+            <div style={{ maxWidth: 560 }}>
+              <div className="ruled-divider" style={{ marginBottom: 28 }} />
+              <p style={{
+                fontSize: 12, fontWeight: 800, letterSpacing: '0.14em',
+                textTransform: 'uppercase', color: 'var(--accent)', marginBottom: 20,
+              }}>
+                For your customers
+              </p>
+              <h2 style={{
+                fontSize: 'clamp(2rem, 5vw, 3rem)',
+                fontWeight: 900,
+                lineHeight: 1.05,
+                letterSpacing: '-0.03em',
+                color: 'var(--text-primary)',
+                marginBottom: 24,
+              }}>
+                They don&apos;t need another app
+              </h2>
+              <p style={{
+                fontSize: 'clamp(1rem, 2vw, 1.125rem)',
+                color: 'var(--text-secondary)',
+                lineHeight: 1.75,
+                maxWidth: '48ch',
+              }}>
+                Customers sign in once with Google, follow your business, and scan your QR. It&apos;s completely free for them — you own the relationship and the repeat visits.
+              </p>
+            </div>
+            <CardStack />
+          </div>
+        </SectionReveal>
+      </section>
 
       {/* PRICING PLANS */}
       <section id="pricing" style={{ position: 'relative' }}>
@@ -913,12 +778,12 @@ export default function HomePage() {
 
         <SectionReveal>
           <div>
-            <FaqRow q="Does the customer need to create an account?" a="Yes, a quick sign-in with Google takes about 10 seconds. No forms, no passwords." />
-            <FaqRow q="What if the QR expires before the customer scans?" a="The merchant taps a button to generate a fresh one. Takes one second." />
-            <FaqRow q="Can one customer follow multiple businesses?" a="Yes. Each business gets its own loyalty card in the customer's wallet." />
-            <FaqRow q="Is there a limit on how many stamps a card can hold?" a="Merchants set this when creating their business, anywhere from 1 to 20 stamps per card." />
-            <FaqRow q="Is StampBuddy free for customers?" a="Yes, completely free. Customers can follow as many spots as they like, collect stamps, and redeem rewards without ever paying." />
-            <FaqRow q="How does the 7-day free trial work for merchants?" a="Merchants get full access to all features of their selected plan for 7 days without entering a credit card. At the end of the trial, choose the plan that best fits your business." />
+            <FaqRow q="How does the 7-day free trial work?" a="You get full access to every feature on your chosen plan for 7 days — no credit card required. At the end of the trial, pick the plan that fits your business or cancel anytime." />
+            <FaqRow q="Do my customers need to download an app?" a="No. Customers use StampBuddy in their browser — they sign in with Google once, follow your business, and scan. No app store, no install." />
+            <FaqRow q="What if the QR expires before a customer scans?" a="Tap one button to generate a fresh QR. It takes a second. Each code is single-use and expires in 60 seconds to prevent fraud." />
+            <FaqRow q="Can I customize my card — logo, colors, and reward?" a="Yes. Set your business name, voucher reward, stamp count, logo, banner, and card colors during onboarding. You can update everything later in Settings." />
+            <FaqRow q="How many stamps should I set per card?" a="Most businesses use 8–10 stamps, but you can set anywhere from 1 to 20. You choose the reward — a free drink, discount, or any offer that brings people back." />
+            <FaqRow q="Is StampBuddy free for customers?" a="Yes, completely free. Customers can follow your business, collect stamps, and redeem rewards without ever paying. You pay for the merchant plan." />
           </div>
         </SectionReveal>
       </section>
@@ -927,7 +792,7 @@ export default function HomePage() {
       <section style={{
         padding: 'clamp(80px, 12vh, 120px) clamp(24px, 5vw, 80px)',
         textAlign: 'center',
-        background: 'linear-gradient(180deg, transparent, rgba(26,18,12,0.4))',
+        background: 'linear-gradient(180deg, transparent, var(--bg-surface))',
         borderTop: '1px solid var(--border-soft)',
         maxWidth: 1440,
         margin: '0 auto',
@@ -962,7 +827,7 @@ export default function HomePage() {
             </p>
             
             <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', justifyContent: 'center', alignItems: 'center' }}>
-              <button className="btn-primary" onClick={() => router.push('/auth')}>
+              <button className="btn-primary" onClick={() => router.push('/auth?intent=merchant')}>
                 Start 7-day free trial
                 <ArrowRight size={18} />
               </button>
@@ -1002,12 +867,15 @@ export default function HomePage() {
         <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
           <StampBuddyLogo size={32} />
           <span style={{ fontSize: 14, color: 'var(--text-muted)', fontWeight: 500 }}>
-            Made for neighborhood spots & services
+            Made for local businesses
           </span>
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6 }}>
           <p style={{ fontSize: 14, color: 'var(--text-muted)' }}>
-            Free for customers • Paid plans for merchants
+            Loyalty software for merchants ·{' '}
+            <a href="/auth?intent=customer" style={{ color: 'inherit', textDecoration: 'underline' }}>
+              Free for customers
+            </a>
           </p>
           <p style={{ fontSize: 12, color: 'var(--text-muted)', fontWeight: 500 }}>
             <a href="/terms" style={{ color: 'inherit', textDecoration: 'underline' }}>Terms of Service</a>

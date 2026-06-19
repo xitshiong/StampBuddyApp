@@ -165,7 +165,7 @@ export default function QRScanner({ card, onClose, onSuccess, mode = 'stamp' }: 
         exit={{ opacity: 0 }}
         style={{
           position: 'fixed', inset: 0, zIndex: 1000,
-          background: 'oklch(0.08 0.008 260 / 0.96)',
+          background: 'color-mix(in oklch, var(--text-primary) 94%, transparent)',
           backdropFilter: 'blur(8px)',
           display: 'flex', flexDirection: 'column',
           alignItems: 'center', justifyContent: 'center',
@@ -178,15 +178,15 @@ export default function QRScanner({ card, onClose, onSuccess, mode = 'stamp' }: 
           transition={{ type: 'spring', stiffness: 300, damping: 28 }}
           style={{ width: '100%', maxWidth: 360, textAlign: 'center' }}
         >
-          <p style={{ fontSize: 13, color: 'oklch(0.65 0.01 260)', marginBottom: 8 }}>
+          <p style={{ fontSize: 13, color: 'oklch(0.85 0.02 80)', marginBottom: 8 }}>
             {mode === 'follow' ? 'Scan to Follow' : card?.businesses.name}
           </p>
-          <h2 style={{ fontSize: 22, fontWeight: 700, marginBottom: 24 }}>
+          <h2 style={{ fontSize: 22, fontWeight: 700, marginBottom: 24, color: 'var(--accent-text)' }}>
             {mode === 'follow' ? 'Scan business QR' : 'Scan merchant QR'}
           </h2>
 
           {error ? (
-            <div style={{ padding: 24, borderRadius: 16, background: 'oklch(0.20 0.008 260)', color: 'oklch(0.65 0.01 260)', fontSize: 14 }}>
+            <div style={{ padding: 24, borderRadius: 16, background: 'var(--bg-elevated)', color: 'var(--text-secondary)', fontSize: 14 }}>
               {error}
             </div>
           ) : (
@@ -198,7 +198,7 @@ export default function QRScanner({ card, onClose, onSuccess, mode = 'stamp' }: 
                   <div key={pos} style={{
                     position: 'absolute',
                     width: 24, height: 24,
-                    borderColor: 'oklch(0.65 0.18 260)',
+                    borderColor: 'var(--accent)',
                     borderStyle: 'solid',
                     borderWidth: 0,
                     ...(pos === 'tl' ? { top: 16, left: 16, borderTopWidth: 3, borderLeftWidth: 3, borderTopLeftRadius: 6 } : {}),
@@ -208,7 +208,7 @@ export default function QRScanner({ card, onClose, onSuccess, mode = 'stamp' }: 
                   }} />
                 ))}
               </div>
-              <p style={{ fontSize: 13, color: 'oklch(0.55 0.01 260)', marginTop: 16, lineHeight: 1.5 }}>
+              <p style={{ fontSize: 13, color: 'oklch(0.78 0.02 75)', marginTop: 16, lineHeight: 1.5 }}>
                 {mode === 'follow' ? "Point camera at business's QR code" : "Point camera at merchant's QR code"}
               </p>
             </>
@@ -218,8 +218,8 @@ export default function QRScanner({ card, onClose, onSuccess, mode = 'stamp' }: 
             onClick={onClose}
             style={{
               marginTop: 24, padding: '14px 32px', borderRadius: 14,
-              background: 'oklch(0.20 0.008 260)', border: '1px solid oklch(0.28 0.01 260)',
-              color: 'oklch(0.96 0.005 260)', fontSize: 15, fontWeight: 600, cursor: 'pointer',
+              background: 'var(--bg-elevated)', border: '1px solid var(--border-soft)',
+              color: 'var(--text-primary)', fontSize: 15, fontWeight: 600, cursor: 'pointer',
             }}
           >
             Cancel
@@ -238,7 +238,7 @@ export default function QRScanner({ card, onClose, onSuccess, mode = 'stamp' }: 
               position: 'fixed',
               inset: 0,
               zIndex: 1001,
-              background: 'oklch(0 0 0 / 0.85)',
+              background: 'color-mix(in oklch, var(--text-primary) 88%, transparent)',
               backdropFilter: 'blur(12px)',
               display: 'flex',
               alignItems: 'center',
@@ -264,7 +264,7 @@ export default function QRScanner({ card, onClose, onSuccess, mode = 'stamp' }: 
                   width: 80,
                   height: 80,
                   borderRadius: '50%',
-                  background: 'oklch(0.66 0.16 155)',
+                  background: 'var(--success)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -297,7 +297,7 @@ export default function QRScanner({ card, onClose, onSuccess, mode = 'stamp' }: 
                 transition={{ delay: 0.3 }}
                 style={{
                   fontSize: 15,
-                  color: 'oklch(0.7 0.01 260)',
+                  color: 'oklch(0.78 0.02 75)',
                   lineHeight: 1.6,
                   marginBottom: 24,
                 }}
@@ -315,7 +315,7 @@ export default function QRScanner({ card, onClose, onSuccess, mode = 'stamp' }: 
                   borderRadius: 16,
                   padding: '16px 18px',
                   border: '1px solid oklch(1 0 0 / 0.15)',
-                  boxShadow: '0 8px 24px oklch(0 0 0 / 0.3)',
+                  boxShadow: '0 8px 24px var(--shadow-mid)',
                 }}
               >
                 <p style={{ fontSize: 16, fontWeight: 700, color: 'oklch(0.95 0.01 65)', letterSpacing: '-0.3px' }}>

@@ -63,14 +63,7 @@ export default function CustomerWalletPage() {
       display: 'flex',
       flexDirection: 'column',
       overflow: 'hidden',
-      backgroundImage: `
-        linear-gradient(45deg, oklch(0.12 0.015 55) 25%, transparent 25%),
-        linear-gradient(-45deg, oklch(0.12 0.015 55) 25%, transparent 25%),
-        linear-gradient(45deg, transparent 75%, oklch(0.12 0.015 55) 75%),
-        linear-gradient(-45deg, transparent 75%, oklch(0.12 0.015 55) 75%)
-      `,
-      backgroundSize: '40px 40px',
-      backgroundPosition: '0 0, 0 20px, 20px -20px, -20px 0px',
+      background: 'var(--bg-base)',
     }}>
       {/* Header */}
       <div style={{ padding: '52px 24px 20px', flexShrink: 0 }}>
@@ -110,15 +103,15 @@ export default function CustomerWalletPage() {
                 color: 'var(--accent-text)',
                 display: 'flex', alignItems: 'center', gap: 8, fontSize: 14, fontWeight: 700,
                 transition: 'transform 0.2s, box-shadow 0.2s',
-                boxShadow: '0 4px 16px oklch(0.76 0.14 78 / 0.3)',
+                boxShadow: '0 4px 16px var(--accent-dim)',
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.transform = 'translateY(-2px)'
-                e.currentTarget.style.boxShadow = '0 6px 20px oklch(0.76 0.14 78 / 0.4)'
+                e.currentTarget.style.boxShadow = '0 6px 20px var(--accent-dim)'
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.transform = 'translateY(0)'
-                e.currentTarget.style.boxShadow = '0 4px 16px oklch(0.76 0.14 78 / 0.3)'
+                e.currentTarget.style.boxShadow = '0 4px 16px var(--accent-dim)'
               }}
             >
               <QrCode size={15} /> Scan
@@ -258,15 +251,15 @@ function EmptyState() {
           fontSize: 15,
           fontWeight: 700,
           transition: 'transform 0.2s, box-shadow 0.2s',
-          boxShadow: '0 4px 16px oklch(0.76 0.14 78 / 0.3)',
+          boxShadow: '0 4px 16px var(--accent-dim)',
         }}
         onMouseEnter={(e) => {
           e.currentTarget.style.transform = 'translateY(-2px)'
-          e.currentTarget.style.boxShadow = '0 6px 20px oklch(0.76 0.14 78 / 0.4)'
+          e.currentTarget.style.boxShadow = '0 6px 20px var(--accent-dim)'
         }}
         onMouseLeave={(e) => {
           e.currentTarget.style.transform = 'translateY(0)'
-          e.currentTarget.style.boxShadow = '0 4px 16px oklch(0.76 0.14 78 / 0.3)'
+          e.currentTarget.style.boxShadow = '0 4px 16px var(--accent-dim)'
         }}
       >
         <QrCode size={18} /> Scan QR Code

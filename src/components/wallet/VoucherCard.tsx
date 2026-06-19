@@ -25,7 +25,7 @@ export default function VoucherCard({ card, onRedeemed }: Props) {
   const maxX = TRACK_W - THUMB - 8
   const progress     = useTransform(x, [0, maxX], [0, 1])
   const labelOpacity = useTransform(progress, [0, 0.7], [1, 0])
-  const thumbBg      = useTransform(progress, [0, 1], ['oklch(0.76 0.14 78)', 'oklch(0.66 0.16 155)'])
+  const thumbBg      = useTransform(progress, [0, 1], ['oklch(0.50 0.16 28)', 'oklch(0.66 0.16 155)'])
 
   useEffect(() => {
     if (!expiresAt) return
@@ -89,7 +89,7 @@ export default function VoucherCard({ card, onRedeemed }: Props) {
           </div>
           <p style={{
             fontWeight: 800, fontSize: 17, letterSpacing: '-0.3px',
-            color: expired ? 'var(--text-muted)' : 'oklch(0.76 0.14 155)',
+            color: expired ? 'var(--text-muted)' : 'var(--success)',
             marginBottom: 4,
           }}>
             {expired ? 'Voucher Expired' : 'Voucher Active'}
@@ -101,10 +101,10 @@ export default function VoucherCard({ card, onRedeemed }: Props) {
             <>
               <div style={{
                 padding: '14px 20px', borderRadius: 14,
-                background: 'oklch(0.09 0.012 55)',
+                background: 'var(--bg-elevated)',
                 fontVariantNumeric: 'tabular-nums',
                 fontSize: 34, fontWeight: 800, letterSpacing: '-1px',
-                color: 'oklch(0.76 0.14 155)',
+                color: 'var(--success)',
                 marginBottom: 16,
               }}>
                 {timeLeft}
@@ -116,9 +116,9 @@ export default function VoucherCard({ card, onRedeemed }: Props) {
                   width: '100%',
                   padding: '10px 16px',
                   borderRadius: 10,
-                  background: 'oklch(0.76 0.14 155 / 0.12)',
-                  border: '1.5px solid oklch(0.76 0.14 155 / 0.35)',
-                  color: 'oklch(0.76 0.14 155)',
+                  background: 'oklch(0.66 0.16 155 / 0.12)',
+                  border: '1.5px solid oklch(0.66 0.16 155 / 0.35)',
+                  color: 'var(--success)',
                   fontSize: 13,
                   fontWeight: 700,
                   cursor: 'pointer',
@@ -128,8 +128,8 @@ export default function VoucherCard({ card, onRedeemed }: Props) {
                   gap: 8,
                   transition: 'background 0.2s',
                 }}
-                onMouseEnter={e => e.currentTarget.style.background = 'oklch(0.76 0.14 155 / 0.22)'}
-                onMouseLeave={e => e.currentTarget.style.background = 'oklch(0.76 0.14 155 / 0.12)'}
+                onMouseEnter={e => e.currentTarget.style.background = 'oklch(0.66 0.16 155 / 0.22)'}
+                onMouseLeave={e => e.currentTarget.style.background = 'oklch(0.66 0.16 155 / 0.12)'}
               >
                 <ExternalLink size={14} /> Show Cashier (Fullscreen)
               </button>
@@ -250,18 +250,18 @@ export default function VoucherCard({ card, onRedeemed }: Props) {
                   transition={{ delay: 0.25 }}
                   style={{
                     width: '100%',
-                    background: 'oklch(0.12 0.015 55)',
+                    background: 'var(--bg-surface)',
                     border: '1.5px solid var(--border-soft)',
                     borderRadius: 20,
                     padding: '20px',
-                    boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
+                    boxShadow: '0 8px 32px var(--shadow-mid)',
                     marginBottom: 28,
                   }}
                 >
                   <p style={{
                     fontSize: 11,
                     fontWeight: 800,
-                    color: expired ? 'var(--text-muted)' : 'oklch(0.76 0.14 78)',
+                    color: expired ? 'var(--text-muted)' : 'var(--accent)',
                     textTransform: 'uppercase',
                     letterSpacing: '0.08em',
                     marginBottom: 6,
@@ -290,7 +290,7 @@ export default function VoucherCard({ card, onRedeemed }: Props) {
                     fontSize: 40,
                     fontWeight: 900,
                     letterSpacing: '-1.5px',
-                    color: expired ? 'var(--text-muted)' : 'oklch(0.76 0.14 155)',
+                    color: expired ? 'var(--text-muted)' : 'var(--success)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -326,7 +326,7 @@ export default function VoucherCard({ card, onRedeemed }: Props) {
                     fontWeight: 700,
                     fontSize: 15,
                     cursor: 'pointer',
-                    boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                    boxShadow: '0 4px 12px var(--shadow-soft)',
                     transition: 'background 0.2s',
                   }}
                   onMouseEnter={e => e.currentTarget.style.background = 'var(--bg-elevated)'}
@@ -347,8 +347,8 @@ export default function VoucherCard({ card, onRedeemed }: Props) {
       {/* Reward banner */}
       <div style={{
         padding: '14px 18px', borderRadius: 14, marginBottom: 14,
-        background: 'oklch(0.76 0.14 78 / 0.1)',
-        border: '1.5px dashed oklch(0.76 0.14 78 / 0.35)',
+        background: 'var(--accent-dim)',
+        border: '1.5px dashed oklch(0.50 0.16 28 / 0.35)',
         display: 'flex', alignItems: 'center', gap: 10,
       }}>
         <span style={{ fontSize: 22 }}>🏆</span>
@@ -392,7 +392,7 @@ export default function VoucherCard({ card, onRedeemed }: Props) {
             background: thumbBg,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             fontSize: 22, cursor: 'grab', touchAction: 'none',
-            boxShadow: '0 2px 16px oklch(0.76 0.14 78 / 0.35)',
+            boxShadow: '0 2px 16px var(--accent-dim)',
           }}
           whileTap={{ cursor: 'grabbing', scale: 1.06 }}
         >

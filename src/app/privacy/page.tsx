@@ -25,7 +25,7 @@ export default function PrivacyPolicy() {
         padding: '0 clamp(24px, 5vw, 80px)', height: 72,
         borderBottom: '1px solid var(--border-soft)',
         backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)',
-        background: 'oklch(0.09 0.012 55 / 0.92)',
+        background: 'var(--bg-elevated)',
       }}>
         <div style={{ cursor: 'pointer' }} onClick={() => router.push('/')}>
           <StampBuddyLogo size={32} />

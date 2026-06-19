@@ -116,7 +116,7 @@ export default function SearchPage() {
               fontWeight: 400, boxSizing: 'border-box',
               transition: 'border-color 0.15s',
             }}
-            onFocus={e => { e.currentTarget.style.borderColor = 'oklch(0.76 0.14 78 / 0.5)' }}
+            onFocus={e => { e.currentTarget.style.borderColor = 'var(--accent)' }}
             onBlur={e => { e.currentTarget.style.borderColor = 'var(--border-soft)' }}
           />
           {loading && (

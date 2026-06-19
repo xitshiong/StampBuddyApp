@@ -1,14 +1,30 @@
 'use client'
 
+import { useEffect } from 'react'
+import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { createClient } from '@/lib/supabase/client'
 import toast from 'react-hot-toast'
 import StampBuddyLogo from '@/components/ui/Logo'
+import { isAuthIntent, setAuthIntentCookie, type AuthIntent } from '@/lib/auth-intent'
 
 const ease = [0.16, 1, 0.3, 1] as [number, number, number, number]
 
 export default function GoogleAuth() {
+  const searchParams = useSearchParams()
+  const intentParam = searchParams.get('intent')
+  const intent: AuthIntent = isAuthIntent(intentParam) ? intentParam : 'merchant'
+  const isMerchant = intent === 'merchant'
+
+  useEffect(() => {
+    if (isAuthIntent(intentParam)) {
+      setAuthIntentCookie(intentParam)
+    }
+  }, [intentParam])
+
   async function signInWithGoogle() {
+    setAuthIntentCookie(intent)
     const supabase = createClient()
     const redirectUrl = `${window.location.origin}/auth/callback`
 
@@ -24,20 +40,11 @@ export default function GoogleAuth() {
       minHeight: '100dvh', display: 'flex', flexDirection: 'column',
       alignItems: 'center', justifyContent: 'center',
       padding: '52px 28px', background: 'var(--bg-base)',
-      backgroundImage: `
-        linear-gradient(45deg, oklch(0.12 0.015 55) 25%, transparent 25%),
-        linear-gradient(-45deg, oklch(0.12 0.015 55) 25%, transparent 25%),
-        linear-gradient(45deg, transparent 75%, oklch(0.12 0.015 55) 75%),
-        linear-gradient(-45deg, transparent 75%, oklch(0.12 0.015 55) 75%)
-      `,
-      backgroundSize: '40px 40px',
-      backgroundPosition: '0 0, 0 20px, 20px -20px, -20px 0px',
     }}>
-      {/* Ambient glow */}
       <div style={{
         position: 'fixed', top: '20%', left: '50%', transform: 'translateX(-50%)',
         width: 400, height: 400, borderRadius: '50%',
-        background: 'radial-gradient(circle, oklch(0.76 0.14 78 / 0.12) 0%, transparent 70%)',
+        background: 'radial-gradient(circle, var(--accent-dim) 0%, transparent 70%)',
         pointerEvents: 'none',
       }} />
 
@@ -47,7 +54,6 @@ export default function GoogleAuth() {
         transition={{ duration: 0.6, ease }}
         style={{ width: '100%', maxWidth: 420, position: 'relative' }}
       >
-        {/* Logo mark */}
         <div style={{ textAlign: 'center', marginBottom: 40 }}>
           <motion.div
             initial={{ scale: 0.7, opacity: 0 }}
@@ -58,7 +64,6 @@ export default function GoogleAuth() {
             <StampBuddyLogo size={64} />
           </motion.div>
 
-          {/* Ruled divider */}
           <div style={{
             height: 4,
             background: 'var(--accent)',
@@ -75,20 +80,21 @@ export default function GoogleAuth() {
             lineHeight: 1,
             textShadow: '0 2px 16px oklch(0 0 0 / 0.3)',
           }}>
-            Welcome back
+            {isMerchant ? 'Start your free trial' : 'Welcome back'}
           </h1>
           <p style={{
             fontSize: 15,
             color: 'var(--text-secondary)',
             lineHeight: 1.6,
-            maxWidth: '32ch',
+            maxWidth: '36ch',
             margin: '0 auto',
           }}>
-            Sign in to your StampBuddy wallet
+            {isMerchant
+              ? 'Sign in with Google to set up your business loyalty program. Live in under 2 minutes.'
+              : 'Sign in to collect stamps and redeem rewards at your favourite spots.'}
           </p>
         </div>
 
-        {/* Google button */}
         <motion.button
           onClick={signInWithGoogle}
           initial={{ opacity: 0, y: 12 }}
@@ -121,8 +127,29 @@ export default function GoogleAuth() {
         </motion.button>
 
         <p style={{
+          fontSize: 13, color: 'var(--text-secondary)', textAlign: 'center',
+          marginTop: 24, lineHeight: 1.6,
+        }}>
+          {isMerchant ? (
+            <>
+              Collecting stamps?{' '}
+              <Link href="/auth?intent=customer" style={{ color: 'var(--accent)', fontWeight: 700 }}>
+                Sign in as a customer
+              </Link>
+            </>
+          ) : (
+            <>
+              Running a business?{' '}
+              <Link href="/auth?intent=merchant" style={{ color: 'var(--accent)', fontWeight: 700 }}>
+                Start your free trial
+              </Link>
+            </>
+          )}
+        </p>
+
+        <p style={{
           fontSize: 12, color: 'var(--text-muted)', textAlign: 'center',
-          marginTop: 28, lineHeight: 1.6,
+          marginTop: 16, lineHeight: 1.6,
         }}>
           By continuing you agree to our terms of service and privacy policy.
         </p>

@@ -227,7 +227,7 @@ export default function MerchantQRPage() {
                 padding: '14px',
                 borderRadius: 14,
                 border: 'none',
-                background: 'oklch(0.76 0.14 78)',
+                background: 'var(--accent)',
                 color: 'white',
                 fontSize: 15,
                 fontWeight: 700,
@@ -237,14 +237,14 @@ export default function MerchantQRPage() {
                 justifyContent: 'center',
                 gap: 8,
                 transition: 'background 0.2s, transform 0.2s',
-                boxShadow: '0 4px 16px oklch(0.76 0.14 78 / 0.3)',
+                boxShadow: '0 4px 16px var(--accent-dim)',
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.background = 'oklch(0.70 0.14 78)'
                 e.currentTarget.style.transform = 'translateY(-1px)'
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.background = 'oklch(0.76 0.14 78)'
+                e.currentTarget.style.background = 'var(--accent)'
                 e.currentTarget.style.transform = 'translateY(0)'
               }}
             >
@@ -272,7 +272,7 @@ export default function MerchantQRPage() {
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.background = 'oklch(0.95 0.004 65)'
-                e.currentTarget.style.borderColor = 'oklch(0.76 0.14 78)'
+                e.currentTarget.style.borderColor = 'var(--accent)'
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.background = 'white'

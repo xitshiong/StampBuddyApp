@@ -9,7 +9,8 @@ import { createClient } from '@/lib/supabase/client'
 import toast from 'react-hot-toast'
 import type { Business } from '@/types/database'
 import NumPad from '@/components/merchant/NumPad'
-import { RefreshCw, Settings, QrCode, Sparkles, BarChart3 } from 'lucide-react'
+import MerchantStampQR from '@/components/merchant/MerchantStampQR'
+import { Settings, QrCode, Sparkles, BarChart3 } from 'lucide-react'
 import { useSearchParams } from 'next/navigation'
 import { Suspense } from 'react'
 
@@ -157,25 +158,13 @@ function MerchantPageInner() {
   }
 
 
-  const pct = sessionId ? (timeLeft / QR_TTL) * 100 : 100
-  const circ = 2 * Math.PI * 26
-  const urgent = timeLeft <= 10
-
   if (loading) return (
     <div style={{
       display: 'flex',
       height: '100dvh',
       alignItems: 'center',
       justifyContent: 'center',
-      background: 'var(--bg-base)',
-      backgroundImage: `
-        linear-gradient(45deg, oklch(0.12 0.015 55) 25%, transparent 25%),
-        linear-gradient(-45deg, oklch(0.12 0.015 55) 25%, transparent 25%),
-        linear-gradient(45deg, transparent 75%, oklch(0.12 0.015 55) 75%),
-        linear-gradient(-45deg, transparent 75%, oklch(0.12 0.015 55) 75%)
-      `,
-      backgroundSize: '40px 40px',
-      backgroundPosition: '0 0, 0 20px, 20px -20px, -20px 0px',
+      background: 'var(--bg-base)'
     }}>
       <div style={{ width: 28, height: 28, borderRadius: '50%', border: '2.5px solid var(--border)', borderTopColor: 'var(--accent)', animation: 'spin 0.7s linear infinite' }} />
       <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
@@ -188,15 +177,7 @@ function MerchantPageInner() {
       overflowY: 'auto',
       padding: '56px 24px 48px',
       background: 'var(--bg-base)',
-      minHeight: '100dvh',
-      backgroundImage: `
-        linear-gradient(45deg, oklch(0.12 0.015 55) 25%, transparent 25%),
-        linear-gradient(-45deg, oklch(0.12 0.015 55) 25%, transparent 25%),
-        linear-gradient(45deg, transparent 75%, oklch(0.12 0.015 55) 75%),
-        linear-gradient(-45deg, transparent 75%, oklch(0.12 0.015 55) 75%)
-      `,
-      backgroundSize: '40px 40px',
-      backgroundPosition: '0 0, 0 20px, 20px -20px, -20px 0px',
+      minHeight: '100dvh'
     }}>
 
       {/* Header */}
@@ -344,7 +325,7 @@ function MerchantPageInner() {
                 left: -50,
                 right: -50,
                 bottom: -50,
-                background: `radial-gradient(circle at 30% 20%, oklch(0.76 0.14 78 / 0.15) 0%, transparent 50%),
+                background: `radial-gradient(circle at 30% 20%, var(--accent-dim) 0%, transparent 50%),
                              radial-gradient(circle at 70% 80%, oklch(0.66 0.16 155 / 0.15) 0%, transparent 50%)`,
                 pointerEvents: 'none',
               }} />
@@ -359,12 +340,12 @@ function MerchantPageInner() {
                     width: 64,
                     height: 64,
                     borderRadius: '50%',
-                    background: 'oklch(0.76 0.14 78)',
+                    background: 'var(--accent)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     margin: '0 auto 20px',
-                    boxShadow: '0 8px 24px oklch(0.76 0.14 78 / 0.3)',
+                    boxShadow: '0 8px 24px var(--accent-dim)',
                   }}
                 >
                   <Sparkles size={32} color="white" />
@@ -422,7 +403,7 @@ function MerchantPageInner() {
                       padding: '14px',
                       borderRadius: 14,
                       border: 'none',
-                      background: 'oklch(0.76 0.14 78)',
+                      background: 'var(--accent)',
                       color: 'white',
                       fontSize: 15,
                       fontWeight: 700,
@@ -434,7 +415,7 @@ function MerchantPageInner() {
                       transition: 'background 0.2s',
                     }}
                     onMouseEnter={(e) => e.currentTarget.style.background = 'oklch(0.70 0.14 78)'}
-                    onMouseLeave={(e) => e.currentTarget.style.background = 'oklch(0.76 0.14 78)'}
+                    onMouseLeave={(e) => e.currentTarget.style.background = 'var(--accent)'}
                   >
                     <QrCode size={16} />
                     View Store QR
@@ -481,95 +462,14 @@ function MerchantPageInner() {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.94, y: -12 }}
             transition={{ type: 'spring', stiffness: 300, damping: 28 }}
-            style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 20 }}
           >
-            {/* QR card */}
-            <div style={{
-              width: '100%', maxWidth: 360,
-              padding: '28px 24px',
-              borderRadius: 24,
-              background: 'var(--bg-surface)',
-              border: '1px solid var(--border-soft)',
-              display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 22,
-              boxShadow: '0 12px 40px oklch(0 0 0 / 0.35)',
-            }}>
-              {/* Live badge + stamp count */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <span className="live-dot" style={{
-                    width: 8, height: 8, borderRadius: '50%',
-                    background: 'oklch(0.66 0.16 155)',
-                    display: 'block',
-                  }} />
-                  <span style={{ fontSize: 12, fontWeight: 700, color: 'oklch(0.66 0.16 155)', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
-                    Live
-                  </span>
-                </div>
-                <span style={{
-                  padding: '3px 10px', borderRadius: 20,
-                  background: 'var(--accent-dim)',
-                  border: '1px solid oklch(0.76 0.14 78 / 0.25)',
-                  fontSize: 12, fontWeight: 700, color: 'var(--accent)',
-                }}>
-                  {stampCount} stamp{stampCount !== 1 ? 's' : ''}
-                </span>
-              </div>
-
-              {/* QR code */}
-              <div style={{
-                padding: 16, borderRadius: 16, background: '#ffffff',
-                boxShadow: '0 2px 20px oklch(0 0 0 / 0.25)',
-              }}>
-                <QRCodeSVG value={sessionId} size={200} level="H" bgColor="#ffffff" fgColor="#0f0e0a" />
-              </div>
-
-              {/* Countdown ring */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-                <svg width={64} height={64} style={{ transform: 'rotate(-90deg)', flexShrink: 0 }}>
-                  <circle cx={32} cy={32} r={26} fill="none" stroke="var(--border)" strokeWidth={3.5} />
-                  <circle
-                    cx={32} cy={32} r={26} fill="none"
-                    stroke={urgent ? 'oklch(0.62 0.20 20)' : 'var(--accent)'}
-                    strokeWidth={3.5}
-                    strokeDasharray={circ}
-                    strokeDashoffset={circ * (1 - pct / 100)}
-                    strokeLinecap="round"
-                    style={{ transition: 'stroke-dashoffset 1s linear, stroke 0.3s' }}
-                  />
-                  <text
-                    x={32} y={32}
-                    textAnchor="middle" dominantBaseline="central"
-                    style={{ transform: 'rotate(90deg)', transformOrigin: '32px 32px' }}
-                    fill={urgent ? 'oklch(0.62 0.20 20)' : 'var(--text-primary)'}
-                    fontSize={13} fontWeight={800}
-                  >
-                    {timeLeft}s
-                  </text>
-                </svg>
-                <div>
-                  <p style={{ fontSize: 14, fontWeight: 700, letterSpacing: '-0.2px', color: urgent ? 'oklch(0.62 0.20 20)' : 'var(--text-primary)' }}>
-                    {urgent ? 'Expiring soon!' : `Expires in ${timeLeft}s`}
-                  </p>
-                  <p style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 3 }}>
-                    One-time scan only
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <motion.button
-              onClick={() => setSessionId(null)}
-              whileTap={{ scale: 0.96 }}
-              style={{
-                display: 'flex', alignItems: 'center', gap: 8,
-                padding: '13px 22px', borderRadius: 14,
-                background: 'var(--bg-surface)',
-                border: '1px solid var(--border-soft)',
-                color: 'var(--text-secondary)', fontWeight: 600, fontSize: 14, cursor: 'pointer',
-              }}
-            >
-              <RefreshCw size={15} /> New QR
-            </motion.button>
+            <MerchantStampQR
+              sessionId={sessionId}
+              stampCount={stampCount}
+              timeLeft={timeLeft}
+              showNewButton
+              onNewQR={() => setSessionId(null)}
+            />
           </motion.div>
         ) : (
           /* ── NumPad ── */

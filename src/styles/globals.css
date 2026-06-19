@@ -1,22 +1,24 @@
 @import "tailwindcss";
 
 :root {
-  /* Warm dark palette — Midnight Espresso */
-  --bg-base:      oklch(0.09 0.012 55);
-  --bg-surface:   oklch(0.13 0.012 55);
-  --bg-elevated:  oklch(0.17 0.013 55);
-  --border:       oklch(0.24 0.016 55);
-  --border-soft:  oklch(0.19 0.013 55);
+  /* Parchment & Ink — light editorial */
+  --bg-base:      oklch(0.965 0.014 88);
+  --bg-surface:   oklch(0.935 0.018 82);
+  --bg-elevated:  oklch(0.99 0.008 92);
+  --border:       oklch(0.82 0.025 70);
+  --border-soft:  oklch(0.88 0.018 78);
 
-  /* Text — warm tinted, not cold gray */
-  --text-primary:   oklch(0.95 0.012 65);
-  --text-secondary: oklch(0.63 0.022 65);
-  --text-muted:     oklch(0.40 0.016 65);
+  --text-primary:   oklch(0.22 0.035 42);
+  --text-secondary: oklch(0.48 0.028 48);
+  --text-muted:     oklch(0.62 0.02 55);
 
-  /* Amber accent — espresso crema */
-  --accent:       oklch(0.76 0.14 78);
-  --accent-dim:   oklch(0.76 0.14 78 / 0.14);
-  --accent-text:  oklch(0.18 0.03 55);
+  --accent:       oklch(0.50 0.16 28);
+  --accent-dim:   oklch(0.50 0.16 28 / 0.10);
+  --accent-text:  oklch(0.98 0.01 90);
+
+  --shadow-soft:   oklch(0.22 0.035 42 / 0.06);
+  --shadow-mid:    oklch(0.22 0.035 42 / 0.10);
+  --shadow-strong: oklch(0.22 0.035 42 / 0.14);
 
   /* Semantic */
   --success:  oklch(0.66 0.16 155);
@@ -57,7 +59,7 @@ html, body {
   overscroll-behavior: none;
   font-feature-settings: 'kern' 1, 'liga' 1, 'ss01' 1;
   font-optical-sizing: auto;
-  color-scheme: dark;
+  color-scheme: light;
 }
 /* Numeric data — tabular alignment */
 .num { font-variant-numeric: tabular-nums; }
@@ -184,12 +186,12 @@ html, body {
 
 .btn:hover {
   transform: translateY(-3px);
-  box-shadow: 0 10px 28px oklch(0.76 0.14 78 / 0.35);
+  box-shadow: 0 10px 28px var(--accent-dim);
 }
 
 .btn:active {
   transform: translateY(-1px);
-  box-shadow: 0 5px 14px oklch(0.76 0.14 78 / 0.25);
+  box-shadow: 0 5px 14px var(--accent-dim);
 }
 
 .btn::after {

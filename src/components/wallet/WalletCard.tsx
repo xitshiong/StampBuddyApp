@@ -18,9 +18,11 @@ interface Props {
   onPointerUp: () => void
   onTap: () => void
   onStampsUpdated: (cardId: string, newStamps: number) => void
+  preview?: boolean
 }
 
 const ease = [0.25, 0.46, 0.45, 0.94] as [number, number, number, number]
+const smoothEase = [0.16, 1, 0.3, 1] as [number, number, number, number]
 
 // Helper for contrast
 function getContrastYIQ(hexcolor: string){
@@ -35,7 +37,7 @@ function getContrastYIQ(hexcolor: string){
 
 export default function WalletCard({ 
   card, isActive, isExpanded, isAnotherExpanded, isLifting, stackIndex, 
-  onPointerDown, onPointerUp, onTap, onStampsUpdated 
+  onPointerDown, onPointerUp, onTap, onStampsUpdated, preview = false,
 }: Props) {
   const [showScanner, setShowScanner] = useState(false)
   const { businesses: biz } = card
@@ -70,32 +72,38 @@ export default function WalletCard({
   return (
     <>
       <motion.div
-        layout
+        layout={!preview}
         onClick={handleInteraction}
         onPointerDown={onPointerDown}
         onPointerUp={onPointerUp}
         onPointerCancel={onPointerUp}
         onPointerLeave={onPointerUp}
         initial={false}
-        animate={{
+        animate={preview ? {
+          opacity: 1,
+          boxShadow: isExpanded
+            ? '0 24px 48px var(--shadow-strong)'
+            : '0 8px 24px var(--shadow-soft)',
+        } : {
           y: isExpanded ? 0 : topOffset,
           scale: isExpanded ? 1 : scale,
           opacity: isAnotherExpanded ? 0 : 1,
           filter: `brightness(${brightness})`,
           zIndex: isExpanded ? 100 : 50 - stackIndex,
         }}
-        transition={{ duration: 0.35, ease }}
+        transition={{ duration: preview ? 0.45 : 0.35, ease: preview ? smoothEase : ease }}
         style={{
-          position: isExpanded ? 'relative' : 'absolute',
-          top: isExpanded ? undefined : 0,
-          left: isExpanded ? undefined : 0,
-          right: isExpanded ? undefined : 0,
-          height: isExpanded ? 'auto' : 250, 
+          position: preview || isExpanded ? 'relative' : 'absolute',
+          top: preview || isExpanded ? undefined : 0,
+          left: preview || isExpanded ? undefined : 0,
+          right: preview || isExpanded ? undefined : 0,
+          height: preview ? undefined : (isExpanded ? 'auto' : 250),
           width: '100%',
-          cursor: isExpanded ? 'default' : 'pointer',
+          cursor: preview ? 'pointer' : (isExpanded ? 'default' : 'pointer'),
           borderRadius: 14,
-          boxShadow: isActive && (isLifting || isExpanded) ? '0 24px 48px rgba(0,0,0,0.25)' : 'none',
+          boxShadow: !preview && isActive && (isLifting || isExpanded) ? '0 24px 48px var(--shadow-strong)' : undefined,
           pointerEvents: isAnotherExpanded ? 'none' : 'auto',
+          overflow: 'hidden',
           '--card-bg': bg,
           '--card-accent': accent,
           '--card-text-clr': textClr,
@@ -117,11 +125,12 @@ export default function WalletCard({
             flex: '1',
             background: 'var(--card-bg)',
             position: 'relative',
-            padding: isExpanded ? 0 : '24px 0 0',
+            padding: isExpanded ? 0 : '20px 0 0',
             display: 'flex',
             flexDirection: 'column',
             borderRadius: 14,
-            minHeight: isExpanded ? undefined : 250,
+            minHeight: preview ? undefined : (isExpanded ? undefined : 250),
+            transition: 'padding 0.45s cubic-bezier(0.16, 1, 0.3, 1)',
           }}>
             {/* Header */}
             <div style={{
@@ -206,9 +215,17 @@ export default function WalletCard({
               </div>
             </div>
 
-            {/* Stamp Grid & Actions — only shown when card is expanded */}
-            {isExpanded && (
-              <>
+            {/* Stamp Grid & Actions — animate open in preview */}
+            <AnimatePresence initial={false}>
+              {isExpanded && (
+                <motion.div
+                  key="expanded-content"
+                  initial={preview ? { height: 0, opacity: 0 } : false}
+                  animate={{ height: 'auto', opacity: 1 }}
+                  exit={preview ? { height: 0, opacity: 0 } : undefined}
+                  transition={{ duration: 0.45, ease: smoothEase }}
+                  style={{ overflow: 'hidden' }}
+                >
                 {/* Stamp Grid */}
                 <div style={{
                   position: 'relative', zIndex: 2,
@@ -220,7 +237,20 @@ export default function WalletCard({
 
                 {/* Action button */}
                 <div style={{ marginTop: 32, position: 'relative', zIndex: 2, padding: '0 24px 32px' }}>
-                   {isComplete ? (
+                   {preview ? (
+                    <p style={{
+                      margin: 0,
+                      textAlign: 'center',
+                      fontSize: 12,
+                      fontWeight: 700,
+                      letterSpacing: '0.1em',
+                      textTransform: 'uppercase',
+                      color: 'var(--card-text-clr)',
+                      opacity: 0.75,
+                    }}>
+                      {biz.voucher_reward} · {biz.max_stamps} stamps
+                    </p>
+                  ) : isComplete ? (
                     <VoucherCard card={card} onRedeemed={(newStamps) => { onStampsUpdated(card.id, newStamps ?? 0); onTap() }} />
                   ) : (
                     <button
@@ -229,7 +259,7 @@ export default function WalletCard({
                         width: '100%', padding: '18px', borderRadius: 14, border: 'none',
                         background: 'var(--card-accent)', color: '#fff',
                         fontWeight: 700, fontSize: 16, cursor: 'pointer',
-                        boxShadow: '0 8px 24px rgba(0,0,0,0.2)',
+                        boxShadow: '0 8px 24px var(--shadow-mid)',
                         letterSpacing: '0.01em',
                       }}
                     >
@@ -237,8 +267,9 @@ export default function WalletCard({
                     </button>
                   )}
                 </div>
-              </>
-            )}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </div>
       </motion.div>

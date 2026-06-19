@@ -21,7 +21,7 @@ export default function CustomerLayout({ children }: { children: React.ReactNode
       {/* Tab bar */}
       <nav style={{
         display: 'flex',
-        background: 'oklch(0.11 0.012 55 / 0.96)',
+        background: 'var(--bg-elevated)',
         backdropFilter: 'blur(24px)',
         WebkitBackdropFilter: 'blur(24px)',
         borderTop: '1px solid var(--border-soft)',

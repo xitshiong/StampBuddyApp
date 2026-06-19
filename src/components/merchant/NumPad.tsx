@@ -101,7 +101,7 @@ export default function NumPad({ onGenerate, loading }: Props) {
                 cursor: disabled ? 'not-allowed' : 'pointer',
                 fontFamily: 'var(--font-body)',
                 outline: isConfirm && valid ? 'none' : '1px solid var(--border-soft)',
-                boxShadow: isConfirm && valid ? '0 4px 20px oklch(0.76 0.14 78 / 0.28)' : 'none',
+                boxShadow: isConfirm && valid ? '0 4px 20px var(--accent-dim)' : 'none',
                 transition: 'background 0.15s, color 0.15s, box-shadow 0.15s',
               }}
             >

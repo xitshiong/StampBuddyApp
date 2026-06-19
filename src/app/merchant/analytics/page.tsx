@@ -541,7 +541,7 @@ export default function MerchantAnalytics() {
               value={totalStampsCount}
               subtitle="All-time customer loyalty stamps"
               icon={Sparkles}
-              color="oklch(0.76 0.14 78)"
+              color="var(--accent)"
             />
           </div>
 
@@ -677,7 +677,7 @@ export default function MerchantAnalytics() {
                                 width="75"
                                 height="28"
                                 rx="6"
-                                fill="oklch(0.12 0.015 55)"
+                                fill="var(--text-primary)"
                                 stroke="var(--border-soft)"
                                 strokeWidth="1.5"
                                 style={{ transform: 'translateX(-22px)' }}
@@ -803,7 +803,7 @@ export default function MerchantAnalytics() {
                     const totalClaims = filteredClaims.length
                     const pct = totalClaims > 0 ? (stat.count / totalClaims) * 100 : 0
                     // Curved friendly colors for locations
-                    const colors = ['oklch(0.68 0.15 210)', 'oklch(0.66 0.16 155)', 'oklch(0.76 0.14 78)']
+                    const colors = ['oklch(0.68 0.15 210)', 'oklch(0.66 0.16 155)', 'oklch(0.50 0.16 28)']
                     const barColor = colors[idx % colors.length]
                     
                     return (
