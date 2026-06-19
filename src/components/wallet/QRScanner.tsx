@@ -8,6 +8,8 @@ import type { LoyaltyCardWithBusiness, RedeemStampResult } from '@/types/databas
 import { CheckCircle2 } from 'lucide-react'
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+const SCAN_COOLDOWN_MS = 3000
+const TOAST_ID = 'qr-scan'
 
 interface Props {
   card?: LoyaltyCardWithBusiness
@@ -35,6 +37,9 @@ export default function QRScanner({
   const scannerRef = useRef<HTMLDivElement>(null)
   const scannerInstance = useRef<unknown>(null)
   const scannedRef = useRef(false)
+  const processingRef = useRef(false)
+  const cooldownUntilRef = useRef(0)
+  const lastDecodedRef = useRef('')
   const [scanning, setScanning] = useState(true)
   const [error, setError] = useState('')
   const [showSuccess, setShowSuccess] = useState(false)
@@ -55,10 +60,26 @@ export default function QRScanner({
           { facingMode: 'environment' },
           { fps: 10, qrbox: { width: 220, height: 220 } },
           async (decodedText) => {
-            if (scannedRef.current) return
+            const now = Date.now()
+            if (
+              scannedRef.current ||
+              processingRef.current ||
+              now < cooldownUntilRef.current
+            ) {
+              return
+            }
+
             scannedRef.current = true
+            processingRef.current = true
+            lastDecodedRef.current = decodedText
             setScanning(false)
-            await handleScan(decodedText)
+            pauseScanner()
+
+            try {
+              await handleScan(decodedText)
+            } finally {
+              processingRef.current = false
+            }
           },
           () => {}
         )
@@ -74,15 +95,25 @@ export default function QRScanner({
     }
   }, [])
 
-  function resetForNextScan() {
-    scannedRef.current = false
-    setScanning(true)
+  function pauseScanner() {
+    const s = scannerInstance.current as { pause?: (shouldPauseVideo?: boolean) => void } | null
+    s?.pause?.(true)
+  }
+
+  function scheduleNextScan(delay = SCAN_COOLDOWN_MS) {
+    cooldownUntilRef.current = Date.now() + delay
+    setTimeout(() => {
+      scannedRef.current = false
+      setScanning(true)
+      const s = scannerInstance.current as { resume?: () => void } | null
+      s?.resume?.()
+    }, delay)
   }
 
   function finishWithError(message: string) {
-    toast.error(message)
+    toast.error(message, { id: TOAST_ID })
     if (isEmbedded) {
-      resetForNextScan()
+      scheduleNextScan()
     } else {
       onClose?.()
     }
@@ -95,7 +126,7 @@ export default function QRScanner({
       setShowSuccess(false)
       setSuccessState(null)
       onSuccess(newStamps)
-      if (isEmbedded) resetForNextScan()
+      if (isEmbedded) scheduleNextScan()
       else onClose?.()
     }, 2200)
   }
@@ -245,9 +276,9 @@ export default function QRScanner({
       return
     }
 
-    toast.success(`+${stampsAdded} stamp${stampsAdded !== 1 ? 's' : ''} added!`)
+    toast.success(`+${stampsAdded} stamp${stampsAdded !== 1 ? 's' : ''} added!`, { id: TOAST_ID })
     onSuccess(newStamps)
-    if (isEmbedded) resetForNextScan()
+    if (isEmbedded) scheduleNextScan()
     else onClose?.()
   }
 
@@ -279,8 +310,8 @@ export default function QRScanner({
       .maybeSingle() as { data: { id: string } | null }
 
     if (existingCard) {
-      toast.success(`Already following ${business.name}`)
-      if (isEmbedded) resetForNextScan()
+      toast.success(`Already following ${business.name}`, { id: TOAST_ID })
+      if (isEmbedded) scheduleNextScan()
       else onClose?.()
       return
     }
