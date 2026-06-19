@@ -41,6 +41,13 @@ type StampAwardRow = {
   customer_email: string
 }
 
+type StampSessionQueryRow = {
+  id: string
+  stamp_count: number
+  redeemed_at: string
+  loyalty_cards: { profiles: { phone: string } | null } | null
+}
+
 function maskCustomerEmail(email: string) {
   if (!email || email === 'Unknown') return 'Unknown'
   const at = email.indexOf('@')
@@ -146,11 +153,14 @@ export default function MerchantAnalytics() {
         .eq('business_id', biz.id)
         .eq('status', 'completed')
         .not('redeemed_at', 'is', null)
-        .order('redeemed_at', { ascending: false })
+        .order('redeemed_at', { ascending: false }) as {
+          data: StampSessionQueryRow[] | null
+          error: unknown
+        }
 
       if (stampError) throw stampError
 
-      const formattedStamps = (stampData || []).map((row: any) => ({
+      const formattedStamps: StampAwardRow[] = (stampData ?? []).map((row) => ({
         id: row.id,
         redeemed_at: row.redeemed_at,
         stamp_count: row.stamp_count,
