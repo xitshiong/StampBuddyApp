@@ -298,7 +298,8 @@ export default function MerchantAnalytics() {
   // Find max value in chart data for drawing height percentages
   const maxChartVal = useMemo(() => {
     const vals = chartData.map(d => d.value)
-    return Math.max(...vals, 5) // Floor at 5 to keep visual scaling readable
+    const peak = Math.max(...vals, 0)
+    return Math.max(peak, 1)
   }, [chartData])
 
   // Dimension statistics (Campaign & Branch share)
@@ -595,7 +596,35 @@ export default function MerchantAnalytics() {
                   No claims data for this view scale.
                 </div>
               ) : (
-                <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
+                <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', position: 'relative' }}>
+                  {hoveredBar !== null && chartData[hoveredBar] && (
+                    <div
+                      style={{
+                        position: 'absolute',
+                        left: `${4 + hoveredBar * (92 / chartData.length) + (92 / chartData.length) / 2}%`,
+                        top: 0,
+                        transform: 'translate(-50%, 0)',
+                        zIndex: 2,
+                        pointerEvents: 'none',
+                        padding: '6px 10px',
+                        borderRadius: 8,
+                        background: 'var(--bg-elevated)',
+                        border: '1px solid var(--border)',
+                        boxShadow: '0 4px 16px var(--shadow-mid)',
+                        fontSize: 11,
+                        fontWeight: 700,
+                        color: 'var(--text-primary)',
+                        whiteSpace: 'nowrap',
+                      }}
+                    >
+                      <span style={{ color: 'var(--text-muted)', fontWeight: 600 }}>
+                        {chartData[hoveredBar].label}
+                      </span>
+                      {' · '}
+                      {chartData[hoveredBar].value} claim{chartData[hoveredBar].value !== 1 ? 's' : ''}
+                    </div>
+                  )}
+
                   {/* SVG Bars Grid */}
                   <svg width="100%" height="220" style={{ overflow: 'visible' }}>
                     {/* Grid Lines */}
@@ -656,44 +685,27 @@ export default function MerchantAnalytics() {
                             fill="transparent"
                           />
 
-                          {/* Render Bar */}
-                          <rect
-                            x={`${xPos}%`}
-                            y={yPos}
-                            width={`${barW}%`}
-                            height={Math.max(barHeight, 2)} // Keep a tiny sliver visible for 0 values
-                            rx={4}
-                            fill={isHovered ? 'var(--accent)' : 'color-mix(in srgb, var(--accent) 70%, transparent)'}
-                            style={{ transition: 'fill 0.15s, y 0.3s ease, height 0.3s ease' }}
-                          />
+                          {/* Render Bar — skip sliver for zero days */}
+                          {d.value > 0 && (
+                            <rect
+                              x={`${xPos}%`}
+                              y={yPos}
+                              width={`${barW}%`}
+                              height={barHeight}
+                              rx={4}
+                              fill={isHovered ? 'var(--accent)' : 'color-mix(in srgb, var(--accent) 70%, transparent)'}
+                              style={{ transition: 'fill 0.15s, y 0.3s ease, height 0.3s ease' }}
+                            />
+                          )}
 
-                          {/* Hover Tooltip inside SVG */}
-                          {isHovered && (
-                            <g>
-                              {/* Background rect */}
-                              <rect
-                                x={`${Math.max(xPos - 5, 2)}%`}
-                                y={yPos - 35}
-                                width="75"
-                                height="28"
-                                rx="6"
-                                fill="var(--text-primary)"
-                                stroke="var(--border-soft)"
-                                strokeWidth="1.5"
-                                style={{ transform: 'translateX(-22px)' }}
-                              />
-                              {/* Tooltip text */}
-                              <text
-                                x={`${xPos}%`}
-                                y={yPos - 21}
-                                textAnchor="middle"
-                                fill="#ffffff"
-                                fontSize="11"
-                                fontWeight="800"
-                              >
-                                {d.value} claim{d.value !== 1 ? 's' : ''}
-                              </text>
-                            </g>
+                          {/* Zero-day hover indicator */}
+                          {d.value === 0 && isHovered && (
+                            <circle
+                              cx={`${xPos + barW / 2}%`}
+                              cy={178}
+                              r={4}
+                              fill="var(--accent)"
+                            />
                           )}
                         </g>
                       )
