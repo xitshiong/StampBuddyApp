@@ -6,7 +6,7 @@ import { useState, useEffect, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import type { Business, VoucherRedemption } from '@/types/database'
+import type { Business } from '@/types/database'
 import { 
   ChevronLeft, 
   Download, 
@@ -20,9 +20,38 @@ import {
   Clock, 
   Users, 
   Sparkles,
-  Ticket
+  Ticket,
+  Stamp
 } from 'lucide-react'
 import toast from 'react-hot-toast'
+
+type ClaimRow = {
+  id: string
+  redeemed_at: string
+  expires_at: string
+  campaign_name: string
+  branch_name: string
+  customer_phone: string
+}
+
+type StampAwardRow = {
+  id: string
+  redeemed_at: string
+  stamp_count: number
+  customer_email: string
+}
+
+function maskCustomerEmail(email: string) {
+  if (!email || email === 'Unknown') return 'Unknown'
+  const at = email.indexOf('@')
+  if (at <= 1) return email
+  const local = email.slice(0, at)
+  const domain = email.slice(at + 1)
+  const maskedLocal = local.length <= 2
+    ? `${local[0]}*`
+    : `${local.slice(0, 2)}***`
+  return `${maskedLocal}@${domain}`
+}
 
 
 export default function MerchantAnalytics() {
@@ -101,6 +130,34 @@ export default function MerchantAnalytics() {
       }))
 
       setRealClaims(formatted)
+
+      const { data: stampData, error: stampError } = await supabase
+        .from('stamp_sessions')
+        .select(`
+          id,
+          stamp_count,
+          redeemed_at,
+          loyalty_cards (
+            profiles (
+              phone
+            )
+          )
+        `)
+        .eq('business_id', biz.id)
+        .eq('status', 'completed')
+        .not('redeemed_at', 'is', null)
+        .order('redeemed_at', { ascending: false })
+
+      if (stampError) throw stampError
+
+      const formattedStamps = (stampData || []).map((row: any) => ({
+        id: row.id,
+        redeemed_at: row.redeemed_at,
+        stamp_count: row.stamp_count,
+        customer_email: row.loyalty_cards?.profiles?.phone || 'Unknown',
+      }))
+
+      setStampAwards(formattedStamps)
       if (showToast) toast.success('Data refreshed!')
     } catch (err: any) {
       console.error(err)
@@ -123,7 +180,8 @@ export default function MerchantAnalytics() {
   }, [])
 
   // Real data state
-  const [realClaims, setRealClaims] = useState<any[]>([])
+  const [realClaims, setRealClaims] = useState<ClaimRow[]>([])
+  const [stampAwards, setStampAwards] = useState<StampAwardRow[]>([])
   const [activeCustomersCount, setActiveCustomersCount] = useState(0)
   const [totalStampsCount, setTotalStampsCount] = useState(0)
 
@@ -132,6 +190,7 @@ export default function MerchantAnalytics() {
   const [selectedCampaign, setSelectedCampaign] = useState<string>('all')
   const [selectedBranch, setSelectedBranch] = useState<string>('all')
   const [searchQuery, setSearchQuery] = useState('')
+  const [stampSearchQuery, setStampSearchQuery] = useState('')
   const [chartView, setChartView] = useState<'day' | 'week' | 'month'>('day')
   const [hoveredBar, setHoveredBar] = useState<number | null>(null)
 
@@ -183,6 +242,45 @@ export default function MerchantAnalytics() {
       return true
     })
   }, [activeClaims, dateLimit, selectedCampaign, selectedBranch, searchQuery])
+
+  const filteredStampAwards = useMemo(() => {
+    return stampAwards.filter(row => {
+      const rowDate = new Date(row.redeemed_at)
+      if (rowDate < dateLimit) return false
+
+      if (stampSearchQuery.trim() !== '') {
+        const query = stampSearchQuery.toLowerCase()
+        const matchEmail = row.customer_email.toLowerCase().includes(query)
+        if (!matchEmail) return false
+      }
+      return true
+    })
+  }, [stampAwards, dateLimit, stampSearchQuery])
+
+  const stampStats = useMemo(() => {
+    const startOfToday = new Date()
+    startOfToday.setHours(0, 0, 0, 0)
+
+    const startOfWeek = new Date()
+    const currentDay = startOfWeek.getDay()
+    const distance = currentDay === 0 ? 6 : currentDay - 1
+    startOfWeek.setDate(startOfWeek.getDate() - distance)
+    startOfWeek.setHours(0, 0, 0, 0)
+
+    const sumStamps = (rows: StampAwardRow[]) =>
+      rows.reduce((sum, row) => sum + row.stamp_count, 0)
+
+    const todayRows = stampAwards.filter(row => new Date(row.redeemed_at) >= startOfToday)
+    const weekRows = stampAwards.filter(row => new Date(row.redeemed_at) >= startOfWeek)
+    const periodRows = stampAwards.filter(row => new Date(row.redeemed_at) >= dateLimit)
+
+    return {
+      today: sumStamps(todayRows),
+      week: sumStamps(weekRows),
+      period: sumStamps(periodRows),
+      todayEvents: todayRows.length,
+    }
+  }, [stampAwards, dateLimit])
 
   // Period Comparison Math
   const comparisonStats = useMemo(() => {
@@ -518,6 +616,15 @@ export default function MerchantAnalytics() {
               color="var(--accent)"
             />
 
+            {/* Stamps given today */}
+            <SummaryCard
+              title="Stamps Given Today"
+              value={stampStats.today}
+              subtitle={`${stampStats.week} stamps this week · ${stampStats.todayEvents} award${stampStats.todayEvents !== 1 ? 's' : ''} today`}
+              icon={Stamp}
+              color="oklch(0.68 0.15 210)"
+            />
+
             {/* Claims Today */}
             <SummaryCard
               title="Claims Today"
@@ -540,10 +647,100 @@ export default function MerchantAnalytics() {
             <SummaryCard
               title="Total Stamps Issued"
               value={totalStampsCount}
-              subtitle="All-time customer loyalty stamps"
+              subtitle={`${stampStats.period} stamps in selected period`}
               icon={Sparkles}
               color="var(--accent)"
             />
+          </div>
+
+          {/* Stamp award log */}
+          <div style={{
+            background: 'var(--bg-surface)',
+            border: '1px solid var(--border-soft)',
+            borderRadius: 24,
+            padding: '28px',
+            boxShadow: '0 4px 24px rgba(0,0,0,0.05)',
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16, marginBottom: 24 }}>
+              <div>
+                <h3 style={{ fontSize: 16, fontWeight: 800, margin: 0, letterSpacing: '-0.2px' }}>Stamp Award Log</h3>
+                <p style={{ fontSize: 12, color: 'var(--text-muted)', margin: '4px 0 0' }}>
+                  Every time a customer scans your stamp QR — time, Google account, and quantity
+                </p>
+              </div>
+            </div>
+
+            <div style={{ position: 'relative', marginBottom: 20 }}>
+              <Search size={16} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+              <input
+                type="text"
+                placeholder="Search by customer Google account..."
+                value={stampSearchQuery}
+                onChange={e => setStampSearchQuery(e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '12px 16px 12px 42px',
+                  borderRadius: 14,
+                  fontSize: 14,
+                  background: 'var(--bg-base)',
+                  border: '1.5px solid var(--border-soft)',
+                  color: 'var(--text-primary)',
+                  outline: 'none',
+                  fontFamily: 'var(--font-sans)',
+                  boxSizing: 'border-box',
+                }}
+              />
+            </div>
+
+            <div style={{ overflowX: 'auto' }}>
+              {filteredStampAwards.length === 0 ? (
+                <div style={{
+                  display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                  padding: '48px 20px', textAlign: 'center', gap: 12,
+                }}>
+                  <div style={{ fontSize: 32 }}>✨</div>
+                  <p style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>No stamp awards yet</p>
+                  <p style={{ fontSize: 13, color: 'var(--text-muted)', margin: 0, maxWidth: 360 }}>
+                    When customers scan your live stamp QR, each award will appear here with the time and their Google account.
+                  </p>
+                </div>
+              ) : (
+                <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: 520 }}>
+                  <thead>
+                    <tr style={{ borderBottom: '1px solid var(--border-soft)' }}>
+                      <th style={{ padding: '12px 16px', fontSize: 12, fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase' }}>Time</th>
+                      <th style={{ padding: '12px 16px', fontSize: 12, fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase' }}>Customer</th>
+                      <th style={{ padding: '12px 16px', fontSize: 12, fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase' }}>Stamps</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredStampAwards.map((row, idx) => {
+                      const rowDate = new Date(row.redeemed_at)
+                      return (
+                        <tr
+                          key={row.id}
+                          style={{
+                            borderBottom: '1px solid var(--border-soft)',
+                            background: idx % 2 === 0 ? 'transparent' : 'color-mix(in srgb, var(--border-soft) 8%, transparent)',
+                          }}
+                          className="table-row-hover"
+                        >
+                          <td style={{ padding: '16px', fontSize: 13, fontWeight: 500 }}>
+                            {rowDate.toLocaleString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+                          </td>
+                          <td style={{ padding: '16px', fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)' }}>
+                            {maskCustomerEmail(row.customer_email)}
+                          </td>
+                          <td style={{ padding: '16px', fontSize: 13, fontWeight: 800, color: 'var(--accent)' }}>
+                            +{row.stamp_count}
+                          </td>
+                        </tr>
+                      )
+                    })}
+                  </tbody>
+                </table>
+              )}
+            </div>
           </div>
 
           {/* Time-Based Charts Section */}

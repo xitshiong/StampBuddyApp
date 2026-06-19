@@ -23,9 +23,9 @@ export interface Database {
         Relationships: []
       }
       stamp_sessions: {
-        Row: { id: string; business_id: string; stamp_count: number; status: 'pending' | 'completed' | 'expired'; created_at: string }
+        Row: { id: string; business_id: string; stamp_count: number; status: 'pending' | 'completed' | 'expired'; created_at: string; loyalty_card_id: string | null; redeemed_at: string | null }
         Insert: { business_id: string; stamp_count: number }
-        Update: { status?: 'pending' | 'completed' | 'expired' }
+        Update: { status?: 'pending' | 'completed' | 'expired'; loyalty_card_id?: string | null; redeemed_at?: string | null }
         Relationships: []
       }
       voucher_redemptions: {
