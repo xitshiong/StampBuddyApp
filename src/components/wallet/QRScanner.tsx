@@ -132,7 +132,7 @@ export default function QRScanner({
       .select('id')
       .eq('user_id', userId)
       .eq('business_id', businessId)
-      .maybeSingle()
+      .maybeSingle() as { data: { id: string } | null }
 
     if (existingCard) return existingCard.id
 
@@ -140,7 +140,7 @@ export default function QRScanner({
       .from('loyalty_cards')
       .insert({ user_id: userId, business_id: businessId } as any)
       .select('id')
-      .single()
+      .single() as { data: { id: string } | null; error: unknown }
 
     if (insertError || !newCard) return null
     return newCard.id
@@ -170,7 +170,7 @@ export default function QRScanner({
         .select('business_id')
         .eq('id', sessionId)
         .eq('status', 'pending')
-        .maybeSingle()
+        .maybeSingle() as { data: { business_id: string } | null }
 
       if (!session) {
         finishWithError('Invalid or expired QR code. Ask the merchant for a new one.')
@@ -181,7 +181,7 @@ export default function QRScanner({
         .from('businesses')
         .select('name, color')
         .eq('id', session.business_id)
-        .single()
+        .single() as { data: { name: string; color: string } | null }
 
       if (!business) {
         finishWithError('Business not found')
@@ -196,7 +196,7 @@ export default function QRScanner({
         .select('id, current_stamps')
         .eq('user_id', user.id)
         .eq('business_id', session.business_id)
-        .maybeSingle()
+        .maybeSingle() as { data: { id: string; current_stamps: number } | null }
 
       if (existingCard) {
         cardId = existingCard.id
@@ -276,7 +276,7 @@ export default function QRScanner({
       .select('id')
       .eq('user_id', user.id)
       .eq('business_id', businessId)
-      .maybeSingle()
+      .maybeSingle() as { data: { id: string } | null }
 
     if (existingCard) {
       toast.success(`Already following ${business.name}`)
