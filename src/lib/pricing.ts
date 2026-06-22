@@ -1,4 +1,4 @@
-export type PricingRegion = 'MY' | 'SG' | 'INTL'
+export type PricingRegion = 'MY' | 'AU' | 'SG'
 
 export type PlanId = 'starter' | 'growth' | 'pro'
 
@@ -14,7 +14,7 @@ export interface RegionPricingConfig {
   label: string
   currency: string
   locale: string
-  /** Prefix shown before the amount (e.g. RM, S$, $) */
+  /** Prefix shown before the amount (e.g. RM, A$, S$) */
   symbol: string
   plans: Record<PlanId, PlanPricing>
 }
@@ -33,6 +33,18 @@ export const PRICING_REGIONS: Record<PricingRegion, RegionPricingConfig> = {
       pro: { priceMonthly: 229, priceAnnually: 189 },
     },
   },
+  AU: {
+    id: 'AU',
+    label: 'Australia',
+    currency: 'AUD',
+    locale: 'en-AU',
+    symbol: 'A$',
+    plans: {
+      starter: { priceMonthly: 29, priceAnnually: 24 },
+      growth: { priceMonthly: 59, priceAnnually: 49 },
+      pro: { priceMonthly: 109, priceAnnually: 89 },
+    },
+  },
   SG: {
     id: 'SG',
     label: 'Singapore',
@@ -45,32 +57,25 @@ export const PRICING_REGIONS: Record<PricingRegion, RegionPricingConfig> = {
       pro: { priceMonthly: 109, priceAnnually: 89 },
     },
   },
-  INTL: {
-    id: 'INTL',
-    label: 'International',
-    currency: 'USD',
-    locale: 'en-US',
-    symbol: '$',
-    plans: {
-      starter: { priceMonthly: 19, priceAnnually: 15 },
-      growth: { priceMonthly: 39, priceAnnually: 32 },
-      pro: { priceMonthly: 79, priceAnnually: 65 },
-    },
-  },
 }
+
+export const PRICING_REGION_ORDER: PricingRegion[] = ['MY', 'AU', 'SG']
 
 export const PRICING_REGION_COOKIE = 'stampbuddy-pricing-region'
 
-export const PRICING_REGIONS_LIST = Object.values(PRICING_REGIONS)
+export const PRICING_REGIONS_LIST = PRICING_REGION_ORDER.map((id) => PRICING_REGIONS[id])
 
 export function countryToPricingRegion(countryCode: string | null | undefined): PricingRegion {
   if (countryCode === 'MY') return 'MY'
+  if (countryCode === 'AU') return 'AU'
   if (countryCode === 'SG') return 'SG'
-  return 'INTL'
+  return 'MY'
 }
 
 export function parsePricingRegion(value: string | null | undefined): PricingRegion | null {
-  if (value === 'MY' || value === 'SG' || value === 'INTL') return value
+  if (value === 'MY' || value === 'AU' || value === 'SG') return value
+  // ponytail: legacy INTL/USD cookie maps to AU until it expires
+  if (value === 'INTL') return 'AU'
   return null
 }
 

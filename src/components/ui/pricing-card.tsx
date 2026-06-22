@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
-import { Check, ChevronDown, X } from "lucide-react";
+import { Check, X } from "lucide-react";
 import {
   PRICING_REGIONS,
   PRICING_REGIONS_LIST,
@@ -142,95 +142,47 @@ const FeatureItem: React.FC<{ feature: Feature }> = ({ feature }) => {
 const RegionSelector: React.FC<{
   region: PricingRegion;
   onRegionChange: (region: PricingRegion) => void;
-}> = ({ region, onRegionChange }) => {
-  const [open, setOpen] = React.useState(false);
-  const containerRef = React.useRef<HTMLDivElement>(null);
-  const current = PRICING_REGIONS[region];
-
-  React.useEffect(() => {
-    const handleClick = (event: MouseEvent) => {
-      if (!containerRef.current?.contains(event.target as Node)) {
-        setOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClick);
-    return () => document.removeEventListener('mousedown', handleClick);
-  }, []);
-
-  return (
-    <div ref={containerRef} style={{ position: 'relative', display: 'inline-block' }}>
-      <button
-        type="button"
-        onClick={() => setOpen((value) => !value)}
-        aria-expanded={open}
-        aria-haspopup="listbox"
-        style={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          gap: 6,
-          padding: '8px 14px',
-          borderRadius: 999,
-          border: '1.5px solid var(--border-soft)',
-          background: 'var(--bg-elevated)',
-          color: 'var(--text-secondary)',
-          fontSize: 13,
-          fontWeight: 600,
-          cursor: 'pointer',
-        }}
-      >
-        Prices shown for {current.label}
-        <ChevronDown size={14} style={{ transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} />
-      </button>
-
-      {open && (
-        <div
-          role="listbox"
-          aria-label="Pricing region"
+}> = ({ region, onRegionChange }) => (
+  <div
+    role="group"
+    aria-label="Pricing currency"
+    style={{
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      flexWrap: 'wrap',
+      gap: 4,
+      fontSize: 14,
+      color: 'var(--text-muted)',
+    }}
+  >
+    <span style={{ marginRight: 4 }}>Prices in</span>
+    {PRICING_REGIONS_LIST.map((option, i) => (
+      <React.Fragment key={option.id}>
+        {i > 0 && <span aria-hidden style={{ color: 'var(--border-soft)', userSelect: 'none' }}>·</span>}
+        <button
+          type="button"
+          aria-pressed={option.id === region}
+          onClick={() => onRegionChange(option.id)}
           style={{
-            position: 'absolute',
-            top: 'calc(100% + 8px)',
-            left: '50%',
-            transform: 'translateX(-50%)',
-            minWidth: 200,
-            background: 'var(--bg-surface)',
-            border: '1.5px solid var(--border-soft)',
-            borderRadius: 16,
-            boxShadow: '0 16px 40px var(--shadow-mid)',
-            padding: 6,
-            zIndex: 20,
+            padding: '2px 4px',
+            border: 'none',
+            background: 'none',
+            fontSize: 14,
+            fontWeight: option.id === region ? 700 : 500,
+            color: option.id === region ? 'var(--text-primary)' : 'var(--text-secondary)',
+            cursor: 'pointer',
+            textDecoration: option.id === region ? 'underline' : 'none',
+            textUnderlineOffset: 3,
           }}
+          className="currency-link"
         >
-          {PRICING_REGIONS_LIST.map((option) => (
-            <button
-              key={option.id}
-              type="button"
-              role="option"
-              aria-selected={option.id === region}
-              onClick={() => {
-                onRegionChange(option.id);
-                setOpen(false);
-              }}
-              style={{
-                width: '100%',
-                textAlign: 'left',
-                padding: '10px 14px',
-                borderRadius: 10,
-                border: 'none',
-                background: option.id === region ? 'var(--accent-dim)' : 'transparent',
-                color: 'var(--text-primary)',
-                fontSize: 14,
-                fontWeight: option.id === region ? 700 : 500,
-                cursor: 'pointer',
-              }}
-            >
-              {option.label}
-            </button>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-};
+          {option.currency}
+        </button>
+      </React.Fragment>
+    ))}
+  </div>
+);
 
 export const PricingComponent: React.FC<PricingComponentProps> = ({
   plans,
@@ -247,7 +199,7 @@ export const PricingComponent: React.FC<PricingComponentProps> = ({
 
   // --- Toggle ---
   const CycleToggle = (
-    <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 72, marginTop: 16 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: 72, marginTop: 16, gap: 16 }}>
       <div style={{
         background: 'var(--bg-elevated)',
         border: '1.5px solid var(--border-soft)',
@@ -313,6 +265,7 @@ export const PricingComponent: React.FC<PricingComponentProps> = ({
           </span>
         </button>
       </div>
+      <RegionSelector region={region} onRegionChange={onRegionChange} />
     </div>
   );
 
@@ -331,6 +284,7 @@ export const PricingComponent: React.FC<PricingComponentProps> = ({
             style={{
               display: 'flex',
               flexDirection: 'column',
+              height: '100%',
               borderRadius: 'var(--r-card)',
               backgroundColor: 'var(--bg-surface)',
               border: isFeatured ? '2.5px solid var(--accent)' : '1.5px solid var(--border-soft)',
@@ -461,11 +415,12 @@ export const PricingComponent: React.FC<PricingComponentProps> = ({
               </ul>
             </div>
 
-            <div>
+            <div style={{ marginTop: 'auto', paddingTop: 8 }}>
               <button
                 onClick={() => onPlanSelect(plan.id, billingCycle)}
                 style={{
                   width: '100%',
+                  minHeight: 52,
                   padding: '16px 20px',
                   borderRadius: 'var(--r-btn)',
                   fontSize: 14,
@@ -473,6 +428,10 @@ export const PricingComponent: React.FC<PricingComponentProps> = ({
                   textTransform: 'uppercase',
                   letterSpacing: '0.04em',
                   cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  textAlign: 'center',
                   border: isFeatured ? 'none' : '1.5px solid var(--border-soft)',
                   background: isFeatured ? 'var(--accent)' : 'var(--bg-elevated)',
                   color: isFeatured ? 'var(--accent-text)' : 'var(--text-primary)',
@@ -606,6 +565,7 @@ export const PricingComponent: React.FC<PricingComponentProps> = ({
           gap: 32px;
           width: 100%;
           margin: 0 auto;
+          align-items: stretch;
         }
         @media (min-width: 768px) {
           .pricing-grid {
@@ -613,6 +573,7 @@ export const PricingComponent: React.FC<PricingComponentProps> = ({
           }
         }
         .pricing-card-el {
+          height: 100%;
           transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.4s;
         }
         .pricing-card-el:hover {
@@ -620,6 +581,9 @@ export const PricingComponent: React.FC<PricingComponentProps> = ({
           box-shadow: 0 24px 48px var(--shadow-strong) !important;
         }
         .toggle-btn:hover {
+          color: var(--text-primary) !important;
+        }
+        .currency-link:hover {
           color: var(--text-primary) !important;
         }
         .card-btn-popular:hover {
@@ -674,9 +638,6 @@ export const PricingComponent: React.FC<PricingComponentProps> = ({
         }}>
           Start with a 7-day free trial. One plan for every stage — from your first location to a full network.
         </p>
-        <div style={{ marginTop: 20 }}>
-          <RegionSelector region={region} onRegionChange={onRegionChange} />
-        </div>
       </header>
 
       {CycleToggle}
