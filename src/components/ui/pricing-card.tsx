@@ -2,22 +2,31 @@
 
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
-import { Check, X } from "lucide-react";
+import { Check, ChevronDown, X } from "lucide-react";
+import {
+  PRICING_REGIONS,
+  PRICING_REGIONS_LIST,
+  PRICING_REGION_COOKIE,
+  annualDiscountPercent,
+  annualSavings,
+  formatMoneyCompact,
+  type BillingCycle,
+  type PlanId,
+  type PricingRegion,
+} from '@/lib/pricing';
 
 // --- Types ---
-type BillingCycle = 'monthly' | 'annually';
-
 interface Feature {
   name: string;
   isIncluded: boolean;
 }
 
 interface PriceTier {
-  id: string;
+  id: PlanId;
   name: string;
   description: string;
   priceMonthly: number;
-  priceAnnually: number; // yearly price per month (discounted)
+  priceAnnually: number;
   isPopular: boolean;
   buttonLabel: string;
   features: Feature[];
@@ -26,8 +35,71 @@ interface PriceTier {
 interface PricingComponentProps extends React.HTMLAttributes<HTMLDivElement> {
   plans: [PriceTier, PriceTier, PriceTier];
   billingCycle: BillingCycle;
+  region: PricingRegion;
   onCycleChange: (cycle: BillingCycle) => void;
-  onPlanSelect: (planId: string, cycle: BillingCycle) => void;
+  onPlanSelect: (planId: PlanId, cycle: BillingCycle) => void;
+  onRegionChange: (region: PricingRegion) => void;
+}
+
+function persistPricingRegion(region: PricingRegion) {
+  document.cookie = `${PRICING_REGION_COOKIE}=${region}; path=/; max-age=31536000; SameSite=Lax`;
+}
+
+const PLAN_META: Omit<PriceTier, 'priceMonthly' | 'priceAnnually'>[] = [
+  {
+    id: 'starter',
+    name: 'Starter',
+    description: 'Perfect for independent local spots, services, and single-location shops.',
+    isPopular: false,
+    buttonLabel: 'Start free — no card needed',
+    features: [
+      { name: '1 active digital loyalty card', isIncluded: true },
+      { name: '1 location terminal key', isIncluded: true },
+      { name: 'Unlimited stamps & scans', isIncluded: true },
+      { name: 'Live 60-second QR validation', isIncluded: true },
+      { name: 'Basic stamp analytics dashboard', isIncluded: true },
+      { name: 'Custom card colors & themes', isIncluded: true },
+    ],
+  },
+  {
+    id: 'growth',
+    name: 'Growth',
+    description: 'For growing neighborhood brands with up to 5 locations.',
+    isPopular: true,
+    buttonLabel: 'Start free trial',
+    features: [
+      { name: 'Up to 5 active cards & terminals', isIncluded: true },
+      { name: 'Unlimited stamps & customer scans', isIncluded: true },
+      { name: 'Multi-location shared customer profiles', isIncluded: true },
+      { name: 'Advanced scan analytics & CSV export', isIncluded: true },
+      { name: 'Custom store logo & banner uploads', isIncluded: true },
+      { name: 'Priority email & text support', isIncluded: true },
+    ],
+  },
+  {
+    id: 'pro',
+    name: 'Pro',
+    description: 'For merchant associations or local business networks.',
+    isPopular: false,
+    buttonLabel: 'Talk to us',
+    features: [
+      { name: 'Unlimited loyalty cards & terminals', isIncluded: true },
+      { name: 'Unlimited stamps & scans', isIncluded: true },
+      { name: 'Cross-store community loyalty campaigns', isIncluded: true },
+      { name: 'Co-op branding & configuration configs', isIncluded: true },
+      { name: '1-on-1 merchant training & setup help', isIncluded: true },
+      { name: 'Dedicated Support Account Manager', isIncluded: true },
+    ],
+  },
+];
+
+function buildPlansForRegion(region: PricingRegion): [PriceTier, PriceTier, PriceTier] {
+  const regional = PRICING_REGIONS[region].plans;
+  return PLAN_META.map((meta) => ({
+    ...meta,
+    priceMonthly: regional[meta.id].priceMonthly,
+    priceAnnually: regional[meta.id].priceAnnually,
+  })) as [PriceTier, PriceTier, PriceTier];
 }
 
 const FeatureItem: React.FC<{ feature: Feature }> = ({ feature }) => {
@@ -67,15 +139,111 @@ const FeatureItem: React.FC<{ feature: Feature }> = ({ feature }) => {
   );
 };
 
+const RegionSelector: React.FC<{
+  region: PricingRegion;
+  onRegionChange: (region: PricingRegion) => void;
+}> = ({ region, onRegionChange }) => {
+  const [open, setOpen] = React.useState(false);
+  const containerRef = React.useRef<HTMLDivElement>(null);
+  const current = PRICING_REGIONS[region];
+
+  React.useEffect(() => {
+    const handleClick = (event: MouseEvent) => {
+      if (!containerRef.current?.contains(event.target as Node)) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, []);
+
+  return (
+    <div ref={containerRef} style={{ position: 'relative', display: 'inline-block' }}>
+      <button
+        type="button"
+        onClick={() => setOpen((value) => !value)}
+        aria-expanded={open}
+        aria-haspopup="listbox"
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: 6,
+          padding: '8px 14px',
+          borderRadius: 999,
+          border: '1.5px solid var(--border-soft)',
+          background: 'var(--bg-elevated)',
+          color: 'var(--text-secondary)',
+          fontSize: 13,
+          fontWeight: 600,
+          cursor: 'pointer',
+        }}
+      >
+        Prices shown for {current.label}
+        <ChevronDown size={14} style={{ transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} />
+      </button>
+
+      {open && (
+        <div
+          role="listbox"
+          aria-label="Pricing region"
+          style={{
+            position: 'absolute',
+            top: 'calc(100% + 8px)',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            minWidth: 200,
+            background: 'var(--bg-surface)',
+            border: '1.5px solid var(--border-soft)',
+            borderRadius: 16,
+            boxShadow: '0 16px 40px var(--shadow-mid)',
+            padding: 6,
+            zIndex: 20,
+          }}
+        >
+          {PRICING_REGIONS_LIST.map((option) => (
+            <button
+              key={option.id}
+              type="button"
+              role="option"
+              aria-selected={option.id === region}
+              onClick={() => {
+                onRegionChange(option.id);
+                setOpen(false);
+              }}
+              style={{
+                width: '100%',
+                textAlign: 'left',
+                padding: '10px 14px',
+                borderRadius: 10,
+                border: 'none',
+                background: option.id === region ? 'var(--accent-dim)' : 'transparent',
+                color: 'var(--text-primary)',
+                fontSize: 14,
+                fontWeight: option.id === region ? 700 : 500,
+                cursor: 'pointer',
+              }}
+            >
+              {option.label}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
 export const PricingComponent: React.FC<PricingComponentProps> = ({
   plans,
   billingCycle,
+  region,
   onCycleChange,
   onPlanSelect,
+  onRegionChange,
   className,
   ...props
 }) => {
-  const annualDiscountPercent = 17;
+  const regional = PRICING_REGIONS[region];
+  const discountPercent = annualDiscountPercent(regional.plans.growth);
 
   // --- Toggle ---
   const CycleToggle = (
@@ -141,7 +309,7 @@ export const PricingComponent: React.FC<PricingComponentProps> = ({
             whiteSpace: 'nowrap',
             boxShadow: '0 2px 8px var(--shadow-soft)'
           }}>
-            Save {annualDiscountPercent}%
+            Save {discountPercent}%
           </span>
         </button>
       </div>
@@ -155,6 +323,7 @@ export const PricingComponent: React.FC<PricingComponentProps> = ({
         const isFeatured = plan.isPopular;
         const displayPrice = billingCycle === 'monthly' ? plan.priceMonthly : plan.priceAnnually;
         const totalBilled = billingCycle === 'annually' ? plan.priceAnnually * 12 : plan.priceMonthly;
+        const savings = annualSavings(plan, region);
 
         return (
           <div
@@ -226,7 +395,7 @@ export const PricingComponent: React.FC<PricingComponentProps> = ({
                   marginRight: 4,
                   alignSelf: 'center',
                 }}>
-                  RM
+                  {regional.symbol}
                 </span>
                 <span className="num" style={{
                   fontSize: 52,
@@ -252,7 +421,7 @@ export const PricingComponent: React.FC<PricingComponentProps> = ({
                 fontWeight: 500,
               }}>
                 {billingCycle === 'annually' 
-                  ? `Billed annually (RM ${totalBilled.toLocaleString()}/yr)` 
+                  ? `Billed annually (${formatMoneyCompact(totalBilled, region)}/yr)` 
                   : "Billed monthly, cancel anytime"
                 }
               </p>
@@ -268,7 +437,7 @@ export const PricingComponent: React.FC<PricingComponentProps> = ({
                     textTransform: 'uppercase',
                     letterSpacing: '0.04em',
                   }}>
-                    Save RM {((plan.priceMonthly - plan.priceAnnually) * 12).toLocaleString()}
+                    Save {formatMoneyCompact(savings, region)}
                   </span>
                 </div>
               )}
@@ -505,6 +674,9 @@ export const PricingComponent: React.FC<PricingComponentProps> = ({
         }}>
           Start with a 7-day free trial. One plan for every stage — from your first location to a full network.
         </p>
+        <div style={{ marginTop: 20 }}>
+          <RegionSelector region={region} onRegionChange={onRegionChange} />
+        </div>
       </header>
 
       {CycleToggle}
@@ -534,71 +706,28 @@ export const PricingComponent: React.FC<PricingComponentProps> = ({
   );
 };
 
-const cafePlans: [PriceTier, PriceTier, PriceTier] = [
-  {
-    id: 'starter',
-    name: 'Starter',
-    description: 'Perfect for independent local spots, services, and single-location shops.',
-    priceMonthly: 59,
-    priceAnnually: 49,
-    isPopular: false,
-    buttonLabel: 'Start free — no card needed',
-    features: [
-      { name: '1 active digital loyalty card', isIncluded: true },
-      { name: '1 location terminal key', isIncluded: true },
-      { name: 'Unlimited stamps & scans', isIncluded: true },
-      { name: 'Live 60-second QR validation', isIncluded: true },
-      { name: 'Basic stamp analytics dashboard', isIncluded: true },
-      { name: 'Custom card colors & themes', isIncluded: true },
-    ],
-  },
-  {
-    id: 'growth',
-    name: 'Growth',
-    description: 'For growing neighborhood brands with up to 5 locations.',
-    priceMonthly: 119,
-    priceAnnually: 99,
-    isPopular: true,
-    buttonLabel: 'Start free trial',
-    features: [
-      { name: 'Up to 5 active cards & terminals', isIncluded: true },
-      { name: 'Unlimited stamps & customer scans', isIncluded: true },
-      { name: 'Multi-location shared customer profiles', isIncluded: true },
-      { name: 'Advanced scan analytics & CSV export', isIncluded: true },
-      { name: 'Custom store logo & banner uploads', isIncluded: true },
-      { name: 'Priority email & text support', isIncluded: true },
-    ],
-  },
-  {
-    id: 'pro',
-    name: 'Pro',
-    description: 'For merchant associations or local business networks.',
-    priceMonthly: 229,
-    priceAnnually: 189,
-    isPopular: false,
-    buttonLabel: 'Talk to us',
-    features: [
-      { name: 'Unlimited loyalty cards & terminals', isIncluded: true },
-      { name: 'Unlimited stamps & scans', isIncluded: true },
-      { name: 'Cross-store community loyalty campaigns', isIncluded: true },
-      { name: 'Co-op branding & configuration configs', isIncluded: true },
-      { name: '1-on-1 merchant training & setup help', isIncluded: true },
-      { name: 'Dedicated Support Account Manager', isIncluded: true },
-    ],
-  },
-];
+interface PricingSectionProps {
+  initialRegion: PricingRegion;
+}
 
-const ExampleComp = () => {
+const PricingSection = ({ initialRegion }: PricingSectionProps) => {
   const router = useRouter();
   const [cycle, setCycle] = React.useState<BillingCycle>('annually');
+  const [region, setRegion] = React.useState<PricingRegion>(initialRegion);
+  const plans = React.useMemo(() => buildPlansForRegion(region), [region]);
 
-  const handleCycleChange = (newCycle: BillingCycle) => {
-    setCycle(newCycle);
+  const handleRegionChange = (nextRegion: PricingRegion) => {
+    setRegion(nextRegion);
+    persistPricingRegion(nextRegion);
   };
 
-  const handlePlanSelect = (planId: string, currentCycle: BillingCycle) => {
+  const handlePlanSelect = (planId: PlanId, currentCycle: BillingCycle) => {
     if (planId === 'pro') {
-      window.open('https://wa.me/601161665322?text=Hi%2C%20I%27m%20interested%20in%20StampBuddy%20for%20my%20business', '_blank');
+      const regionLabel = PRICING_REGIONS[region].label;
+      const message = encodeURIComponent(
+        `Hi, I'm interested in StampBuddy Pro (${regionLabel} pricing).`
+      );
+      window.open(`https://wa.me/601161665322?text=${message}`, '_blank');
     } else {
       router.push('/auth?intent=merchant');
     }
@@ -607,13 +736,15 @@ const ExampleComp = () => {
   return (
     <div style={{ width: '100%' }}>
       <PricingComponent
-        plans={cafePlans}
+        plans={plans}
         billingCycle={cycle}
-        onCycleChange={handleCycleChange}
+        region={region}
+        onCycleChange={setCycle}
         onPlanSelect={handlePlanSelect}
+        onRegionChange={handleRegionChange}
       />
     </div>
   );
 };
 
-export default ExampleComp;
+export default PricingSection;
